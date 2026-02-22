@@ -150,6 +150,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pageTitle = useMemo(() => getPageTitle(pathname, tab), [pathname, tab]);
   const helpHref = useMemo(() => helpHrefForPathname(pathname), [pathname]);
   const screenPreset = useMemo(() => getScreenPreset(pathname), [pathname]);
+  const isLanding = pathname === '/';
+  const showNavigation = !isLanding;
   const activeVersionId = onboarding.state.activeVersionId;
   const restartTour = () => {
     requestTourRestart();
@@ -320,16 +322,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <header className={cn(styles.header, 'pf-surface-panel')}>
         <div className={styles.headerInner}>
           <div className={styles.headerLeft}>
-            <PFIconButton
-              type="button"
-              size="sm"
-              variant="ghost"
-              className={styles.menuButton}
-              label="Open navigation"
-              onClick={() => setMobileNavOpen(true)}
-            >
-              <Menu width={16} height={16} aria-hidden="true" focusable="false" />
-            </PFIconButton>
+            {showNavigation && (
+              <PFIconButton
+                type="button"
+                size="sm"
+                variant="ghost"
+                className={styles.menuButton}
+                label="Open navigation"
+                onClick={() => setMobileNavOpen(true)}
+              >
+                <Menu width={16} height={16} aria-hidden="true" focusable="false" />
+              </PFIconButton>
+            )}
 
             <Link href="/" className={styles.logoLink}>
               <div className={styles.logoMark} aria-hidden="true">
@@ -364,7 +368,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      {mobileNavOpen && (
+      {showNavigation && mobileNavOpen && (
         <div className={styles.drawerOverlay} role="dialog" aria-modal="true">
           <button
             type="button"
@@ -390,30 +394,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <div className={styles.body}>
-        <aside className={cn(styles.sidebar, 'rfScrollbar')}>{nav}</aside>
+      <div className={cn(styles.body, isLanding && styles.bodyLanding)}>
+        {showNavigation && <aside className={cn(styles.sidebar, 'rfScrollbar')}>{nav}</aside>}
 
-        <main className={cn(styles.main, 'rfScrollbar')}>
-          <div className={styles.mainInner}>
-            <div className={styles.pageHeader}>
-              <div className={styles.pageHeaderLeft}>
-                <Breadcrumbs />
-                <h1 className={styles.pageTitle}>{pageTitle}</h1>
+        <main className={cn(styles.main, 'rfScrollbar', isLanding && styles.mainLanding)}>
+          <div className={cn(styles.mainInner, isLanding && styles.mainInnerLanding)}>
+            {showNavigation && (
+              <div className={styles.pageHeader}>
+                <div className={styles.pageHeaderLeft}>
+                  <Breadcrumbs />
+                  <h1 className={styles.pageTitle}>{pageTitle}</h1>
+                </div>
+                <div className={styles.mobileActions}>
+                  <ThemeToggle />
+                  <DensityToggle />
+                  <Link
+                    className={cn('pf-button', 'pf-size-sm', 'pf-button--outline', 'pf-button--neutral')}
+                    href={helpHref}
+                  >
+                    Help
+                  </Link>
+                  <PFButton variant="outline" intent="neutral" size="sm" onClick={restartTour}>
+                    Restart Tour
+                  </PFButton>
+                  <PFButton size="sm" onClick={() => setNewConfigOpen(true)}>
+                    New
+                  </PFButton>
+                </div>
               </div>
-              <div className={styles.mobileActions}>
-              <ThemeToggle />
-              <DensityToggle />
-              <Link className={cn('pf-button', 'pf-size-sm', 'pf-button--outline', 'pf-button--neutral')} href={helpHref}>
-                Help
-              </Link>
-              <PFButton variant="outline" intent="neutral" size="sm" onClick={restartTour}>
-                Restart Tour
-              </PFButton>
-              <PFButton size="sm" onClick={() => setNewConfigOpen(true)}>
-                New
-              </PFButton>
-              </div>
-            </div>
+            )}
             {children}
           </div>
         </main>

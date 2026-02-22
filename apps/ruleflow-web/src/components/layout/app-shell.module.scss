@@ -378,3 +378,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+.bodyLanding {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+  height: 100%;
+}
+
+.mainLanding {
+  overflow-y: auto;
+  height: 100%;
+  padding-right: 0;
+}
+
+.mainInnerLanding {
+  padding-bottom: 0;
+  min-height: 100%;
+  width: 100%;
+}
