@@ -47,7 +47,7 @@ export function RuleListPanel({
   }, [rules, searchText]);
 
   return (
-    <section className={styles.panel} aria-label="Rule list">
+    <section className={styles.panel} aria-label="Rule list" data-tour-target="rules-panel">
       <div className={styles.header}>
         <h3 className={styles.title}>Rule List</h3>
         <Badge variant="muted">{rules.length}</Badge>

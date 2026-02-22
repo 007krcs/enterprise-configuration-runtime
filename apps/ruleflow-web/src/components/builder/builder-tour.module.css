@@ -1,0 +1,88 @@
+.tour {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 120;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(1, 2, 5, 0.55);
+}
+
+.highlight {
+  position: absolute;
+  border: 2px solid var(--rf-primary);
+  border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(1, 2, 5, 0.55);
+  pointer-events: none;
+}
+
+.tooltip {
+  position: absolute;
+  width: 280px;
+  background: var(--rf-surface);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--rf-border);
+  color: var(--rf-fg);
+  pointer-events: auto;
+}
+
+.tooltipHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tooltipTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.closeButton {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--rf-muted);
+}
+
+.tooltipBody {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.controlButton,
+.actionButton {
+  border-radius: 999px;
+  border: 1px solid var(--rf-border);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.actionButton {
+  background: var(--rf-primary);
+  color: var(--rf-primary-fg);
+  border-color: transparent;
+}
+
+.controlButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

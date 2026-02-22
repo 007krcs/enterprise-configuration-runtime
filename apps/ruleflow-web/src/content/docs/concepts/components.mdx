@@ -1,0 +1,9 @@
+# Components & Registry
+
+The component registry holds manifests that describe palette assets.
+
+- **adapterHint**: maps schema nodes to renderer implementations (`platform.textField`, `aggrid.table`, etc.).
+- **palette metadata**: controls availability (planned, hidden) and drag behavior.
+- **props schema**: each component exposes a JSON Schema for the inspector panel.
+
+Registry updates flow into Builder automatically, so new adapters become immediately available in the palette and inspector.

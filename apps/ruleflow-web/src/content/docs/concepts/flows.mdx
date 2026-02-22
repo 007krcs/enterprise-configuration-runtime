@@ -1,0 +1,9 @@
+# Flows
+
+Flows describe directed graphs of screens and transitions.
+
+- **States** mirror UI screens.
+- **Transitions** (`event`, `target`, `guard`) answer the question “what happens when an event fires?”
+- **Initial state** determines the first screen when the bundle activates.
+
+Use the flow diagram and `flowSchema.states` to verify each `onEvent` and ensure every target state exists.

@@ -1,12 +1,55 @@
-.grid {
-  display: grid;
-  gap: var(--rf-space-6);
-  align-items: start;
-}
-
 .stack {
   display: grid;
   gap: var(--rf-space-4);
+}
+
+.playgroundShell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: var(--rf-space-5);
+}
+
+.playgroundSidebar {
+  border-radius: var(--rf-radius-lg);
+  border: 1px solid var(--rf-border);
+  background: var(--rf-surface);
+  padding: var(--rf-space-4);
+  display: grid;
+  gap: var(--rf-space-4);
+  box-shadow: var(--rf-shadow-soft);
+}
+
+.sidebarSection {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sidebarLabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rf-muted);
+}
+
+.sidebarButtons {
+  display: grid;
+  gap: var(--rf-space-2);
+}
+
+.sidebarHelper {
+  margin: 0;
+  font-size: 12px;
+  color: var(--rf-muted);
+}
+
+.playgroundMain {
+  display: grid;
+  gap: var(--rf-space-5);
+}
+
+.contextCard {
+  border-radius: var(--rf-radius-lg);
 }
 
 .field {
@@ -53,6 +96,39 @@
   display: grid;
   gap: var(--rf-space-4);
   font-size: 14px;
+}
+
+.splitView {
+  display: grid;
+  gap: var(--rf-space-4);
+}
+
+.previewCard {
+  border-radius: var(--rf-radius-lg);
+}
+
+.editorCard {
+  border-radius: var(--rf-radius-lg);
+}
+
+.jsonEditor {
+  width: 100%;
+  min-height: 360px;
+  border-radius: var(--rf-radius-md);
+  padding: var(--rf-space-3);
+  border: 1px solid var(--rf-border);
+  background: color-mix(in srgb, var(--rf-surface-2) 50%, transparent);
+  font-family: var(--rf-font-mono);
+  font-size: 13px;
+  color: var(--rf-fg);
+  resize: vertical;
+}
+
+.editorActions {
+  margin-top: var(--rf-space-3);
+  display: flex;
+  gap: var(--rf-space-2);
+  flex-wrap: wrap;
 }
 
 .traceFocus {
@@ -304,11 +380,7 @@
 }
 
 @media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: 340px minmax(0, 1fr) 420px;
-  }
-
-  .formGrid {
-    grid-template-columns: 1fr;
+  .splitView {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
   }
 }

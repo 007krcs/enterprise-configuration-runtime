@@ -1,28 +1,29 @@
 .header {
-  padding: 4px 0 12px;
+  padding: var(--ecr-spacing-1) 0 var(--ecr-spacing-3);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-  border-bottom: 1px solid var(--dt-color-border, #c6d2e1);
-  margin-bottom: 16px;
+  gap: var(--ecr-spacing-3);
+  border-bottom: 1px solid var(--ecr-color-border);
+  margin-bottom: var(--ecr-spacing-4);
 }
 
 .kicker {
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 0.75rem;
-  color: var(--dt-color-text-muted, #4f6680);
-  margin: 0 0 4px;
+  font-size: var(--ecr-font-size-xs);
+  color: var(--ecr-color-text-muted);
+  margin: 0 0 var(--ecr-spacing-1);
 }
 
 .title {
-  font-size: 1.4rem;
+  font-size: var(--ecr-font-size-lg);
   margin: 0;
 }
 
 .subtitle {
-  margin: 6px 0 0;
-  color: var(--dt-color-text-muted, #4f6680);
+  margin: var(--ecr-spacing-1) 0 0;
+  color: var(--ecr-color-text-muted);
   line-height: 1.5;
+  font-size: var(--ecr-font-size-sm);
 }

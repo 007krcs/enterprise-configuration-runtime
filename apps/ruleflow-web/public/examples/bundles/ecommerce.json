@@ -1,0 +1,752 @@
+{
+  "uiSchema": {
+    "version": "1.0.0",
+    "pageId": "home",
+    "layout": {
+      "id": "home-root",
+      "type": "stack",
+      "direction": "vertical",
+      "children": [
+        {
+          "id": "home-hero",
+          "type": "section",
+          "title": "Welcome",
+          "componentIds": ["homeHero"]
+        },
+        {
+          "id": "home-categories",
+          "type": "section",
+          "title": "Browse categories",
+          "componentIds": ["homeCategoryTable"]
+        },
+        {
+          "id": "home-featured",
+          "type": "section",
+          "title": "Top products",
+          "componentIds": ["homeFeaturedProducts"]
+        }
+      ]
+    },
+    "components": [
+      {
+        "id": "homeHero",
+        "type": "custom",
+        "adapterHint": "d3.custom",
+        "props": {
+          "alignment": "center",
+          "text": "Shop the Enterprise E-Commerce Suite",
+          "height": 220
+        },
+        "i18n": {
+          "labelKey": "examples.home.hero"
+        }
+      },
+      {
+        "id": "homeCategoryTable",
+        "type": "table",
+        "adapterHint": "aggrid.table",
+        "props": {
+          "columns": [
+            { "field": "name", "headerKey": "examples.categories.name" },
+            { "field": "items", "headerKey": "examples.categories.items" },
+            { "field": "description", "headerKey": "examples.categories.description" }
+          ],
+          "rows": []
+        },
+        "bindings": {
+          "data": {
+            "rows": "data.categories"
+          }
+        },
+        "i18n": {
+          "labelKey": "examples.categories.table"
+        }
+      },
+      {
+        "id": "homeFeaturedProducts",
+        "type": "table",
+        "adapterHint": "aggrid.table",
+        "props": {
+          "columns": [
+            { "field": "name", "headerKey": "examples.products.name" },
+            { "field": "price", "headerKey": "examples.products.price" },
+            { "field": "stock", "headerKey": "examples.products.stock" }
+          ],
+          "rows": []
+        },
+        "bindings": {
+          "data": {
+            "rows": "data.products"
+          }
+        },
+        "i18n": {
+          "labelKey": "examples.products.table"
+        }
+      }
+    ]
+  },
+  "uiSchemasById": {
+    "home": {
+      "version": "1.0.0",
+      "pageId": "home",
+      "layout": {
+        "id": "home-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "home-hero",
+            "type": "section",
+            "title": "Welcome",
+            "componentIds": ["homeHero"]
+          },
+          {
+            "id": "home-categories",
+            "type": "section",
+            "title": "Browse categories",
+            "componentIds": ["homeCategoryTable"]
+          },
+          {
+            "id": "home-featured",
+            "type": "section",
+            "title": "Top products",
+            "componentIds": ["homeFeaturedProducts"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "homeHero",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "alignment": "center",
+            "text": "Shop the Enterprise E-Commerce Suite",
+            "height": 220
+          },
+          "i18n": {
+            "labelKey": "examples.home.hero"
+          }
+        },
+        {
+          "id": "homeCategoryTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "examples.categories.name" },
+              { "field": "items", "headerKey": "examples.categories.items" },
+              { "field": "description", "headerKey": "examples.categories.description" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.categories"
+            }
+          },
+          "i18n": {
+            "labelKey": "examples.categories.table"
+          }
+        },
+        {
+          "id": "homeFeaturedProducts",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "examples.products.name" },
+              { "field": "price", "headerKey": "examples.products.price" },
+              { "field": "stock", "headerKey": "examples.products.stock" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.products"
+            }
+          },
+          "i18n": {
+            "labelKey": "examples.products.table"
+          }
+        }
+      ]
+    },
+    "category": {
+      "version": "1.0.0",
+      "pageId": "category",
+      "layout": {
+        "id": "category-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "category-intro",
+            "type": "section",
+            "title": "Category spotlight",
+            "componentIds": ["categoryFilters"]
+          },
+          {
+            "id": "category-products",
+            "type": "section",
+            "title": "Products you can expand",
+            "componentIds": ["categoryProductTable"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "categoryFilters",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "Filter the catalog by attributes, pricing, and promotions.",
+            "height": 120
+          }
+        },
+        {
+          "id": "categoryProductTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "examples.products.name" },
+              { "field": "category", "headerKey": "examples.products.category" },
+              { "field": "price", "headerKey": "examples.products.price" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.products"
+            }
+          }
+        }
+      ]
+    },
+    "product": {
+      "version": "1.0.0",
+      "pageId": "product",
+      "layout": {
+        "id": "product-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "product-carousel",
+            "type": "section",
+            "title": "Product carousel",
+            "componentIds": ["productCarousel"]
+          },
+          {
+            "id": "product-details",
+            "type": "section",
+            "title": "Product specs",
+            "componentIds": ["productSpecs"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "productCarousel",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "High-resolution product carousel placeholder",
+            "height": 200
+          }
+        },
+        {
+          "id": "productSpecs",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "examples.products.name" },
+              { "field": "price", "headerKey": "examples.products.price" },
+              { "field": "stock", "headerKey": "examples.products.stock" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.products"
+            }
+          }
+        }
+      ]
+    },
+    "cart": {
+      "version": "1.0.0",
+      "pageId": "cart",
+      "layout": {
+        "id": "cart-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "cart-items",
+            "type": "section",
+            "title": "Cart items",
+            "componentIds": ["cartTable"]
+          },
+          {
+            "id": "cart-totals",
+            "type": "section",
+            "title": "Totals",
+            "componentIds": ["cartTotals"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "cartTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "examples.cart.item" },
+              { "field": "quantity", "headerKey": "examples.cart.qty" },
+              { "field": "price", "headerKey": "examples.cart.price" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.cart.items"
+            }
+          }
+        },
+        {
+          "id": "cartTotals",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "Totals update once discounts apply.",
+            "height": 140
+          }
+        }
+      ]
+    },
+    "checkout": {
+      "version": "1.0.0",
+      "pageId": "checkout",
+      "layout": {
+        "id": "checkout-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "checkout-shipping",
+            "type": "section",
+            "title": "Shipping",
+            "componentIds": [
+              "checkoutAddressInput",
+              "checkoutCityInput",
+              "checkoutPostalInput",
+              "checkoutCountryInput"
+            ]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "checkoutAddressInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "text"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.order.shipping.address"
+            }
+          },
+          "validations": {
+            "required": true
+          }
+        },
+        {
+          "id": "checkoutCityInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "text"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.order.shipping.city"
+            }
+          },
+          "validations": {
+            "required": true
+          }
+        },
+        {
+          "id": "checkoutPostalInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "text"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.order.shipping.postalCode"
+            }
+          },
+          "validations": {
+            "required": true
+          }
+        },
+        {
+          "id": "checkoutCountryInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "text"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.order.shipping.country"
+            }
+          },
+          "validations": {
+            "required": true
+          }
+        }
+      ]
+    },
+    "confirmation": {
+      "version": "1.0.0",
+      "pageId": "confirmation",
+      "layout": {
+        "id": "confirmation-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "confirmation-message",
+            "type": "section",
+            "title": "Order confirmed",
+            "componentIds": ["confirmationMessage"]
+          },
+          {
+            "id": "confirmation-summary",
+            "type": "section",
+            "title": "Summary",
+            "componentIds": ["confirmationSummary"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "confirmationMessage",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "Thank you! Your order is in review.",
+            "height": 120
+          }
+        },
+        {
+          "id": "confirmationSummary",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "label", "headerKey": "examples.confirmation.label" },
+              { "field": "value", "headerKey": "examples.confirmation.value" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.order.summary"
+            }
+          }
+        }
+      ]
+    },
+    "admin-metrics": {
+      "version": "1.0.0",
+      "pageId": "admin-metrics",
+      "layout": {
+        "id": "admin-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "admin-chart",
+            "type": "section",
+            "title": "Sales momentum",
+            "componentIds": ["adminRevenueChart"]
+          },
+          {
+            "id": "admin-regions",
+            "type": "section",
+            "title": "Regional breakdown",
+            "componentIds": ["adminRegionTable"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "adminRevenueChart",
+          "type": "chart",
+          "adapterHint": "highcharts.chart",
+          "props": {
+            "series": []
+          },
+          "bindings": {
+            "data": {
+              "series": "data.metrics.revenueSeries"
+            }
+          }
+        },
+        {
+          "id": "adminRegionTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "region", "headerKey": "examples.metrics.region" },
+              { "field": "revenue", "headerKey": "examples.metrics.revenue" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.metrics.byRegion"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "activeUiPageId": "home",
+  "flowSchema": {
+    "version": "1.0.0",
+    "flowId": "ecommerce-flow",
+    "initialState": "home",
+    "states": {
+      "home": {
+        "uiPageId": "home",
+        "on": {
+          "onBrowseCategory": {
+            "target": "category"
+          },
+          "onOpenAdmin": {
+            "target": "admin-metrics",
+            "guard": {
+              "op": "contains",
+              "left": {
+                "path": "data.user.roles"
+              },
+              "right": {
+                "value": "admin"
+              }
+            }
+          }
+        }
+      },
+      "category": {
+        "uiPageId": "category",
+        "on": {
+          "onSelectProduct": {
+            "target": "product"
+          }
+        }
+      },
+      "product": {
+        "uiPageId": "product",
+        "on": {
+          "onAddToCart": {
+            "target": "cart"
+          }
+        }
+      },
+      "cart": {
+        "uiPageId": "cart",
+        "on": {
+          "onCheckout": {
+            "target": "checkout",
+            "guard": {
+              "op": "gt",
+              "left": {
+                "path": "data.cart.items.length"
+              },
+              "right": {
+                "value": 0
+              }
+            }
+          }
+        }
+      },
+      "checkout": {
+        "uiPageId": "checkout",
+        "on": {
+          "onSubmitOrder": {
+            "target": "confirmation",
+            "guard": {
+              "all": [
+                {
+                  "op": "exists",
+                  "left": {
+                    "path": "data.order.shipping.address"
+                  }
+                },
+                {
+                  "op": "exists",
+                  "left": {
+                    "path": "data.order.shipping.city"
+                  }
+                },
+                {
+                  "op": "exists",
+                  "left": {
+                    "path": "data.order.shipping.postalCode"
+                  }
+                },
+                {
+                  "op": "exists",
+                  "left": {
+                    "path": "data.order.shipping.country"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "confirmation": {
+        "uiPageId": "confirmation",
+        "on": {
+          "onContinueShopping": {
+            "target": "home"
+          }
+        }
+      },
+      "admin-metrics": {
+        "uiPageId": "admin-metrics",
+        "on": {
+          "onReturnHome": {
+            "target": "home"
+          }
+        }
+      }
+    }
+  },
+  "rules": {
+    "version": "1.0.0",
+    "rules": [
+      {
+        "ruleId": "CartNotEmpty",
+        "description": "Require at least one item before checkout",
+        "priority": 90,
+        "when": {
+          "op": "gt",
+          "left": {
+            "path": "data.cart.items.length"
+          },
+          "right": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "ruleId": "ApplyDiscount",
+        "description": "Apply enterprise discount when totals exceed $100",
+        "priority": 80,
+        "when": {
+          "op": "gt",
+          "left": {
+            "path": "data.cart.total"
+          },
+          "right": {
+            "value": 100
+          }
+        },
+        "actions": [
+          {
+            "type": "setField",
+            "path": "cart.discount",
+            "value": 0.1
+          },
+          {
+            "type": "setField",
+            "path": "cart.finalTotal",
+            "value": 256.5
+          }
+        ]
+      },
+      {
+        "ruleId": "UserMustBeLoggedIn",
+        "description": "Prevent checkout when session token is missing",
+        "priority": 70,
+        "when": {
+          "not": {
+            "op": "exists",
+            "left": {
+              "path": "data.user.token"
+            }
+          }
+        },
+        "actions": [
+          {
+            "type": "throwError",
+            "message": "Login required before checkout",
+            "code": "AUTH_REQUIRED"
+          }
+        ]
+      },
+      {
+        "ruleId": "RequiredFieldsPresent",
+        "description": "Ensure shipping address is complete",
+        "priority": 60,
+        "when": {
+          "all": [
+            {
+              "op": "exists",
+              "left": {
+                "path": "data.order.shipping.address"
+              }
+            },
+            {
+              "op": "exists",
+              "left": {
+                "path": "data.order.shipping.city"
+              }
+            },
+            {
+              "op": "exists",
+              "left": {
+                "path": "data.order.shipping.postalCode"
+              }
+            },
+            {
+              "op": "exists",
+              "left": {
+                "path": "data.order.shipping.country"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "ruleId": "UserIsAdmin",
+        "description": "Gate admin metrics to admin roles",
+        "priority": 50,
+        "when": {
+          "op": "contains",
+          "left": {
+            "path": "data.user.roles"
+          },
+          "right": {
+            "value": "admin"
+          }
+        }
+      }
+    ]
+  },
+  "apiMappingsById": {}
+}

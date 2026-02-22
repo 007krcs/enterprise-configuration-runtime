@@ -1,0 +1,11 @@
+# Rules
+
+Rules guard transitions and mutate context/data without executing arbitrary code.
+
+Each rule has:
+
+- `ruleId`
+- `condition` (JSON AST referencing `context`, `data`, `screen`)
+- `actions` such as `setContext`, `setData`, `emitEvent`, or `throwError`
+
+The Rules Engine evaluates every guard before flow transitions, compiles traces for explainability, and supports `debugger`, `trace`, and `emitEvent` helpers used in Playground.

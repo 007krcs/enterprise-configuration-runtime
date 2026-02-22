@@ -5,11 +5,16 @@
   grid-template-rows: auto minmax(0, 1fr);
   gap: var(--rf-space-4);
   width: 100%;
-  min-height: calc(100dvh - 160px);
+  min-height: 0;
+  height: 100%;
 }
 
 .builderRoot {
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
 }
 
 .headerCard {
@@ -46,6 +51,88 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--rf-space-2);
+}
+
+.drawerToggleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rf-space-2);
+  margin-top: var(--rf-space-3);
+}
+
+.drawerToggleButton {
+  border-radius: var(--rf-radius-pill);
+  border: 1px solid var(--rf-border);
+  background: var(--rf-surface);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rf-fg);
+  cursor: pointer;
+}
+
+.drawerToggleButton.active {
+  border-color: var(--rf-primary);
+  background: color-mix(in srgb, var(--rf-primary) 12%, var(--rf-surface));
+}
+
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  z-index: 110;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: var(--rf-space-2);
+}
+
+.drawerOverlay.inspectorOverlay {
+  justify-content: flex-start;
+}
+
+.drawerPanel {
+  width: min(320px, 80vw);
+  max-height: calc(100vh - 52px);
+  background: var(--rf-surface);
+  border-radius: var(--rf-radius-lg);
+  border: 1px solid var(--rf-border);
+  box-shadow: var(--rf-shadow-soft);
+  overflow: auto;
+  padding: var(--rf-space-4);
+}
+
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--rf-space-2);
+}
+
+.drawerHeader button {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--rf-muted);
+}
+
+.exportLink {
+  padding: 6px 12px;
+  border-radius: var(--rf-radius-pill);
+  border: 1px solid var(--rf-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rf-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.exportLink:hover {
+  background: color-mix(in srgb, var(--rf-primary) 15%, var(--rf-surface));
 }
 
 .metaGrid {
@@ -255,11 +342,86 @@
   align-content: start;
 }
 
+.canvasEmptyStatePanel {
+  border-radius: var(--rf-radius-lg);
+  border: 1px dashed color-mix(in srgb, var(--rf-border) 60%, transparent);
+  background: color-mix(in srgb, var(--rf-surface) 95%, transparent);
+  padding: var(--rf-space-4);
+  margin: 0 auto;
+  max-width: min(780px, 100%);
+  box-shadow: var(--rf-shadow-soft);
+  display: grid;
+  gap: var(--rf-space-3);
+  text-align: center;
+}
+
+.canvasEmptyStateTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--rf-fg);
+}
+
+.canvasEmptyStateDescription {
+  margin: 0;
+  color: var(--rf-muted);
+  line-height: 1.4;
+  font-size: 14px;
+}
+
+.canvasEmptyStateActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--rf-space-2);
+}
+
+.canvasEmptyScratch {
+  border: none;
+  background: transparent;
+  color: var(--rf-primary);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.canvasEmptyScratch:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.canvasEmptyTips {
+  text-align: left;
+  border-radius: var(--rf-radius-md);
+  padding: var(--rf-space-3);
+  background: color-mix(in srgb, var(--rf-primary) 8%, var(--rf-surface));
+}
+
+.canvasEmptyTipHeading {
+  margin: 0 0 var(--rf-space-1);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rf-fg);
+}
+
+.canvasEmptyTipList {
+  margin: 0;
+  padding-left: var(--rf-space-3);
+  display: grid;
+  gap: 4px;
+}
+
+.canvasEmptyTipItem {
+  color: var(--rf-muted);
+  font-size: 13px;
+}
+
 .canvasZone {
   position: relative;
   width: 100%;
   min-width: 100%;
-  min-height: 680px;
+  min-height: 0;
   border-radius: var(--rf-radius-lg);
   border: 1px dashed color-mix(in srgb, var(--rf-border) 70%, var(--rf-primary));
   background:

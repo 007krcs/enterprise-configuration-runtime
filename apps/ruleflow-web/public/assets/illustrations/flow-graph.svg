@@ -1,0 +1,18 @@
+<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow graph illustration">
+  <defs>
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <rect width="280" height="200" rx="20" fill="#0b1220" />
+  <circle cx="60" cy="80" r="26" fill="url(#flowGrad)" />
+  <circle cx="220" cy="80" r="26" fill="#111827" stroke="#2563eb" stroke-width="3" />
+  <circle cx="140" cy="150" r="26" fill="#111827" stroke="#0ea5e9" stroke-width="3" />
+  <line x1="85" y1="80" x2="195" y2="80" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+  <line x1="140" y1="120" x2="140" y2="124" stroke="#fff" stroke-width="3" />
+  <path d="M140 120 L130 110" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+  <text x="60" y="120" fill="#fff" font-size="12" text-anchor="middle">Home</text>
+  <text x="140" y="180" fill="#fff" font-size="12" text-anchor="middle">Checkout</text>
+  <text x="220" y="120" fill="#fff" font-size="12" text-anchor="middle">Confirmation</text>
+</svg>

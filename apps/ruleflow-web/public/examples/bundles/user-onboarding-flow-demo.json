@@ -1,0 +1,654 @@
+{
+  "uiSchema": {
+    "version": "1.0.0",
+    "pageId": "onboarding-flow",
+    "layout": {
+      "id": "root",
+      "type": "stack",
+      "direction": "vertical",
+      "children": [
+        {
+          "id": "filters",
+          "type": "section",
+          "title": "Welcome",
+          "componentIds": [
+            "customerNameInput",
+            "orderTotalInput"
+          ]
+        },
+        {
+          "id": "table",
+          "type": "section",
+          "title": "Profile",
+          "componentIds": [
+            "ordersTable"
+          ]
+        },
+        {
+          "id": "chart",
+          "type": "section",
+          "title": "Verification",
+          "componentIds": [
+            "revenueChart"
+          ]
+        },
+        {
+          "id": "viz",
+          "type": "section",
+          "title": "Summary",
+          "componentIds": [
+            "customViz"
+          ]
+        }
+      ]
+    },
+    "components": [
+      {
+        "id": "customerNameInput",
+        "type": "input",
+        "adapterHint": "material.input",
+        "props": {},
+        "i18n": {
+          "labelKey": "runtime.filters.customerName.label",
+          "placeholderKey": "runtime.filters.customerName.placeholder",
+          "helperTextKey": "runtime.filters.customerName.helper"
+        },
+        "bindings": {
+          "data": {
+            "value": "data.filters.customerName"
+          }
+        },
+        "validations": {
+          "required": false,
+          "min": 2,
+          "max": 64,
+          "regex": "^[a-zA-Z\\s]+$"
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.filters.customerName.aria",
+          "tabIndex": 0,
+          "role": "textbox",
+          "keyboardNav": true,
+          "focusOrder": 1
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": {
+              "columns": 12,
+              "span": 12
+            },
+            "md": {
+              "columns": 12,
+              "span": 6
+            }
+          }
+        },
+        "events": {
+          "onChange": [
+            {
+              "type": "emitEvent",
+              "payload": {
+                "event": "filterChanged"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "orderTotalInput",
+        "type": "input",
+        "adapterHint": "material.input",
+        "props": {
+          "inputType": "number"
+        },
+        "i18n": {
+          "labelKey": "runtime.filters.orderTotal.label",
+          "placeholderKey": "runtime.filters.orderTotal.placeholder",
+          "helperTextKey": "runtime.filters.orderTotal.helper"
+        },
+        "bindings": {
+          "data": {
+            "value": "data.orderTotal"
+          }
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.filters.orderTotal.aria",
+          "tabIndex": 0,
+          "role": "spinbutton",
+          "keyboardNav": true,
+          "focusOrder": 2
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": {
+              "columns": 12,
+              "span": 12
+            },
+            "md": {
+              "columns": 12,
+              "span": 6
+            }
+          }
+        }
+      },
+      {
+        "id": "ordersTable",
+        "type": "table",
+        "adapterHint": "aggrid.table",
+        "props": {
+          "columns": [
+            {
+              "field": "orderId",
+              "headerKey": "runtime.orders.table.columns.orderId"
+            },
+            {
+              "field": "customer",
+              "headerKey": "runtime.orders.table.columns.customer"
+            },
+            {
+              "field": "total",
+              "headerKey": "runtime.orders.table.columns.total"
+            }
+          ],
+          "rows": []
+        },
+        "i18n": {
+          "labelKey": "runtime.orders.table.label"
+        },
+        "bindings": {
+          "data": {
+            "rows": "data.orders"
+          }
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.orders.table.aria",
+          "tabIndex": 0,
+          "role": "table",
+          "keyboardNav": true,
+          "focusOrder": 3
+        }
+      },
+      {
+        "id": "revenueChart",
+        "type": "chart",
+        "adapterHint": "highcharts.chart",
+        "props": {
+          "series": []
+        },
+        "i18n": {
+          "labelKey": "runtime.revenue.chart.label"
+        },
+        "bindings": {
+          "data": {
+            "series": "data.revenueSeries"
+          }
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.revenue.chart.aria",
+          "tabIndex": 0,
+          "role": "img",
+          "keyboardNav": true,
+          "focusOrder": 4
+        }
+      },
+      {
+        "id": "customViz",
+        "type": "custom",
+        "adapterHint": "d3.custom",
+        "props": {
+          "height": 240
+        },
+        "i18n": {
+          "labelKey": "runtime.customViz.label"
+        },
+        "bindings": {
+          "data": {
+            "dataset": "data.customViz"
+          }
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.customViz.aria",
+          "tabIndex": 0,
+          "role": "img",
+          "keyboardNav": true,
+          "focusOrder": 5
+        }
+      }
+    ]
+  },
+  "uiSchemasById": {
+    "onboarding-flow": {
+      "version": "1.0.0",
+      "pageId": "onboarding-flow",
+      "layout": {
+        "id": "root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "filters",
+            "type": "section",
+            "title": "Welcome",
+            "componentIds": [
+              "customerNameInput",
+              "orderTotalInput"
+            ]
+          },
+          {
+            "id": "table",
+            "type": "section",
+            "title": "Profile",
+            "componentIds": [
+              "ordersTable"
+            ]
+          },
+          {
+            "id": "chart",
+            "type": "section",
+            "title": "Verification",
+            "componentIds": [
+              "revenueChart"
+            ]
+          },
+          {
+            "id": "viz",
+            "type": "section",
+            "title": "Summary",
+            "componentIds": [
+              "customViz"
+            ]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "customerNameInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {},
+          "i18n": {
+            "labelKey": "runtime.filters.customerName.label",
+            "placeholderKey": "runtime.filters.customerName.placeholder",
+            "helperTextKey": "runtime.filters.customerName.helper"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.filters.customerName"
+            }
+          },
+          "validations": {
+            "required": false,
+            "min": 2,
+            "max": 64,
+            "regex": "^[a-zA-Z\\s]+$"
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.filters.customerName.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 1
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": {
+                "columns": 12,
+                "span": 12
+              },
+              "md": {
+                "columns": 12,
+                "span": 6
+              }
+            }
+          },
+          "events": {
+            "onChange": [
+              {
+                "type": "emitEvent",
+                "payload": {
+                  "event": "filterChanged"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "orderTotalInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "number"
+          },
+          "i18n": {
+            "labelKey": "runtime.filters.orderTotal.label",
+            "placeholderKey": "runtime.filters.orderTotal.placeholder",
+            "helperTextKey": "runtime.filters.orderTotal.helper"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.orderTotal"
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.filters.orderTotal.aria",
+            "tabIndex": 0,
+            "role": "spinbutton",
+            "keyboardNav": true,
+            "focusOrder": 2
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": {
+                "columns": 12,
+                "span": 12
+              },
+              "md": {
+                "columns": 12,
+                "span": 6
+              }
+            }
+          }
+        },
+        {
+          "id": "ordersTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              {
+                "field": "orderId",
+                "headerKey": "runtime.orders.table.columns.orderId"
+              },
+              {
+                "field": "customer",
+                "headerKey": "runtime.orders.table.columns.customer"
+              },
+              {
+                "field": "total",
+                "headerKey": "runtime.orders.table.columns.total"
+              }
+            ],
+            "rows": []
+          },
+          "i18n": {
+            "labelKey": "runtime.orders.table.label"
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.orders"
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.orders.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 3
+          }
+        },
+        {
+          "id": "revenueChart",
+          "type": "chart",
+          "adapterHint": "highcharts.chart",
+          "props": {
+            "series": []
+          },
+          "i18n": {
+            "labelKey": "runtime.revenue.chart.label"
+          },
+          "bindings": {
+            "data": {
+              "series": "data.revenueSeries"
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.revenue.chart.aria",
+            "tabIndex": 0,
+            "role": "img",
+            "keyboardNav": true,
+            "focusOrder": 4
+          }
+        },
+        {
+          "id": "customViz",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "height": 240
+          },
+          "i18n": {
+            "labelKey": "runtime.customViz.label"
+          },
+          "bindings": {
+            "data": {
+              "dataset": "data.customViz"
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.customViz.aria",
+            "tabIndex": 0,
+            "role": "img",
+            "keyboardNav": true,
+            "focusOrder": 5
+          }
+        }
+      ]
+    }
+  },
+  "activeUiPageId": "onboarding-flow",
+  "flowSchema": {
+    "version": "1.0.0",
+    "flowId": "onboarding-flow",
+    "initialState": "welcome",
+    "states": {
+      "welcome": {
+        "uiPageId": "onboarding-flow",
+        "on": {
+          "next": {
+            "target": "profile",
+            "guard": {
+              "op": "eq",
+              "left": {
+                "path": "data.acceptedTerms"
+              },
+              "right": {
+                "value": true
+              }
+            }
+          }
+        }
+      },
+      "profile": {
+        "uiPageId": "onboarding-flow",
+        "on": {
+          "back": {
+            "target": "welcome"
+          },
+          "next": {
+            "target": "verify",
+            "guard": {
+              "op": "eq",
+              "left": {
+                "path": "data.formValid"
+              },
+              "right": {
+                "value": true
+              }
+            }
+          }
+        }
+      },
+      "verify": {
+        "uiPageId": "onboarding-flow",
+        "on": {
+          "back": {
+            "target": "profile"
+          },
+          "submit": {
+            "target": "complete",
+            "guard": {
+              "op": "eq",
+              "left": {
+                "path": "data.readyToSubmit"
+              },
+              "right": {
+                "value": true
+              }
+            },
+            "actions": [
+              "evaluateRules",
+              "callApi"
+            ],
+            "apiId": "verifyIdentity"
+          }
+        }
+      },
+      "complete": {
+        "uiPageId": "onboarding-flow",
+        "on": {
+          "back": {
+            "target": "verify"
+          }
+        }
+      }
+    }
+  },
+  "rules": {
+    "version": "1.0.0",
+    "rules": [
+      {
+        "ruleId": "US_ADMIN_DISCOUNT",
+        "description": "Apply admin approval for high-risk onboarding requests",
+        "priority": 100,
+        "scope": {
+          "countries": [
+            "US"
+          ],
+          "roles": [
+            "admin"
+          ]
+        },
+        "when": {
+          "op": "gt",
+          "left": {
+            "path": "data.orderTotal"
+          },
+          "right": {
+            "value": 1000
+          }
+        },
+        "actions": [
+          {
+            "type": "setField",
+            "path": "data.discount",
+            "value": 0.1
+          },
+          {
+            "type": "emitEvent",
+            "event": "discountApplied",
+            "payload": {
+              "level": "admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "EU_GDPR_NOTICE",
+        "description": "Flag GDPR notices for EU hires",
+        "priority": 50,
+        "scope": {
+          "countries": [
+            "DE",
+            "FR",
+            "ES"
+          ],
+          "roles": [
+            "user",
+            "admin"
+          ]
+        },
+        "when": {
+          "op": "exists",
+          "left": {
+            "path": "context.locale"
+          }
+        },
+        "actions": [
+          {
+            "type": "setContext",
+            "path": "context.gdprNotice",
+            "value": true
+          }
+        ]
+      },
+      {
+        "ruleId": "BLOCK_GUEST_RESTRICTED",
+        "description": "Prevent guests from opening onboarding artifacts",
+        "priority": 10,
+        "scope": {
+          "roles": [
+            "guest"
+          ]
+        },
+        "when": {
+          "op": "eq",
+          "left": {
+            "path": "data.restricted"
+          },
+          "right": {
+            "value": true
+          }
+        },
+        "actions": [
+          {
+            "type": "throwError",
+            "message": "Guest access not permitted",
+            "code": "GUEST_BLOCK"
+          }
+        ]
+      }
+    ]
+  },
+  "apiMappingsById": {
+    "verifyIdentity": {
+      "version": "1.0.0",
+      "apiId": "verifyIdentity",
+      "type": "rest",
+      "method": "POST",
+      "endpoint": "https://api.example.com/verify",
+      "requestMap": {
+        "body": {
+          "userId": {
+            "from": "context.userId"
+          },
+          "profileStatus": {
+            "from": "data.orderTotal"
+          },
+          "locale": {
+            "from": "context.locale"
+          }
+        },
+        "headers": {
+          "authorization": {
+            "from": "context.permissions[0]"
+          }
+        }
+      },
+      "responseMap": {
+        "data": {
+          "verified": "response.status"
+        }
+      },
+      "transforms": [],
+      "errorHandling": {
+        "map": {
+          "401": "UNAUTHORIZED"
+        },
+        "retry": {
+          "maxAttempts": 1,
+          "backoffMs": 500
+        }
+      }
+    }
+  }
+}

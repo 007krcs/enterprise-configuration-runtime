@@ -1,0 +1,43 @@
+## E-Commerce Bundle Overview
+
+The `examples/bundles/ecommerce.json` bundle is a complete storefront that demonstrates how UI screens, flow transitions, and rules interact for a shopper-facing workflow plus an administrator dashboard. Use it to study common data patterns (categories, cart, shipping, metrics) or load it straight into the Builder/Playground for experimentation.
+
+### Screens
+
+- **home** – hero banner, category table, and featured product list.
+- **category** – catalog filters and product list for a category.
+- **product** – product carousel placeholder and detailed specs.
+- **cart** – editable cart table plus running totals.
+- **checkout** – shipping form inputs (address, city, postal code, country).
+- **confirmation** – success notice plus order metadata.
+- **admin-metrics** – chart of `metrics.revenueSeries` and regional table for admins.
+
+### Flow
+
+The bundle models the following transitions:
+
+- `home` → `category` via `onBrowseCategory`.
+- `category` → `product` via `onSelectProduct`.
+- `product` → `cart` via `onAddToCart`.
+- `cart` → `checkout` via `onCheckout` guarded by `CartNotEmpty`.
+- `checkout` → `confirmation` via `onSubmitOrder` guarded by `RequiredFieldsPresent`.
+- `confirmation` → `home` via `onContinueShopping`.
+- `home` → `admin-metrics` via `onOpenAdmin` guarded by `UserIsAdmin`.
+
+Guards reuse the rule conditions, so the flow automatically enforces cart hygiene, shipping validation, and role-based access.
+
+### Rules
+
+1. **CartNotEmpty** – enables checkout only when `cart.items.length > 0`.
+2. **ApplyDiscount** – whenever `cart.total > 100`, sets `cart.discount` to `0.10` and writes a discounted `cart.finalTotal` (256.5 in this demo) so downstream UI can show savings.
+3. **UserMustBeLoggedIn** – throws a `AUTH_REQUIRED` error if `data.user.token` is missing before checkout.
+4. **RequiredFieldsPresent** – requires every shipping field before allowing submission.
+5. **UserIsAdmin** – restricts the admin metrics transition to roles that include `admin`.
+
+### Loading the bundle
+
+Fetch `/examples/bundles/ecommerce.json` directly in the browser or point `loadExampleBundle('ecommerce')` at it. Once the bundle is loaded, you can:
+
+- Preview the runtime experience in Playground.
+- Use `applyBundleToBuilder` (from the examples loader) to seed the Builder state with the same UI flow/rules.
+- Download the JSON to inspect it in the Builder or host environment and iterate on screen layouts, transitions, and rules.

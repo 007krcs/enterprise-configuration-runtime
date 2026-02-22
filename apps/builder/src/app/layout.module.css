@@ -9,10 +9,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px;
-  border-bottom: 1px solid var(--dt-color-border, rgba(16, 36, 63, 0.12));
-  background: color-mix(in srgb, var(--dt-color-surface, #ffffff) 82%, transparent);
-  backdrop-filter: blur(12px);
+  padding: var(--ecr-spacing-3) var(--ecr-spacing-5);
+  border-bottom: 1px solid var(--ecr-color-border);
+  background: color-mix(in srgb, var(--ecr-color-surface-soft) 72%, transparent);
+  backdrop-filter: blur(14px);
 }
 
 .brand {
@@ -22,35 +22,35 @@
 }
 
 .brandTitle {
-  font-size: 0.95rem;
+  font-size: var(--ecr-font-size-sm);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
 .brandSubtitle {
-  font-size: 0.75rem;
-  color: var(--dt-color-text-muted, rgba(16, 36, 63, 0.7));
+  font-size: var(--ecr-font-size-xs);
+  color: var(--ecr-color-text-muted);
 }
 
 .navLinks {
   display: flex;
-  gap: 12px;
+  gap: var(--ecr-spacing-3);
   align-items: center;
 }
 
 .navLink {
   text-decoration: none;
-  color: var(--dt-color-text, #10243f);
+  color: var(--ecr-color-text);
   font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 999px;
+  padding: var(--ecr-spacing-1) var(--ecr-spacing-3);
+  border-radius: var(--ecr-radius-lg);
   border: 1px solid transparent;
   transition: background 120ms ease, border-color 120ms ease;
 }
 
 .navLink:hover {
-  background: color-mix(in srgb, var(--dt-color-primary, #0f62fe) 10%, transparent);
-  border-color: color-mix(in srgb, var(--dt-color-primary, #0f62fe) 35%, transparent);
+  background: color-mix(in srgb, var(--ecr-color-primary, #0f62fe) 10%, transparent);
+  border-color: color-mix(in srgb, var(--ecr-color-primary, #0f62fe) 35%, transparent);
 }
 
 .main {

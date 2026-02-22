@@ -1,0 +1,29 @@
+## SaaS Dashboard Bundle
+
+This bundle lives in `examples/bundles/saas-dashboard.json` and shows a minimal SaaS workflow with login, dashboard KPIs, and admin reports protected by role-based rules.
+
+### Screens
+
+- **login** — collects email/password and emits `onLoginSuccess`.
+- **dashboard** — shows KPI rows and a revenue chart, plus a `View reports` button wired to `onViewReports`.
+- **reports** — tabular report grid with a “Back to dashboard” action event.
+
+### Flow
+
+1. `login` → `dashboard` when `onLoginSuccess` fires.
+2. `dashboard` → `reports` via `onViewReports`, guarded by `IsAdmin` (checks `data.user.role === 'admin'`).
+3. `reports` → `dashboard` through `onBack`.
+4. `dashboard` → `login` via `onInactivityTimeout`, guarded by the same host event so the flow can react to inactivity notifications.
+
+### Rules
+
+- **IsAdmin** ensures only admin users can reach the reports page.
+- **InactivityLogout** watches `data.hostEvent === 'onInactivityTimeout'`, emits a `logout` event, and clears `data.user.token` to simulate ending the session. The flow uses the same event to return to the login screen.
+
+### Data
+
+The bundle expects `data.metrics.kpis`, `data.metrics.revenueSeries`, `data.reports`, and `data.user` (with `role`/`token`). Supply those fields before previewing the bundle, or use the examples loader (see `/examples`) so the preview has the dummy metrics baked in.
+
+### Loading the bundle
+
+Call `loadExampleBundle('saas-dashboard')`, then `applyBundleToBuilder` to seed Builder state, or access `/examples/bundles/saas-dashboard.json` from your environment. The bundle is stateless except for the sample `data.hostEvent` field, so trigger `onInactivityTimeout` manually to simulate logout behavior.

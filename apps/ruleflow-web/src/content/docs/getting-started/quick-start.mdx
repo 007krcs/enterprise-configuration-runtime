@@ -1,0 +1,77 @@
+# Quick Start
+
+Follow this path to go from zero to a governed bundle in under five minutes.
+
+## 1. Load an example bundle
+
+Visit `/examples`, pick **E-Commerce Store**, **SaaS Dashboard**, or **Onboarding Journey**, and click **Open in Builder**.
+The empty canvas is replaced with the sample UI schema + flow + rules so you can experiment immediately.
+
+## 2. Customize a screen
+
+Switch to the canvas, drag a table or card from the palette, then move it and tweak props via the inspector.
+Use the toolbar to toggle rulers or change artboard breakpoints so you can see how the interface adapts.
+
+## 3. Guard a transition with rules
+
+Open **Rules** (`/builder/rules`), add a rule, set the JSON guard (for example `cart.total > 0`), and save.
+This rule is wired to a flow transition so the runtime will evaluate it before moving to the next state.
+
+## 4. Preview the runtime
+
+Switch to **Playground** (`/playground`), change a bound input (`orderTotal`, `user.role`, etc.), and click **Submit** or **Next**.
+The trace reveals each flow transition and every rule evaluation.
+
+## 5. Export the JSON
+
+In **Console** (`/console?tab=versions`), click **GitOps > Export** to download the bundle you just edited.
+Use the exported file to seed another tenant, diff against a merged change, or commit to GitOps storage.
+
+### Flow transition overview
+
+<svg width="100%" height="180" viewBox="0 0 520 180" role="img" aria-label="Flow transition diagram">
+  <defs>
+    <linearGradient id="flow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#1f2937" stopOpacity="0.8" />
+      <stop offset="100%" stopColor="#2563eb" stopOpacity="0.9" />
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#111827" />
+    </marker>
+  </defs>
+  <rect x="20" y="40" width="140" height="60" rx="14" fill="url(#flow-grad)" />
+  <text x="90" y="80" textAnchor="middle" fill="#fff" fontSize="14">Home</text>
+  <rect x="190" y="20" width="140" height="60" rx="14" fill="#111827" opacity="0.85" />
+  <text x="260" y="60" textAnchor="middle" fill="#fff" fontSize="14">Product</text>
+  <rect x="360" y="60" width="140" height="60" rx="14" fill="#0ea5e9" />
+  <text x="430" y="100" textAnchor="middle" fill="#fff" fontSize="14">Checkout</text>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#111827" />
+    </marker>
+  </defs>
+  <line x1="160" y1="70" x2="190" y2="50" stroke="#111827" strokeWidth="2.5" markerEnd="url(#arrow)" />
+  <line x1="330" y1="80" x2="360" y2="80" stroke="#111827" strokeWidth="2.5" markerEnd="url(#arrow)" />
+  <text x="260" y="95" textAnchor="middle" fill="#94a3b8" fontSize="12">onSelectProduct</text>
+  <text x="430" y="40" textAnchor="middle" fill="#94a3b8" fontSize="12">onCheckout</text>
+</svg>
+
+### Rule evaluation snapshot
+
+<svg width="100%" height="160" viewBox="0 0 520 160" role="img" aria-label="Rule evaluation diagram">
+  <defs>
+    <marker id="rule-arrow" markerWidth="10" markerHeight="10" refX="2" refY="5" orient="auto">
+      <path d="M0,0 L8,5 L0,10 Z" fill="#fff" />
+    </marker>
+  </defs>
+  <rect x="30" y="40" width="200" height="70" rx="12" fill="#101828" />
+  <text x="130" y="70" fill="#fff" fontSize="14" textAnchor="middle">Context + Data</text>
+  <rect x="260" y="30" width="220" height="100" rx="12" fill="#0e7490" opacity="0.9" />
+  <text x="370" y="70" fill="#fff" fontSize="14" textAnchor="middle">Rule: cart.total > 0</text>
+  <circle cx="500" cy="80" r="15" fill="#10b981" />
+  <text x="500" y="85" textAnchor="middle" fontSize="12" fill="#fff">PASS</text>
+  <line x1="230" y1="75" x2="260" y2="75" stroke="#fff" strokeWidth="2" markerEnd="url(#rule-arrow)" />
+  <text x="240" y="90" fill="#cbd5f5" fontSize="11">evaluated for guard</text>
+</svg>
+
+Need more context? Visit `/docs/getting-started` or the full Reference section below.

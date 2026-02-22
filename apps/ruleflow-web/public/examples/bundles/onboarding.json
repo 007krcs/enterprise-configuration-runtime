@@ -1,0 +1,316 @@
+{
+  "uiSchema": {
+    "version": "1.0.0",
+    "pageId": "welcome",
+    "layout": {
+      "id": "welcome-root",
+      "type": "stack",
+      "direction": "vertical",
+      "children": [
+        {
+          "id": "welcome-note",
+          "type": "section",
+          "title": "Welcome",
+          "componentIds": ["welcomeText"]
+        }
+      ]
+    },
+    "components": [
+      {
+        "id": "welcomeText",
+        "type": "custom",
+        "adapterHint": "d3.custom",
+        "props": {
+          "text": "Welcome to the onboarding journey. Keep going to finish setup.",
+          "height": 120
+        }
+      }
+    ]
+  },
+  "uiSchemasById": {
+    "welcome": {
+      "version": "1.0.0",
+      "pageId": "welcome",
+      "layout": {
+        "id": "welcome-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "welcome-note",
+            "type": "section",
+            "title": "Welcome",
+            "componentIds": ["welcomeText", "welcomeNext"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "welcomeText",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "Welcome to the onboarding journey. Keep going to finish setup.",
+            "height": 120
+          }
+        },
+        {
+          "id": "welcomeNext",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {"text": "Next", "height": 48},
+          "events": {
+            "onClick": [{ "type": "emitEvent", "event": "onNext" }]
+          }
+        }
+      ]
+    },
+    "account-setup": {
+      "version": "1.0.0",
+      "pageId": "account-setup",
+      "layout": {
+        "id": "account-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "account-form",
+            "type": "section",
+            "title": "Account setup",
+            "componentIds": ["accountName", "accountEmail"]
+          },
+          {
+            "id": "account-actions",
+            "type": "section",
+            "title": "Actions",
+            "componentIds": ["accountBack", "accountNext"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "accountName",
+          "type": "input",
+          "adapterHint": "material.input",
+          "bindings": { "data": { "value": "data.onboarding.accountName" } },
+          "validations": { "required": true }
+        },
+        {
+          "id": "accountEmail",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": { "inputType": "email" },
+          "bindings": { "data": { "value": "data.onboarding.accountEmail" } },
+          "validations": { "required": true }
+        },
+        {
+          "id": "accountBack",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": { "text": "Back", "height": 42 },
+          "events": { "onClick": [{ "type": "emitEvent", "event": "onBack" }] }
+        },
+        {
+          "id": "accountNext",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": { "text": "Next", "height": 48 },
+          "events": { "onClick": [{ "type": "emitEvent", "event": "onNext" }] },
+          "disabledWhen": {
+            "op": "eq",
+            "left": { "path": "context.onboarding.nextEnabled" },
+            "right": { "value": false }
+          }
+        }
+      ]
+    },
+    "preferences": {
+      "version": "1.0.0",
+      "pageId": "preferences",
+      "layout": {
+        "id": "preferences-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "preferences-section",
+            "type": "section",
+            "title": "Preferences",
+            "componentIds": ["preferenceTier", "preferenceRegion"]
+          },
+          {
+            "id": "preferences-actions",
+            "type": "section",
+            "title": "Actions",
+            "componentIds": ["preferencesBack", "preferencesNext"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "preferenceTier",
+          "type": "input",
+          "adapterHint": "material.input",
+          "bindings": { "data": { "value": "data.onboarding.preferenceTier" } },
+          "validations": { "required": true }
+        },
+        {
+          "id": "preferenceRegion",
+          "type": "input",
+          "adapterHint": "material.input",
+          "bindings": { "data": { "value": "data.onboarding.preferenceRegion" } },
+          "validations": { "required": true }
+        },
+        {
+          "id": "preferencesBack",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": { "text": "Back", "height": 42 },
+          "events": { "onClick": [{ "type": "emitEvent", "event": "onBack" }] }
+        },
+        {
+          "id": "preferencesNext",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": { "text": "Next", "height": 48 },
+          "events": { "onClick": [{ "type": "emitEvent", "event": "onNext" }] },
+          "disabledWhen": {
+            "op": "eq",
+            "left": { "path": "context.onboarding.preferencesValid" },
+            "right": { "value": false }
+          }
+        }
+      ]
+    },
+    "finish": {
+      "version": "1.0.0",
+      "pageId": "finish",
+      "layout": {
+        "id": "finish-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "finish-note",
+            "type": "section",
+            "title": "Finish",
+            "componentIds": ["finishText", "finishBack"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "finishText",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": { "text": "You're ready! Click Back to review any step.", "height": 140 }
+        },
+        {
+          "id": "finishBack",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": { "text": "Back", "height": 48 },
+          "events": { "onClick": [{ "type": "emitEvent", "event": "onBack" }] }
+        }
+      ]
+    }
+  },
+  "activeUiPageId": "welcome",
+  "flowSchema": {
+    "version": "1.0.0",
+    "flowId": "onboarding-flow",
+    "initialState": "welcome",
+    "states": {
+      "welcome": {
+        "uiPageId": "welcome",
+        "on": {
+          "onNext": { "target": "account-setup" }
+        }
+      },
+      "account-setup": {
+        "uiPageId": "account-setup",
+        "on": {
+          "onNext": {
+            "target": "preferences",
+            "guard": {
+              "op": "eq",
+              "left": { "path": "context.onboarding.nextEnabled" },
+              "right": { "value": true }
+            }
+          },
+          "onBack": { "target": "welcome" }
+        }
+      },
+      "preferences": {
+        "uiPageId": "preferences",
+        "on": {
+          "onNext": {
+            "target": "finish",
+            "guard": {
+              "op": "eq",
+              "left": { "path": "context.onboarding.preferencesValid" },
+              "right": { "value": true }
+            }
+          },
+          "onBack": { "target": "account-setup" }
+        }
+      },
+      "finish": {
+        "uiPageId": "finish",
+        "on": {
+          "onBack": { "target": "preferences" }
+        }
+      }
+    }
+  },
+  "rules": {
+    "version": "1.0.0",
+    "rules": [
+      {
+        "ruleId": "AccountFieldsValid",
+        "description": "Signal that account inputs are filled",
+        "priority": 90,
+        "when": {
+          "all": [
+            { "op": "exists", "left": { "path": "data.onboarding.accountName" } },
+            { "op": "exists", "left": { "path": "data.onboarding.accountEmail" } }
+          ]
+        },
+        "actions": [
+          { "type": "setContext", "path": "context.onboarding.nextEnabled", "value": true }
+        ]
+      },
+      {
+        "ruleId": "PreferencesValid",
+        "description": "Signal when preference inputs are picked",
+        "priority": 80,
+        "when": {
+          "op": "exists",
+          "left": { "path": "data.onboarding.preferenceTier" }
+        },
+        "actions": [
+          { "type": "setContext", "path": "context.onboarding.preferencesValid", "value": true }
+        ]
+      },
+      {
+        "ruleId": "DisableNextUnlessValid",
+        "description": "Clear flags when required fields are missing",
+        "priority": 70,
+        "when": {
+          "not": {
+            "all": [
+              { "op": "exists", "left": { "path": "data.onboarding.accountName" } },
+              { "op": "exists", "left": { "path": "data.onboarding.accountEmail" } },
+              { "op": "exists", "left": { "path": "data.onboarding.preferenceTier" } }
+            ]
+          }
+        },
+        "actions": [
+          { "type": "setContext", "path": "context.onboarding.nextEnabled", "value": false },
+          { "type": "setContext", "path": "context.onboarding.preferencesValid", "value": false }
+        ]
+      }
+    ]
+  },
+  "apiMappingsById": {}
+}

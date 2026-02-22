@@ -1,0 +1,33 @@
+## Onboarding Journey Demo
+
+The Onboarding Journey bundle lives in `examples/bundles/onboarding.json` and highlights a linear flow with Next/Back navigation while guarding progression through rules.
+
+### Screens
+
+- **welcome** – greeting hero plus a “Next” button.
+- **account-setup** – captures `accountName` and `accountEmail`, with Next disabled until both fields are filled.
+- **preferences** – asks for `preferenceTier`/`preferenceRegion` and keeps Next disabled until the preference tier exists.
+- **finish** – confirmation note plus a Back button to revisit the prior step.
+
+Each Next button exposes `context.onboarding.nextEnabled` or `context.onboarding.preferencesValid` through the component’s `disabledWhen` schema entry so the UI responds directly to the rule-produced context flags.
+
+### Flow
+
+1. `welcome` → `account-setup` via `onNext`.
+2. `account-setup` → `preferences` via `onNext`, guarded by `context.onboarding.nextEnabled === true`.
+3. `preferences` → `finish` via `onNext`, guarded by `context.onboarding.preferencesValid === true`.
+4. Each screen exposes `onBack` to reverse navigation where needed.
+
+### Rules
+
+- **AccountFieldsValid** sets `context.onboarding.nextEnabled` when both account fields exist.
+- **PreferencesValid** sets `context.onboarding.preferencesValid` while the preference tier is chosen.
+- **DisableNextUnlessValid** resets both flags to `false` whenever any required field is missing, ensuring the buttons stay disabled until validation passes.
+
+### Data contract
+
+The bundle expects `data.onboarding.accountName`, `.accountEmail`, `.preferenceTier`, and `.preferenceRegion`. Use the examples loader or provide those fields manually before advancing to the next screen.
+
+### Loading
+
+Access `/examples/bundles/onboarding.json` or call `loadExampleBundle('onboarding')` so `applyBundleToBuilder` seeds Builder/Playground state for further experimentation.

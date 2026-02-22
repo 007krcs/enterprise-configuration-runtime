@@ -1,6 +1,6 @@
 import './globals.scss';
 import '@platform/ui-kit/styles.css';
-import { Manrope, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import { Suspense } from 'react';
 import { platformThemeInitScript } from '@platform/ui-kit/theme-init';
 import { ThemeProvider } from '@/components/layout/theme-provider';
@@ -8,7 +8,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { ToastProvider } from '@/components/ui/toast';
 import { OnboardingProvider } from '@/components/onboarding/onboarding-provider';
 
-const manrope = Manrope({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono', display: 'swap' });
 
 export const metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script id="pf-theme-init" dangerouslySetInnerHTML={{ __html: platformThemeInitScript }} />
       </head>
-      <body suppressHydrationWarning className={`${manrope.variable} ${jetbrains.variable}`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${jetbrains.variable}`}>
         <ThemeProvider defaultTheme="system">
           <ToastProvider>
             <Suspense fallback={<div>Loading...</div>}>

@@ -1,0 +1,18 @@
+# Builder API
+
+The Builder shell relies on a few key APIs to hydrate schemas, flow graphs, and rules.
+
+## Schema & flow loading
+- `GET /api/config-versions/[versionId]`: master bundle (uiSchema, uiSchemasById, flowSchema, rules, apiMappings).
+- `GET /api/config-versions/[versionId]/flow`: returns just the flow schema for stitching the Flow Editor canvas.
+- `GET /api/config-versions/[versionId]/rules`: returns the rule set surfaced in the Rules panel.
+- `GET /api/config-versions/[versionId]/diff`: shows changes between the current draft and its last saved version.
+
+## Saving & validation
+- `PATCH /api/config-versions/[versionId]/ui-schema`: persists canvas edits, flow schema updates, and active page swaps.
+- `POST /api/config-versions/[versionId]/submit-review`: triggered when an author clicks **Submit For Review**.
+
+## Supporting endpoints
+- `GET /api/templates`: populates the template library card.
+- `GET /api/component-registry`: powers the palette and ensures `adapterHint` lookups stay fresh.
+- `POST /api/runtime-flags`: toggles labs features used while developing new palette items.

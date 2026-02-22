@@ -1,9 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
   color-scheme: light dark;
-  font-family: var(--dt-font-family, 'Segoe UI', Arial, sans-serif);
+  font-family: var(--ecr-font-body, 'Inter', 'Segoe UI', sans-serif);
+
+  --ecr-font-body: 'Inter', 'Segoe UI', sans-serif;
+  --ecr-font-heading: 'Inter', 'Segoe UI', sans-serif;
+  --ecr-font-size-xs: 0.75rem;
+  --ecr-font-size-sm: 0.875rem;
+  --ecr-font-size-base: 1rem;
+  --ecr-font-size-md: 1.125rem;
+  --ecr-font-size-lg: 1.25rem;
+  --ecr-font-size-xl: 1.5rem;
+  --ecr-line-height-base: 1.5;
+
+  --ecr-spacing-1: 4px;
+  --ecr-spacing-2: 8px;
+  --ecr-spacing-3: 12px;
+  --ecr-spacing-4: 16px;
+  --ecr-spacing-5: 24px;
+  --ecr-spacing-6: 32px;
+  --ecr-spacing-7: 48px;
+
+  --ecr-radius-sm: 6px;
+  --ecr-radius-md: 12px;
+  --ecr-radius-lg: 18px;
+
+  --ecr-shadow-sm: 0 1px 2px rgba(16, 36, 63, 0.08);
+  --ecr-shadow-md: 0 12px 24px rgba(16, 36, 63, 0.16);
+  --ecr-shadow-card: 0 6px 18px rgba(16, 36, 63, 0.08);
+  --ecr-shadow-raised: 0 18px 35px rgba(16, 36, 63, 0.2);
+  --ecr-shadow-focus: 0 0 0 3px rgba(31, 111, 235, 0.45);
+  --ecr-transition-fast: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --ecr-color-surface: var(--dt-color-surface, #ffffff);
+  --ecr-color-surface-subtle: var(--dt-color-surface-subtle, #f7f9fc);
+  --ecr-color-border: var(--dt-color-border, #c6d2e1);
+  --ecr-color-text: var(--dt-color-text, #13283d);
+  --ecr-color-text-muted: var(--dt-color-text-muted, #4f6680);
+  --ecr-color-primary: var(--dt-color-primary, #0f62fe);
+  --ecr-color-primary-strong: var(--dt-color-primary-hover, #0353e9);
+  --ecr-color-focus: var(--dt-color-focus, #0f62fe);
+  --ecr-color-danger: var(--dt-color-danger, #d92929);
+  --ecr-color-warning: var(--dt-color-warning, #d98324);
+  --ecr-color-success: var(--dt-color-success, #1f9d60);
+
+  --ecr-color-border-muted: #d5deea;
+  --ecr-color-border-light: #ced9e8;
+  --ecr-color-border-dashed: #c3d3e6;
+
+  --ecr-color-surface-soft: #f8fbff;
+  --ecr-color-surface-muted: #f7fbff;
+  --ecr-color-surface-alt: #f4f9ff;
+  --ecr-color-surface-highlight: #eef4ff;
+
+  --ecr-color-text-strong: #173250;
+  --ecr-color-text-secondary: #37506a;
+  --ecr-color-text-subtle: #4a6785;
+  --ecr-color-text-muted-strong: #607690;
+
+  --ecr-color-info: #2a547f;
+  --ecr-color-info-strong: #113f7c;
+  --ecr-color-info-soft: rgba(31, 111, 235, 0.08);
+  --ecr-color-highlight: #e8f3ff;
+  --ecr-color-highlight-strong: #1f6feb;
+  --ecr-color-warning-soft: #fff6f6;
+  --ecr-color-danger-soft: #fff3f3;
+  --ecr-color-graph-fill: #5b7ea4;
+  --ecr-color-graph-path: #6a8eb5;
+  --ecr-color-graph-strong: #1f6feb;
+  --ecr-color-graph-label: #2b5178;
+  --ecr-color-graph-heading: #12365d;
+  --ecr-color-graph-body: #3f5f80;
+  --ecr-color-graph-note: #607690;
+  --ecr-color-graph-action: #1a456f;
+  --ecr-color-graph-cta: #154169;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -14,14 +90,17 @@ body {
 
 body {
   margin: 0;
-  min-height: 100%;
+  min-height: 100vh;
   background: radial-gradient(
-    circle at top left,
-    var(--dt-color-surface-subtle, #eef4fd),
-    var(--dt-color-surface, #f6f9fe) 45%,
-    var(--dt-color-surface-subtle, #eef3fb) 100%
+    circle at 15% -10%,
+    var(--ecr-color-surface-subtle),
+    var(--ecr-color-surface) 35%,
+    var(--ecr-color-surface-alt) 75%
   );
-  color: var(--dt-color-text, #10243f);
+  color: var(--ecr-color-text);
+  font-family: var(--ecr-font-body);
+  font-size: var(--ecr-font-size-base);
+  line-height: var(--ecr-line-height-base);
   overflow: hidden;
 }
 

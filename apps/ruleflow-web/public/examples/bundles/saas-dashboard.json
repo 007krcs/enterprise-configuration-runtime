@@ -1,0 +1,370 @@
+{
+  "uiSchema": {
+    "version": "1.0.0",
+    "pageId": "login",
+    "layout": {
+      "id": "login-root",
+      "type": "stack",
+      "direction": "vertical",
+      "children": [
+        {
+          "id": "login-form",
+          "type": "section",
+          "title": "Sign in",
+          "componentIds": ["loginEmail", "loginPassword", "loginButton"]
+        }
+      ]
+    },
+    "components": [
+      {
+        "id": "loginEmail",
+        "type": "input",
+        "adapterHint": "material.input",
+        "props": {
+          "inputType": "email"
+        },
+        "bindings": {
+          "data": {
+            "value": "data.user.email"
+          }
+        },
+        "validations": {
+          "required": true
+        },
+        "i18n": {
+          "labelKey": "examples.saas.login.email"
+        }
+      },
+      {
+        "id": "loginPassword",
+        "type": "input",
+        "adapterHint": "material.input",
+        "props": {
+          "inputType": "password"
+        },
+        "bindings": {
+          "data": {
+            "value": "data.user.password"
+          }
+        },
+        "validations": {
+          "required": true
+        },
+        "i18n": {
+          "labelKey": "examples.saas.login.password"
+        }
+      },
+      {
+        "id": "loginButton",
+        "type": "custom",
+        "adapterHint": "d3.custom",
+        "props": {
+          "text": "Login",
+          "height": 60
+        },
+        "events": {
+          "onClick": [
+            { "type": "emitEvent", "payload": { "event": "onLoginSuccess" } }
+          ]
+        }
+      }
+    ]
+  },
+  "uiSchemasById": {
+    "login": {
+      "version": "1.0.0",
+      "pageId": "login",
+      "layout": {
+        "id": "login-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "login-form",
+            "type": "section",
+            "title": "Sign in",
+            "componentIds": ["loginEmail", "loginPassword", "loginButton"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "loginEmail",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "email"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.user.email"
+            }
+          },
+          "validations": {
+            "required": true
+          }
+        },
+        {
+          "id": "loginPassword",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "password"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.user.password"
+            }
+          },
+          "validations": {
+            "required": true
+          }
+        },
+        {
+          "id": "loginButton",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "Login",
+            "height": 60
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "event": "onLoginSuccess" }
+            ]
+          }
+        }
+      ]
+    },
+    "dashboard": {
+      "version": "1.0.0",
+      "pageId": "dashboard",
+      "layout": {
+        "id": "dashboard-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "dashboard-kpis",
+            "type": "section",
+            "title": "KPI Snapshot",
+            "componentIds": ["kpiTable"]
+          },
+          {
+            "id": "dashboard-chart",
+            "type": "section",
+            "title": "Revenue trends",
+            "componentIds": ["dashboardChart"]
+          },
+          {
+            "id": "dashboard-reports",
+            "type": "section",
+            "title": "Report access",
+            "componentIds": ["reportButton"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "kpiTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "label", "headerKey": "examples.saas.kpi.label" },
+              { "field": "value", "headerKey": "examples.saas.kpi.value" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.metrics.kpis"
+            }
+          }
+        },
+        {
+          "id": "dashboardChart",
+          "type": "chart",
+          "adapterHint": "highcharts.chart",
+          "props": {
+            "series": []
+          },
+          "bindings": {
+            "data": {
+              "series": "data.metrics.revenueSeries"
+            }
+          }
+        },
+        {
+          "id": "reportButton",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "View reports",
+            "height": 56
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "event": "onViewReports" }
+            ]
+          }
+        }
+      ]
+    },
+    "reports": {
+      "version": "1.0.0",
+      "pageId": "reports",
+      "layout": {
+        "id": "reports-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "reports-grid",
+            "type": "section",
+            "title": "Reports grid",
+            "componentIds": ["reportsTable"]
+          },
+          {
+            "id": "reports-actions",
+            "type": "section",
+            "title": "Actions",
+            "componentIds": ["reportsBack"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "reportsTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "examples.saas.reports.name" },
+              { "field": "status", "headerKey": "examples.saas.reports.status" },
+              { "field": "owner", "headerKey": "examples.saas.reports.owner" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.reports"
+            }
+          }
+        },
+        {
+          "id": "reportsBack",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "Back to dashboard",
+            "height": 48
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "event": "onBack" }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "activeUiPageId": "login",
+  "flowSchema": {
+    "version": "1.0.0",
+    "flowId": "saas-dashboard-flow",
+    "initialState": "login",
+    "states": {
+      "login": {
+        "uiPageId": "login",
+        "on": {
+          "onLoginSuccess": {
+            "target": "dashboard"
+          }
+        }
+      },
+      "dashboard": {
+        "uiPageId": "dashboard",
+        "on": {
+          "onViewReports": {
+            "target": "reports",
+            "guard": {
+              "op": "eq",
+              "left": {
+                "path": "data.user.role"
+              },
+              "right": {
+                "value": "admin"
+              }
+            }
+          },
+          "onInactivityTimeout": {
+            "target": "login",
+            "guard": {
+              "op": "eq",
+              "left": {
+                "path": "data.hostEvent"
+              },
+              "right": {
+                "value": "onInactivityTimeout"
+              }
+            }
+          }
+        }
+      },
+      "reports": {
+        "uiPageId": "reports",
+        "on": {
+          "onBack": {
+            "target": "dashboard"
+          }
+        }
+      }
+    }
+  },
+  "rules": {
+    "version": "1.0.0",
+    "rules": [
+      {
+        "ruleId": "IsAdmin",
+        "description": "Only admins may reach reports",
+        "priority": 100,
+        "when": {
+          "op": "eq",
+          "left": {
+            "path": "data.user.role"
+          },
+          "right": {
+            "value": "admin"
+          }
+        }
+      },
+      {
+        "ruleId": "InactivityLogout",
+        "description": "Emit logout event when host reports inactivity",
+        "priority": 90,
+        "when": {
+          "op": "eq",
+          "left": {
+            "path": "data.hostEvent"
+          },
+          "right": {
+            "value": "onInactivityTimeout"
+          }
+        },
+        "actions": [
+          {
+            "type": "emitEvent",
+            "event": "logout"
+          },
+          {
+            "type": "setField",
+            "path": "data.user.token",
+            "value": null
+          }
+        ]
+      }
+    ]
+  },
+  "apiMappingsById": {}
+}

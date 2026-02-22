@@ -32,6 +32,8 @@ type ShellPrefs = {
 };
 
 const MOBILE_BREAKPOINT = 1200;
+const INSPECTOR_DRAWER_BREAKPOINT = 1024;
+const PALETTE_DRAWER_BREAKPOINT = 768;
 const DEFAULT_PREFS: ShellPrefs = {
   paletteWidth: 320,
   inspectorWidth: 360,
@@ -42,11 +44,6 @@ const MIN_PALETTE = 240;
 const MAX_PALETTE = 460;
 const MIN_INSPECTOR = 280;
 const MAX_INSPECTOR = 520;
-
-function isNarrowViewport() {
-  if (typeof window === 'undefined') return false;
-  return window.innerWidth < MOBILE_BREAKPOINT;
-}
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -81,11 +78,15 @@ export function BuilderShell({
   inspector,
   storageKey = 'ruleflow:builder:layout:v2',
 }: BuilderShellProps) {
-  const [isMobile, setIsMobile] = useState(isNarrowViewport);
+  const [viewportWidth, setViewportWidth] = useState(() => (typeof window === 'undefined' ? 1440 : window.innerWidth));
+  const [paletteDrawerOpen, setPaletteDrawerOpen] = useState(false);
+  const [inspectorDrawerOpen, setInspectorDrawerOpen] = useState(false);
   const [panelsOpen, setPanelsOpen] = useState(false);
   const [activePanel, setActivePanel] = useState<MobilePanel>('palette');
   const [prefs, setPrefs] = useState<ShellPrefs>(DEFAULT_PREFS);
   const dragRef = useRef<{ side: SplitterSide; startX: number; startValue: number } | null>(null);
+  const inspectorDrawer = viewportWidth < INSPECTOR_DRAWER_BREAKPOINT;
+  const paletteDrawer = viewportWidth < PALETTE_DRAWER_BREAKPOINT;
 
   useEffect(() => {
     setPrefs(readPrefs(storageKey));
@@ -93,9 +94,9 @@ export function BuilderShell({
 
   useEffect(() => {
     const onResize = () => {
-      const next = isNarrowViewport();
-      setIsMobile(next);
-      if (!next) setPanelsOpen(false);
+      const width = window.innerWidth;
+      setViewportWidth(width);
+      if (width >= MOBILE_BREAKPOINT) setPanelsOpen(false);
     };
     onResize();
     window.addEventListener('resize', onResize);
@@ -136,6 +137,11 @@ export function BuilderShell({
     };
   }, []);
 
+  useEffect(() => {
+    if (!paletteDrawer) setPaletteDrawerOpen(false);
+    if (!inspectorDrawer) setInspectorDrawerOpen(false);
+  }, [paletteDrawer, inspectorDrawer]);
+
   const startResize = (side: SplitterSide, startX: number) => {
     dragRef.current = {
       side,
@@ -168,19 +174,24 @@ export function BuilderShell({
   const hideBoth = prefs.hidePalette && prefs.hideInspector;
   const showPalette = !prefs.hidePalette;
   const showInspector = !prefs.hideInspector;
+    const isMobile = viewportWidth < MOBILE_BREAKPOINT;
+  const paletteDrawerActive = paletteDrawer && showPalette;
+  const inspectorDrawerActive = inspectorDrawer && showInspector;
+  const showPalettePanel = showPalette && !paletteDrawer;
+  const showInspectorPanel = showInspector && !inspectorDrawer;
 
   const desktopColumns = useMemo(() => {
-    if (showPalette && showInspector) {
+    if (showPalettePanel && showInspectorPanel) {
       return 'var(--builder-palette-width) 10px minmax(0, 1fr) 10px var(--builder-inspector-width)';
     }
-    if (showPalette) {
+    if (showPalettePanel) {
       return 'var(--builder-palette-width) 10px minmax(0, 1fr)';
     }
-    if (showInspector) {
+    if (showInspectorPanel) {
       return 'minmax(0, 1fr) 10px var(--builder-inspector-width)';
     }
     return 'minmax(0, 1fr)';
-  }, [showInspector, showPalette]);
+  }, [showInspectorPanel, showPalettePanel]);
 
   const shellStyle = useMemo(
     () =>
@@ -253,99 +264,173 @@ export function BuilderShell({
   }
 
   return (
-    <section className={cn(styles.shell, className)} style={shellStyle} data-testid="builder-shell">
-      {showPalette ? (
-        <aside className={cn(styles.sidePane, 'pf-surface-panel')} data-testid="builder-palette-panel">
-          {palette}
-        </aside>
-      ) : null}
+    <>
+      <section className={cn(styles.shell, className)} style={shellStyle} data-testid="builder-shell">
+        {showPalettePanel ? (
+          <aside className={cn(styles.sidePane, 'pf-surface-panel')} data-testid="builder-palette-panel">
+            {palette}
+          </aside>
+        ) : null}
 
-      {showPalette ? (
-        <div
-          className={styles.splitter}
-          data-testid="builder-splitter-left"
-          role="separator"
-          aria-label="Resize palette panel"
-          aria-orientation="vertical"
-          aria-valuemin={MIN_PALETTE}
-          aria-valuemax={MAX_PALETTE}
-          aria-valuenow={prefs.paletteWidth}
-          tabIndex={0}
-          onMouseDown={(event) => startResize('left', event.clientX)}
-          onKeyDown={(event) => onSplitterKeyDown('left', event)}
-        />
-      ) : null}
+        {showPalettePanel ? (
+          <div
+            className={styles.splitter}
+            data-testid="builder-splitter-left"
+            role="separator"
+            aria-label="Resize palette panel"
+            aria-orientation="vertical"
+            aria-valuemin={MIN_PALETTE}
+            aria-valuemax={MAX_PALETTE}
+            aria-valuenow={prefs.paletteWidth}
+            tabIndex={0}
+            onMouseDown={(event) => startResize('left', event.clientX)}
+            onKeyDown={(event) => onSplitterKeyDown('left', event)}
+          />
+        ) : null}
 
-      <section className={cn(styles.workspace, 'rf-builder-workspace')} data-testid="builder-canvas-workspace">
-        <div className={styles.toolbar}>
-          <div className={styles.panelActions}>
-            <button
-              type="button"
-              className={cn(styles.panelActionButton, prefs.hidePalette ? styles.panelActionButtonActive : undefined)}
-              onClick={() => setPrefs((current) => ({ ...current, hidePalette: !current.hidePalette }))}
-              data-testid="builder-toggle-palette"
-            >
-              {prefs.hidePalette ? 'Show Palette' : 'Hide Palette'}
-            </button>
-            <button
-              type="button"
-              className={cn(styles.panelActionButton, prefs.hideInspector ? styles.panelActionButtonActive : undefined)}
-              onClick={() => setPrefs((current) => ({ ...current, hideInspector: !current.hideInspector }))}
-              data-testid="builder-toggle-inspector"
-            >
-              {prefs.hideInspector ? 'Show Inspector' : 'Hide Inspector'}
-            </button>
-            <button
-              type="button"
-              className={cn(styles.panelActionButton, hideBoth ? styles.panelActionButtonActive : undefined)}
-              onClick={() =>
-                setPrefs((current) => ({
-                  ...current,
-                  hidePalette: !hideBoth,
-                  hideInspector: !hideBoth,
-                }))
-              }
-              data-testid="builder-focus-canvas"
-            >
-              {hideBoth ? 'Exit Focus Mode' : 'Focus Canvas'}
-            </button>
-            <button
-              type="button"
-              className={styles.panelActionButton}
-              onClick={resetLayout}
-              data-testid="builder-reset-layout"
-            >
-              Reset Layout
-            </button>
+        <section className={cn(styles.workspace, 'rf-builder-workspace')} data-testid="builder-canvas-workspace">
+          <div className={styles.toolbar}>
+            <div className={styles.panelActions}>
+              <button
+                type="button"
+                className={cn(styles.panelActionButton, prefs.hidePalette ? styles.panelActionButtonActive : undefined)}
+                onClick={() => setPrefs((current) => ({ ...current, hidePalette: !current.hidePalette }))}
+                data-testid="builder-toggle-palette"
+              >
+                {prefs.hidePalette ? 'Show Palette' : 'Hide Palette'}
+              </button>
+              <button
+                type="button"
+                className={cn(styles.panelActionButton, prefs.hideInspector ? styles.panelActionButtonActive : undefined)}
+                onClick={() => setPrefs((current) => ({ ...current, hideInspector: !current.hideInspector }))}
+                data-testid="builder-toggle-inspector"
+              >
+                {prefs.hideInspector ? 'Show Inspector' : 'Hide Inspector'}
+              </button>
+              <button
+                type="button"
+                className={cn(styles.panelActionButton, hideBoth ? styles.panelActionButtonActive : undefined)}
+                onClick={() =>
+                  setPrefs((current) => ({
+                    ...current,
+                    hidePalette: !hideBoth,
+                    hideInspector: !hideBoth,
+                  }))
+                }
+                data-testid="builder-focus-canvas"
+              >
+                {hideBoth ? 'Exit Focus Mode' : 'Focus Canvas'}
+              </button>
+              <button
+                type="button"
+                className={styles.panelActionButton}
+                onClick={resetLayout}
+                data-testid="builder-reset-layout"
+              >
+                Reset Layout
+              </button>
+            </div>
+            {(paletteDrawerActive || inspectorDrawerActive) ? (
+              <div className={styles.drawerToggleRow}>
+                {paletteDrawerActive ? (
+                  <button
+                    type="button"
+                    className={cn(
+                      styles.drawerToggleButton,
+                      paletteDrawerOpen ? styles.panelActionButtonActive : undefined,
+                    )}
+                    onClick={() => {
+                      setPaletteDrawerOpen((value) => !value);
+                      if (!paletteDrawerOpen) setInspectorDrawerOpen(false);
+                    }}
+                  >
+                    {paletteDrawerOpen ? 'Close palette' : 'Open palette'}
+                  </button>
+                ) : null}
+                {inspectorDrawerActive ? (
+                  <button
+                    type="button"
+                    className={cn(
+                      styles.drawerToggleButton,
+                      inspectorDrawerOpen ? styles.panelActionButtonActive : undefined,
+                    )}
+                    onClick={() => {
+                      setInspectorDrawerOpen((value) => !value);
+                      if (!inspectorDrawerOpen) setPaletteDrawerOpen(false);
+                    }}
+                  >
+                    {inspectorDrawerOpen ? 'Close inspector' : 'Open inspector'}
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
+            {canvasToolbar}
           </div>
-          {canvasToolbar}
-        </div>
-        <div className={styles.viewport} data-testid="builder-canvas-viewport">
-          {canvas}
-        </div>
+          <div className={styles.viewport} data-testid="builder-canvas-viewport">
+            {canvas}
+          </div>
+        </section>
+
+        {showInspectorPanel ? (
+          <div
+            className={styles.splitter}
+            data-testid="builder-splitter-right"
+            role="separator"
+            aria-label="Resize inspector panel"
+            aria-orientation="vertical"
+            aria-valuemin={MIN_INSPECTOR}
+            aria-valuemax={MAX_INSPECTOR}
+            aria-valuenow={prefs.inspectorWidth}
+            tabIndex={0}
+            onMouseDown={(event) => startResize('right', event.clientX)}
+            onKeyDown={(event) => onSplitterKeyDown('right', event)}
+          />
+        ) : null}
+
+        {showInspectorPanel ? (
+          <aside className={cn(styles.sidePane, 'pf-surface-panel')} data-testid="builder-inspector-panel">
+            {inspector}
+          </aside>
+        ) : null}
       </section>
-
-      {showInspector ? (
+      {paletteDrawerActive && paletteDrawerOpen ? (
         <div
-          className={styles.splitter}
-          data-testid="builder-splitter-right"
-          role="separator"
-          aria-label="Resize inspector panel"
-          aria-orientation="vertical"
-          aria-valuemin={MIN_INSPECTOR}
-          aria-valuemax={MAX_INSPECTOR}
-          aria-valuenow={prefs.inspectorWidth}
-          tabIndex={0}
-          onMouseDown={(event) => startResize('right', event.clientX)}
-          onKeyDown={(event) => onSplitterKeyDown('right', event)}
-        />
+          className={styles.drawerOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Palette drawer"
+          onClick={() => setPaletteDrawerOpen(false)}
+        >
+          <div className={styles.drawerPanel} onClick={(event) => event.stopPropagation()}>
+            <div className={styles.drawerHeader}>
+              <span>Palette</span>
+              <button type="button" onClick={() => setPaletteDrawerOpen(false)} aria-label="Close palette">
+                ×
+              </button>
+            </div>
+            {palette}
+          </div>
+        </div>
       ) : null}
-
-      {showInspector ? (
-        <aside className={cn(styles.sidePane, 'pf-surface-panel')} data-testid="builder-inspector-panel">
-          {inspector}
-        </aside>
+      {inspectorDrawerActive && inspectorDrawerOpen ? (
+        <div
+          className={cn(styles.drawerOverlay, styles.inspectorOverlay)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Inspector drawer"
+          onClick={() => setInspectorDrawerOpen(false)}
+        >
+          <div className={styles.drawerPanel} onClick={(event) => event.stopPropagation()}>
+            <div className={styles.drawerHeader}>
+              <span>Inspector</span>
+              <button type="button" onClick={() => setInspectorDrawerOpen(false)} aria-label="Close inspector">
+                ×
+              </button>
+            </div>
+            {inspector}
+          </div>
+        </div>
       ) : null}
-    </section>
+    </>
   );
 }

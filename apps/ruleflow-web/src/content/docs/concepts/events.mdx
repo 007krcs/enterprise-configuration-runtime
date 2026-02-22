@@ -1,0 +1,9 @@
+# Events
+
+Events drive flow navigation.
+
+- **Built-in events**: `onBrowseCategory`, `onSelectProduct`, `onCheckout`, `onSubmitOrder`.
+- **Custom events**: `emitEvent('checkoutApproved')` can be triggered from rules or API mappings.
+- **Guards** listen for events plus context/data to route traffic (e.g., only admins see `admin-metrics`).
+
+Document every event name inside your flow schema so Builder and Playground can surface them in the UI.

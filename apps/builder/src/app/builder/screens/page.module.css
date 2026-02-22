@@ -1,0 +1,10 @@
+.infoBanner {
+  margin-bottom: var(--ecr-spacing-4);
+  padding: var(--ecr-spacing-3) var(--ecr-spacing-4);
+  border-radius: var(--ecr-radius-md);
+  background: var(--ecr-color-highlight);
+  color: var(--ecr-color-info-strong);
+  font-weight: 700;
+  font-size: var(--ecr-font-size-sm);
+  letter-spacing: 0.01em;
+}

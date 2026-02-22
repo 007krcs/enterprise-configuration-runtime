@@ -1,0 +1,522 @@
+{
+  "uiSchema": {
+    "version": "1.0.0",
+    "pageId": "dashboard",
+    "layout": {
+      "id": "root",
+      "type": "stack",
+      "direction": "vertical",
+      "children": [
+        {
+          "id": "filters",
+          "type": "section",
+          "title": "Filters",
+          "componentIds": ["customerNameInput", "orderTotalInput"]
+        },
+        {
+          "id": "table",
+          "type": "section",
+          "title": "Orders",
+          "componentIds": ["ordersTable"]
+        },
+        {
+          "id": "chart",
+          "type": "section",
+          "title": "Revenue",
+          "componentIds": ["revenueChart"]
+        },
+        {
+          "id": "viz",
+          "type": "section",
+          "title": "Custom Insight",
+          "componentIds": ["customViz"]
+        }
+      ]
+    },
+    "components": [
+      {
+        "id": "customerNameInput",
+        "type": "input",
+        "adapterHint": "material.input",
+        "props": {},
+        "i18n": {
+          "labelKey": "runtime.filters.customerName.label",
+          "placeholderKey": "runtime.filters.customerName.placeholder",
+          "helperTextKey": "runtime.filters.customerName.helper"
+        },
+        "bindings": {
+          "data": {
+            "value": "data.filters.customerName"
+          }
+        },
+        "validations": {
+          "required": false,
+          "min": 2,
+          "max": 64,
+          "regex": "^[a-zA-Z\\s]+$"
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.filters.customerName.aria",
+          "tabIndex": 0,
+          "role": "textbox",
+          "keyboardNav": true,
+          "focusOrder": 1
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 6 }
+          }
+        },
+        "events": {
+          "onChange": [
+            { "type": "emitEvent", "payload": { "event": "filterChanged" } }
+          ]
+        }
+      },
+      {
+        "id": "orderTotalInput",
+        "type": "input",
+        "adapterHint": "material.input",
+        "props": {
+          "inputType": "number"
+        },
+        "i18n": {
+          "labelKey": "runtime.filters.orderTotal.label",
+          "placeholderKey": "runtime.filters.orderTotal.placeholder",
+          "helperTextKey": "runtime.filters.orderTotal.helper"
+        },
+        "bindings": {
+          "data": {
+            "value": "data.orderTotal"
+          }
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.filters.orderTotal.aria",
+          "tabIndex": 0,
+          "role": "spinbutton",
+          "keyboardNav": true,
+          "focusOrder": 2
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 6 }
+          }
+        }
+      },
+      {
+        "id": "ordersTable",
+        "type": "table",
+        "adapterHint": "aggrid.table",
+        "props": {
+          "columns": [
+            { "field": "orderId", "headerKey": "runtime.orders.table.columns.orderId" },
+            { "field": "customer", "headerKey": "runtime.orders.table.columns.customer" },
+            { "field": "total", "headerKey": "runtime.orders.table.columns.total" }
+          ],
+          "rows": []
+        },
+        "i18n": {
+          "labelKey": "runtime.orders.table.label"
+        },
+        "bindings": {
+          "data": {
+            "rows": "data.orders"
+          }
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.orders.table.aria",
+          "tabIndex": 0,
+          "role": "table",
+          "keyboardNav": true,
+          "focusOrder": 3
+        }
+      },
+      {
+        "id": "revenueChart",
+        "type": "chart",
+        "adapterHint": "highcharts.chart",
+        "props": {
+          "series": []
+        },
+        "i18n": {
+          "labelKey": "runtime.revenue.chart.label"
+        },
+        "bindings": {
+          "data": {
+            "series": "data.revenueSeries"
+          }
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.revenue.chart.aria",
+          "tabIndex": 0,
+          "role": "img",
+          "keyboardNav": true,
+          "focusOrder": 4
+        }
+      },
+      {
+        "id": "customViz",
+        "type": "custom",
+        "adapterHint": "d3.custom",
+        "props": {
+          "height": 240
+        },
+        "i18n": {
+          "labelKey": "runtime.customViz.label"
+        },
+        "bindings": {
+          "data": {
+            "dataset": "data.customViz"
+          }
+        },
+        "accessibility": {
+          "ariaLabelKey": "runtime.customViz.aria",
+          "tabIndex": 0,
+          "role": "img",
+          "keyboardNav": true,
+          "focusOrder": 5
+        }
+      }
+    ]
+  },
+  "uiSchemasById": {
+    "dashboard": {
+      "version": "1.0.0",
+      "pageId": "dashboard",
+      "layout": {
+        "id": "root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "filters",
+            "type": "section",
+            "title": "Filters",
+            "componentIds": ["customerNameInput", "orderTotalInput"]
+          },
+          {
+            "id": "table",
+            "type": "section",
+            "title": "Orders",
+            "componentIds": ["ordersTable"]
+          },
+          {
+            "id": "chart",
+            "type": "section",
+            "title": "Revenue",
+            "componentIds": ["revenueChart"]
+          },
+          {
+            "id": "viz",
+            "type": "section",
+            "title": "Custom Insight",
+            "componentIds": ["customViz"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "customerNameInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {},
+          "i18n": {
+            "labelKey": "runtime.filters.customerName.label",
+            "placeholderKey": "runtime.filters.customerName.placeholder",
+            "helperTextKey": "runtime.filters.customerName.helper"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.filters.customerName"
+            }
+          },
+          "validations": {
+            "required": false,
+            "min": 2,
+            "max": 64,
+            "regex": "^[a-zA-Z\\s]+$"
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.filters.customerName.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 1
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
+          },
+          "events": {
+            "onChange": [
+              { "type": "emitEvent", "payload": { "event": "filterChanged" } }
+            ]
+          }
+        },
+        {
+          "id": "orderTotalInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "number"
+          },
+          "i18n": {
+            "labelKey": "runtime.filters.orderTotal.label",
+            "placeholderKey": "runtime.filters.orderTotal.placeholder",
+            "helperTextKey": "runtime.filters.orderTotal.helper"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.orderTotal"
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.filters.orderTotal.aria",
+            "tabIndex": 0,
+            "role": "spinbutton",
+            "keyboardNav": true,
+            "focusOrder": 2
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
+          }
+        },
+        {
+          "id": "ordersTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "orderId", "headerKey": "runtime.orders.table.columns.orderId" },
+              { "field": "customer", "headerKey": "runtime.orders.table.columns.customer" },
+              { "field": "total", "headerKey": "runtime.orders.table.columns.total" }
+            ],
+            "rows": []
+          },
+          "i18n": {
+            "labelKey": "runtime.orders.table.label"
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.orders"
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.orders.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 3
+          }
+        },
+        {
+          "id": "revenueChart",
+          "type": "chart",
+          "adapterHint": "highcharts.chart",
+          "props": {
+            "series": []
+          },
+          "i18n": {
+            "labelKey": "runtime.revenue.chart.label"
+          },
+          "bindings": {
+            "data": {
+              "series": "data.revenueSeries"
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.revenue.chart.aria",
+            "tabIndex": 0,
+            "role": "img",
+            "keyboardNav": true,
+            "focusOrder": 4
+          }
+        },
+        {
+          "id": "customViz",
+          "type": "custom",
+          "adapterHint": "d3.custom",
+          "props": {
+            "height": 240
+          },
+          "i18n": {
+            "labelKey": "runtime.customViz.label"
+          },
+          "bindings": {
+            "data": {
+              "dataset": "data.customViz"
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "runtime.customViz.aria",
+            "tabIndex": 0,
+            "role": "img",
+            "keyboardNav": true,
+            "focusOrder": 5
+          }
+        }
+      ]
+    }
+  },
+  "activeUiPageId": "dashboard",
+  "flowSchema": {
+    "version": "1.0.0",
+    "flowId": "store-flow",
+    "initialState": "browse",
+    "states": {
+      "browse": {
+        "uiPageId": "dashboard",
+        "on": {
+          "next": {
+            "target": "details",
+            "guard": {
+              "op": "eq",
+              "left": { "path": "data.acceptedTerms" },
+              "right": { "value": true }
+            }
+          }
+        }
+      },
+      "details": {
+        "uiPageId": "dashboard",
+        "on": {
+          "back": { "target": "browse" },
+          "next": {
+            "target": "review",
+            "guard": {
+              "op": "eq",
+              "left": { "path": "data.formValid" },
+              "right": { "value": true }
+            }
+          }
+        }
+      },
+      "review": {
+        "uiPageId": "dashboard",
+        "on": {
+          "back": { "target": "details" },
+          "submit": {
+            "target": "complete",
+            "guard": {
+              "op": "eq",
+              "left": { "path": "data.readyToSubmit" },
+              "right": { "value": true }
+            },
+            "actions": ["evaluateRules", "callApi"],
+            "apiId": "submitOrder"
+          }
+        }
+      },
+      "complete": {
+        "uiPageId": "dashboard",
+        "on": {
+          "back": { "target": "review" }
+        }
+      }
+    }
+  },
+  "rules": {
+    "version": "1.0.0",
+    "rules": [
+      {
+        "ruleId": "US_ADMIN_DISCOUNT",
+        "description": "Apply admin discount for US orders over 1000",
+        "priority": 100,
+        "scope": {
+          "countries": ["US"],
+          "roles": ["admin"]
+        },
+        "when": {
+          "op": "gt",
+          "left": { "path": "data.orderTotal" },
+          "right": { "value": 1000 }
+        },
+        "actions": [
+          { "type": "setField", "path": "data.discount", "value": 0.1 },
+          { "type": "emitEvent", "event": "discountApplied", "payload": { "level": "admin" } }
+        ]
+      },
+      {
+        "ruleId": "EU_GDPR_NOTICE",
+        "description": "Flag GDPR notice for EU visitors",
+        "priority": 50,
+        "scope": {
+          "countries": ["DE", "FR", "ES"],
+          "roles": ["user", "admin"]
+        },
+        "when": {
+          "op": "exists",
+          "left": { "path": "context.locale" }
+        },
+        "actions": [
+          { "type": "setContext", "path": "context.gdprNotice", "value": true }
+        ]
+      },
+      {
+        "ruleId": "BLOCK_GUEST_RESTRICTED",
+        "description": "Block guest access to restricted data",
+        "priority": 10,
+        "scope": {
+          "roles": ["guest"]
+        },
+        "when": {
+          "op": "eq",
+          "left": { "path": "data.restricted" },
+          "right": { "value": true }
+        },
+        "actions": [
+          { "type": "throwError", "message": "Guest access not permitted", "code": "GUEST_BLOCK" }
+        ]
+      }
+    ]
+  },
+  "apiMappingsById": {
+    "submitOrder": {
+      "version": "1.0.0",
+      "apiId": "submitOrder",
+      "type": "rest",
+      "method": "POST",
+      "endpoint": "https://api.example.com/orders",
+      "requestMap": {
+        "body": {
+          "orderId": { "from": "data.orderId" },
+          "customerId": { "from": "data.customerId" },
+          "total": { "from": "data.orderTotal" },
+          "locale": { "from": "context.locale", "transform": "upper($)" }
+        },
+        "headers": {
+          "x-tenant": { "from": "context.tenantId" }
+        }
+      },
+      "responseMap": {
+        "data": {
+          "orderId": "response.orderId",
+          "status": "response.status"
+        },
+        "context": {
+          "lastRequestId": "response.requestId"
+        }
+      },
+      "transforms": [
+        { "name": "upper", "expression": "upper($)" }
+      ],
+      "errorHandling": {
+        "map": {
+          "400": "BAD_REQUEST",
+          "500": "SERVER_ERROR"
+        },
+        "retry": {
+          "maxAttempts": 2,
+          "backoffMs": 250
+        }
+      }
+    }
+  }
+}

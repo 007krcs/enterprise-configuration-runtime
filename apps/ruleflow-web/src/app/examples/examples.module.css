@@ -1,0 +1,153 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 0 1rem 3rem;
+}
+
+.hero {
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  background: radial-gradient(circle at 20% -10%, rgba(99, 102, 241, 0.35), transparent 45%), #0f172a;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 40px rgba(15, 23, 42, 0.35);
+}
+
+.heroTitle {
+  margin-top: 0.75rem;
+  margin-bottom: 0.35rem;
+  font-size: clamp(1.8rem, 2vw, 2.4rem);
+  font-weight: 600;
+}
+
+.heroText {
+  margin: 0;
+  max-width: 60ch;
+  color: rgba(248, 250, 252, 0.9);
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.cardHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cardDescription {
+  margin: 0.5rem 0 0;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.highlightList {
+  padding-left: 1.25rem;
+  margin: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #0f172a;
+}
+
+.highlightItem {
+  list-style: disc;
+  line-height: 1.4;
+}
+
+.statRow {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.stat {
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #312e81;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.previewPanel {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: min(460px, calc(100% - 3rem));
+  max-height: 80vh;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 40px 100px rgba(15, 23, 42, 0.45);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.previewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.previewTag {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.previewTitle {
+  margin: 0.25rem 0 0;
+  font-size: 1.1rem;
+  color: #f8fafc;
+}
+
+.previewClose {
+  color: #cbd5f5;
+}
+
+.previewBody {
+  background: #111827;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.75rem;
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.previewFrame {
+  height: 100%;
+  background: #0b1120;
+  border-radius: 0.6rem;
+  padding: 0.75rem;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 768px) {
+  .previewPanel {
+    position: static;
+    width: 100%;
+    max-height: none;
+  }
+}

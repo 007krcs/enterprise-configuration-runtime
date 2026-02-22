@@ -15,11 +15,14 @@ import { RenderPage } from '@platform/react-renderer';
 import type { ComponentDefinition } from '@platform/component-registry';
 import { builtinComponentDefinitions, isPaletteComponentEnabled } from '@platform/component-registry';
 import { createProviderFromBundles, EXAMPLE_TENANT_BUNDLES, PLATFORM_BUNDLES } from '@platform/i18n';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { ConfigVersion } from '@/lib/demo/types';
 import { apiGet, apiPatch, apiPost } from '@/lib/demo/api-client';
 import { useRuntimeFlags } from '@/lib/use-runtime-flags';
 import { useRuntimeAdapters } from '@/lib/use-runtime-adapters';
+import { exampleCatalog, loadExampleBundle } from '@/lib/examples';
+import type { ExampleId } from '@/lib/examples';
 import {
   normalizeUiPages,
   rebindFlowSchemaToAvailablePages,
@@ -33,6 +36,7 @@ import { ComponentEditor } from '@/components/builder/component-editor';
 import { SchemaPreview } from '@/components/builder/schema-preview';
 import { GridCanvas, type CanvasInteraction, type GridCanvasMetrics } from '@/components/builder/grid-canvas';
 import { BuilderShell } from '@/components/builder/BuilderShell';
+import { BuilderTour } from '@/components/builder/BuilderTour';
 import {
   clampGridRect,
   clampNumber,
@@ -117,6 +121,23 @@ const scratchComponents: UIComponent[] = [
     },
   },
 ];
+
+const EMPTY_STATE_EXAMPLES: { id: ExampleId; label: string }[] = [
+  { id: 'e-commerce-store-demo', label: 'Load E-Commerce Demo' },
+  { id: 'saas-dashboard', label: 'Load Dashboard Demo' },
+  { id: 'user-onboarding-flow-demo', label: 'Load Onboarding Demo' },
+];
+
+const EMPTY_STATE_TIPS = [
+  'Drag components from the palette onto the grid surface.',
+  'Use the inspector to tweak props, text, and data bindings.',
+  'Preview your layout to validate the runtime experience.',
+  'Export the JSON bundle to share or branch your screen set.',
+];
+
+function getExampleTitle(exampleId: ExampleId): string {
+  return exampleCatalog.find((example) => example.id === exampleId)?.title ?? exampleId;
+}
 
 type GetVersionResponse = { ok: true; version: ConfigVersion } | { ok: false; error: string };
 
@@ -621,6 +642,7 @@ export default function BuilderPage() {
     viewportRect: null,
     zoom: 1,
   });
+  const [exampleLoading, setExampleLoading] = useState<ExampleId | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -1132,6 +1154,59 @@ export default function BuilderPage() {
     setSchema(nextSchema);
     setFlowSchemaDraft(reboundFlow);
     setSelectedComponentId((nextSchema.components as UIComponent[])[0]?.id ?? null);
+  };
+
+  const resetToScratch = () => {
+    const fallback = normalizeSchema(createSchemaFromComponents(scratchComponents));
+    commitPages({ [fallback.pageId]: fallback }, fallback.pageId);
+    setTemplateSummary(null);
+    setSetupChecklistOpen(false);
+    setSetupChecklistState({});
+    setPreviewMode(false);
+    toast({
+      variant: 'info',
+      title: 'Starting from scratch',
+      description: 'Starter components are ready for further edits.',
+    });
+  };
+
+  const loadExample = async (exampleId: ExampleId) => {
+    if (exampleLoading) return;
+    setExampleLoading(exampleId);
+    setLoading(true);
+    try {
+      const bundle = await loadExampleBundle(exampleId);
+      const normalizedPages = normalizeUiPages({
+        uiSchema: bundle.uiSchema,
+        uiSchemasById: bundle.uiSchemasById,
+        activeUiPageId: bundle.activeUiPageId,
+        flowSchema: bundle.flowSchema,
+      });
+      const resolvedPageId =
+        normalizedPages.activeUiPageId ??
+        Object.keys(normalizedPages.uiSchemasById)[0] ??
+        selectedUiPageId ??
+        schema.pageId;
+      commitPages(normalizedPages.uiSchemasById, resolvedPageId, bundle.flowSchema);
+      setTemplateSummary(null);
+      setSetupChecklistOpen(false);
+      setSetupChecklistState({});
+      setPreviewMode(false);
+      toast({
+        variant: 'success',
+        title: 'Example loaded',
+        description: `${getExampleTitle(exampleId)} is ready to explore.`,
+      });
+    } catch (error) {
+      toast({
+        variant: 'error',
+        title: 'Example load failed',
+        description: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setLoading(false);
+      setExampleLoading(null);
+    }
   };
 
   const switchUiPage = (pageId: string) => {
@@ -1669,6 +1744,7 @@ export default function BuilderPage() {
 
   return (
     <div className={cn(styles.page, styles.builderRoot)}>
+      <BuilderTour />
       <Card className={styles.headerCard}>
         <CardHeader>
           <div className={styles.headerRow}>
@@ -1696,7 +1772,13 @@ export default function BuilderPage() {
               <Button variant="outline" size="sm" onClick={loadFromStore} disabled={!versionId || loading}>
                 Reload
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setPreviewMode((v) => !v)} disabled={loading}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPreviewMode((v) => !v)}
+                disabled={loading}
+                data-tour-target="preview-toggle"
+              >
                 {previewMode ? 'Exit preview' : 'Preview'}
               </Button>
               {templateSummary ? (
@@ -1739,6 +1821,13 @@ export default function BuilderPage() {
               >
                 {loading ? 'Working...' : 'Save'}
               </Button>
+              <Link
+                href="/builder/json"
+                className={styles.exportLink}
+                data-tour-target="export-json"
+              >
+                Export JSON
+              </Link>
             </div>
           </div>
           {killSwitchActive ? (
@@ -1885,7 +1974,11 @@ export default function BuilderPage() {
           </div>
           <div className={styles.metaSpanAll}>
             <label className="rfFieldLabel">Flow State to Page Binding</label>
-            <div className={styles.flowStateGrid} data-testid="builder-flow-state-bindings">
+              <div
+                className={styles.flowStateGrid}
+                data-testid="builder-flow-state-bindings"
+                data-tour-target="flow-bindings"
+              >
               {flowStateEntries.map(([stateId, state]) => (
                 <div key={stateId} className={styles.flowStateRow}>
                   <span className={styles.flowStateName}>{stateId}</span>
@@ -1963,7 +2056,8 @@ export default function BuilderPage() {
             className={styles.builderShell}
             storageKey={`ruleflow:builder:layout:${effectivePreviewContext.tenantId}`}
             palette={
-              <Card className={styles.panelCard}>
+              <div data-tour-target="palette">
+                <Card className={styles.panelCard}>
                 <CardHeader className={styles.panelHeader}>
                   <CardTitle>Component Palette</CardTitle>
                 </CardHeader>
@@ -2014,6 +2108,7 @@ export default function BuilderPage() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
             }
             canvasToolbar={
               <div className={styles.workspaceToolbar}>
@@ -2179,10 +2274,49 @@ export default function BuilderPage() {
               </div>
             }
             canvas={
-              <div className={styles.canvasContent}>
+              <div className={styles.canvasContent} data-tour-target="canvas">
                 <CanvasDropZone disabled={loading}>
                   {loading && components.length === 0 ? <p className={styles.canvasHint}>Loading schema...</p> : null}
-                  {!loading && components.length === 0 ? <p className={styles.canvasEmptyHint}>Drag from the palette to start.</p> : null}
+                  {!loading && components.length === 0 ? (
+                    <div className={styles.canvasEmptyStatePanel}>
+                      <h3 className={styles.canvasEmptyStateTitle}>Start with an Example</h3>
+                      <p className={styles.canvasEmptyStateDescription}>
+                        Load one of the curated demos below or begin from scratch to explore the builder canvas, inspector, and preview.
+                      </p>
+                      <div className={styles.canvasEmptyStateActions}>
+                        {EMPTY_STATE_EXAMPLES.map((example) => (
+                          <Button
+                            key={example.id}
+                            variant="default"
+                            size="md"
+                            onClick={() => void loadExample(example.id)}
+                            disabled={loading}
+                            data-testid={`builder-empty-load-${example.id}`}
+                          >
+                            {exampleLoading === example.id ? 'Loading…' : example.label}
+                          </Button>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        className={styles.canvasEmptyScratch}
+                        onClick={resetToScratch}
+                        disabled={loading}
+                      >
+                        Start from Scratch
+                      </button>
+                      <div className={styles.canvasEmptyTips}>
+                        <p className={styles.canvasEmptyTipHeading}>Helpful tips</p>
+                        <ul className={styles.canvasEmptyTipList}>
+                          {EMPTY_STATE_TIPS.map((tip) => (
+                            <li key={tip} className={styles.canvasEmptyTipItem}>
+                              {tip}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ) : null}
                   <GridCanvas
                     components={components}
                     items={activeItems}
@@ -2216,7 +2350,7 @@ export default function BuilderPage() {
               </div>
             }
             inspector={
-              <div className={styles.inspectorStack}>
+              <div className={styles.inspectorStack} data-tour-target="inspector">
                 {setupChecklistOpen && templateSummary ? (
                   <Card className={styles.setupChecklistCard} data-testid="builder-template-checklist">
                     <CardHeader>

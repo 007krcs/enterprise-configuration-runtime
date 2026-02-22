@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import styles from './playground.module.css';
 import { useSearchParams } from 'next/navigation';
 import { useOnboarding } from '@/components/onboarding/onboarding-provider';
+import { exampleCatalog, type ExampleId, loadExampleBundle } from '@/lib/examples';
 
 const initialContext: ExecutionContext = {
   tenantId: 'tenant-1',
@@ -202,6 +203,16 @@ export function Playground({
   const [selectedVersionId, setSelectedVersionId] = useState<string>(initialVersion?.id ?? '');
   const [version, setVersion] = useState<ConfigVersion | null>(initialVersion);
   const [busy, setBusy] = useState(false);
+  const [runtimeBundle, setRuntimeBundle] = useState<ConfigVersion['bundle'] | null>(initialVersion?.bundle ?? null);
+  const [lastLoadedBundle, setLastLoadedBundle] = useState<ConfigVersion['bundle'] | null>(initialVersion?.bundle ?? null);
+  const [editorText, setEditorText] = useState<string>(() =>
+    initialVersion?.bundle ? JSON.stringify(initialVersion.bundle, null, 2) : '',
+  );
+  const [editorError, setEditorError] = useState<string | null>(null);
+  const [currentExampleId, setCurrentExampleId] = useState<ExampleId | null>(null);
+  const [selectedExample, setSelectedExample] = useState<ExampleId>('e-commerce-store-demo');
+  const [loadingExample, setLoadingExample] = useState(false);
+  const [exampleError, setExampleError] = useState<string | null>(null);
 
   const [stateId, setStateId] = useState<string>(() => {
     const flow = (initialVersion?.bundle.flowSchema ?? null) as unknown as FlowSchema | null;
@@ -246,8 +257,11 @@ export function Playground({
         const resp = await apiGet<GetVersionResponse>(`/api/config-versions/${encodeURIComponent(selectedVersionId)}`);
         if (!resp.ok) throw new Error(resp.error);
         setVersion(resp.version);
-        const flow = resp.version.bundle.flowSchema as unknown as FlowSchema;
-        setStateId(flow.initialState);
+        setRuntimeBundle(resp.version.bundle);
+        setLastLoadedBundle(resp.version.bundle);
+        setEditorText(JSON.stringify(resp.version.bundle, null, 2));
+        setEditorError(null);
+        setCurrentExampleId(null);
         setData(initialData);
         setTrace(null);
       } catch (error) {
@@ -257,6 +271,7 @@ export function Playground({
           description: error instanceof Error ? error.message : String(error),
         });
         setVersion(null);
+        setRuntimeBundle(null);
       } finally {
         setBusy(false);
       }
@@ -270,19 +285,20 @@ export function Playground({
     setActiveVersionId(selectedVersionId);
   }, [activeVersionId, selectedVersionId, setActiveVersionId]);
 
-  const flowRaw: FlowSchema | null = version?.bundle.flowSchema ?? null;
-  const rules: Rule[] = version?.bundle.rules.rules ?? [];
-  const apiMappingsById: Record<string, ApiMapping> = version?.bundle.apiMappingsById ?? {};
+  const baseBundle = runtimeBundle ?? version?.bundle ?? null;
+  const flowRaw: FlowSchema | null = baseBundle?.flowSchema ?? null;
+  const rules: Rule[] = baseBundle?.rules?.rules ?? [];
+  const apiMappingsById: Record<string, ApiMapping> = baseBundle?.apiMappingsById ?? {};
 
   const normalizedUiPages = useMemo(
     () =>
       normalizeUiPages({
-        uiSchema: version?.bundle.uiSchema,
-        uiSchemasById: version?.bundle.uiSchemasById,
-        activeUiPageId: version?.bundle.activeUiPageId,
+        uiSchema: baseBundle?.uiSchema,
+        uiSchemasById: baseBundle?.uiSchemasById,
+        activeUiPageId: baseBundle?.activeUiPageId,
         flowSchema: flowRaw,
       }),
-    [flowRaw, version?.bundle.activeUiPageId, version?.bundle.uiSchema, version?.bundle.uiSchemasById],
+    [baseBundle, flowRaw],
   );
   const uiSchemasById = normalizedUiPages.uiSchemasById;
   const flow = useMemo(
@@ -294,6 +310,20 @@ export function Playground({
       ),
     [flowRaw, normalizedUiPages.activeUiPageId, uiSchemasById],
   );
+
+  useEffect(() => {
+    if (!flow) return;
+    setStateId(flow.initialState ?? 'start');
+    setContext({
+      ...initialContext,
+      featureFlags: {
+        ...initialContext.featureFlags,
+        ...runtimeFlags.featureFlags,
+      },
+    });
+    setData(initialData);
+    setTrace(null);
+  }, [flow, runtimeFlags.featureFlags]);
 
   const baseLocale = effectiveContext.locale.split('-')[0] ?? effectiveContext.locale;
   const i18n = useMemo(
@@ -446,116 +476,232 @@ export function Playground({
     setTrace(null);
   };
 
-  return (
-    <div className={styles.grid}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Context Simulator</CardTitle>
-        </CardHeader>
-        <CardContent className={styles.stack}>
-          <div className={styles.field}>
-            <label className="rfFieldLabel">Config Version</label>
-            <Select
-              value={selectedVersionId}
-              onChange={(event) => setSelectedVersionId(event.target.value)}
-              disabled={(snapshot?.versions.length ?? 0) === 0}
-            >
-              {(snapshot?.versions ?? []).map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.version} ({v.status})
-                </option>
-              ))}
-            </Select>
-          </div>
+  const availableExamples = exampleCatalog.filter((example) =>
+    ['e-commerce-store-demo', 'saas-dashboard', 'user-onboarding-flow-demo'].includes(example.id),
+  );
 
-          <div className={styles.formGrid}>
+  const handleEditorChange = (value: string) => {
+    setEditorText(value);
+    try {
+      JSON.parse(value);
+      setEditorError(null);
+    } catch (error) {
+      setEditorError(error instanceof Error ? error.message : 'Invalid JSON');
+    }
+  };
+
+  const applyEditorChanges = () => {
+    try {
+      const parsed = JSON.parse(editorText) as ConfigVersion['bundle'];
+      setRuntimeBundle(parsed);
+      setTrace(null);
+      setEditorError(null);
+    } catch (error) {
+      setEditorError(error instanceof Error ? error.message : 'Unable to parse JSON');
+    }
+  };
+
+  const handleLoadExample = async () => {
+    setLoadingExample(true);
+    setExampleError(null);
+    try {
+      const bundle = await loadExampleBundle(selectedExample);
+      setRuntimeBundle(bundle);
+      setLastLoadedBundle(bundle);
+      setEditorText(JSON.stringify(bundle, null, 2));
+      setEditorError(null);
+      setCurrentExampleId(selectedExample);
+      setTrace(null);
+    } catch (error) {
+      setExampleError(error instanceof Error ? error.message : 'Unable to load example bundle');
+    } finally {
+      setLoadingExample(false);
+    }
+  };
+
+  const resetToExample = () => {
+    if (!currentExampleId || !lastLoadedBundle) return;
+    setRuntimeBundle(lastLoadedBundle);
+    setEditorText(JSON.stringify(lastLoadedBundle, null, 2));
+    setEditorError(null);
+    setTrace(null);
+  };
+
+  return (
+    <div className={styles.playgroundShell}>
+      <aside className={styles.playgroundSidebar}>
+        <div className={styles.sidebarSection}>
+          <p className={styles.sidebarLabel}>Example bundle</p>
+          <Select value={selectedExample} onChange={(event) => setSelectedExample(event.target.value as ExampleId)}>
+            {availableExamples.map((example) => (
+              <option key={example.id} value={example.id}>
+                {example.title}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className={styles.sidebarButtons}>
+          <Button variant="outline" size="sm" onClick={handleLoadExample} disabled={loadingExample}>
+            {loadingExample ? 'Loading…' : 'Load Example'}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={resetToExample}
+            disabled={!currentExampleId || !lastLoadedBundle || loadingExample}
+          >
+            Reset to Example
+          </Button>
+        </div>
+        {exampleError ? (
+          <p className={styles.error}>{exampleError}</p>
+        ) : (
+          <p className={styles.sidebarHelper}>
+            Examples instantly replace the bundle under test. Use the JSON editor to tweak and reapply the preview.
+          </p>
+        )}
+      </aside>
+      <div className={styles.playgroundMain}>
+        <Card className={styles.contextCard}>
+          <CardHeader>
+            <CardTitle>Context Simulator</CardTitle>
+          </CardHeader>
+          <CardContent className={styles.stack}>
             <div className={styles.field}>
-              <label className="rfFieldLabel">Role</label>
-              <Input value={context.role} onChange={(event) => setContext({ ...context, role: event.target.value })} />
-            </div>
-            <div className={styles.field}>
-              <label className="rfFieldLabel">Country</label>
-              <Input
-                value={context.country}
-                onChange={(event) => setContext({ ...context, country: event.target.value as ExecutionContext['country'] })}
-              />
-            </div>
-            <div className={styles.field}>
-              <label className="rfFieldLabel">Device</label>
+              <label className="rfFieldLabel">Config Version</label>
               <Select
-                value={context.device}
-                onChange={(event) => setContext({ ...context, device: event.target.value as ExecutionContext['device'] })}
+                value={selectedVersionId}
+                onChange={(event) => setSelectedVersionId(event.target.value)}
+                disabled={(snapshot?.versions.length ?? 0) === 0}
               >
-                <option value="desktop">Desktop</option>
-                <option value="tablet">Tablet</option>
-                <option value="mobile">Mobile</option>
+                {(snapshot?.versions ?? []).map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.version} ({v.status})
+                  </option>
+                ))}
               </Select>
             </div>
-            <div className={styles.field}>
-              <label className="rfFieldLabel">Locale</label>
-              <Input value={context.locale} onChange={(event) => setContext({ ...context, locale: event.target.value })} />
+
+            <div className={styles.formGrid}>
+              <div className={styles.field}>
+                <label className="rfFieldLabel">Role</label>
+                <Input value={context.role} onChange={(event) => setContext({ ...context, role: event.target.value })} />
+              </div>
+              <div className={styles.field}>
+                <label className="rfFieldLabel">Country</label>
+                <Input
+                  value={context.country}
+                  onChange={(event) =>
+                    setContext({ ...context, country: event.target.value as ExecutionContext['country'] })
+                  }
+                />
+              </div>
+              <div className={styles.field}>
+                <label className="rfFieldLabel">Device</label>
+                <Select
+                  value={context.device}
+                  onChange={(event) => setContext({ ...context, device: event.target.value as ExecutionContext['device'] })}
+                >
+                  <option value="desktop">Desktop</option>
+                  <option value="tablet">Tablet</option>
+                  <option value="mobile">Mobile</option>
+                </Select>
+              </div>
+              <div className={styles.field}>
+                <label className="rfFieldLabel">Locale</label>
+                <Input value={context.locale} onChange={(event) => setContext({ ...context, locale: event.target.value })} />
+              </div>
             </div>
-          </div>
 
-          {killSwitchActive ? (
-            <p className={styles.error} data-testid="playground-kill-warning">
-              Execution blocked by kill switch. {killSwitchReason}
-            </p>
-          ) : null}
+            {killSwitchActive ? (
+              <p className={styles.error} data-testid="playground-kill-warning">
+                Execution blocked by kill switch. {killSwitchReason}
+              </p>
+            ) : null}
 
-          <div className={styles.actions}>
-            <Button size="sm" variant="outline" onClick={reset} disabled={busy}>
-              Reset
-            </Button>
-            <Button size="sm" onClick={() => runEvent('back')} disabled={busy || !flow || killSwitchActive}>
-              Back
-            </Button>
-            <Button size="sm" onClick={() => runEvent('next')} disabled={busy || !flow || killSwitchActive}>
-              Next
-            </Button>
-            <Button size="sm" onClick={() => runEvent('submit')} disabled={busy || !flow || killSwitchActive}>
-              Submit
-            </Button>
-          </div>
+            <div className={styles.actions}>
+              <Button size="sm" variant="outline" onClick={reset} disabled={busy}>
+                Reset
+              </Button>
+              <Button size="sm" onClick={() => runEvent('back')} disabled={busy || !flow || killSwitchActive}>
+                Back
+              </Button>
+              <Button size="sm" onClick={() => runEvent('next')} disabled={busy || !flow || killSwitchActive}>
+                Next
+              </Button>
+              <Button size="sm" onClick={() => runEvent('submit')} disabled={busy || !flow || killSwitchActive}>
+                Submit
+              </Button>
+            </div>
 
-          <div className={styles.stateBox}>
-            <p className={styles.stateRow} data-testid="playground-current-state">
-              <span className={styles.stateKey}>State:</span> {stateId}
-            </p>
-            <p className={styles.stateRow} data-testid="playground-current-event">
-              <span className={styles.stateKey}>Event:</span> {trace?.flow.event ?? '-'}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+            <div className={styles.stateBox}>
+              <p className={styles.stateRow} data-testid="playground-current-state">
+                <span className={styles.stateKey}>State:</span> {stateId}
+              </p>
+              <p className={styles.stateRow} data-testid="playground-current-event">
+                <span className={styles.stateKey}>Event:</span> {trace?.flow.event ?? '-'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Rendered UI</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!currentUiSchema ? (
-            <p className={styles.emptyText}>Select a config version to render.</p>
-          ) : (
-            <RenderPage
-              uiSchema={currentUiSchema}
-              data={data}
-              context={effectiveContext}
-              i18n={i18n}
-              mode="controlled"
-              onDataChange={setData}
-              onContextChange={setContext}
-            />
-          )}
-        </CardContent>
-      </Card>
+        <div className={styles.splitView}>
+          <Card className={styles.previewCard}>
+            <CardHeader>
+              <CardTitle>Rendered UI</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!currentUiSchema ? (
+                <p className={styles.emptyText}>Select a config version to render.</p>
+              ) : (
+                <RenderPage
+                  uiSchema={currentUiSchema}
+                  data={data}
+                  context={effectiveContext}
+                  i18n={i18n}
+                  mode="controlled"
+                  onDataChange={setData}
+                  onContextChange={setContext}
+                />
+              )}
+            </CardContent>
+          </Card>
 
-      <div ref={traceFocusRef} className={cn(focus === 'trace' ? styles.traceFocus : undefined)}>
-        <TracePanel
-          trace={trace}
-          apiMappingsById={apiMappingsById}
-          defaultExplain={searchParams.get('explain') === '1'}
-        />
+          <Card className={styles.editorCard}>
+            <CardHeader>
+              <CardTitle>JSON Editor</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <textarea
+                className={styles.jsonEditor}
+                value={editorText}
+                onChange={(event) => handleEditorChange(event.target.value)}
+                spellCheck={false}
+                aria-label="Edit bundle JSON"
+              />
+              <div className={styles.editorActions}>
+                <Button size="sm" onClick={applyEditorChanges} disabled={busy || Boolean(editorError)}>
+                  Apply to preview
+                </Button>
+              </div>
+              {editorError ? (
+                <p className={styles.error}>{editorError}</p>
+              ) : (
+                <p className={styles.sidebarHelper}>
+                  Modify the bundle, then click “Apply to preview” to rebuild flow, rules, and screens instantly.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div ref={traceFocusRef} className={cn(focus === 'trace' ? styles.traceFocus : undefined)}>
+          <TracePanel
+            trace={trace}
+            apiMappingsById={apiMappingsById}
+            defaultExplain={searchParams.get('explain') === '1'}
+          />
+        </div>
       </div>
     </div>
   );

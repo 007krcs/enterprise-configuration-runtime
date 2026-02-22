@@ -1,0 +1,24 @@
+# Schemas
+
+Every ECR bundle is driven by explicit JSON contracts.
+
+## UI Schema
+
+Defines the screens, layout grid, components, and translations.
+- `uiSchema.components[]` uses `adapterHint` to point to registry entries.
+- `uiSchema.layout` dictates grid columns/row heights per breakpoint.
+
+## Flow Schema
+
+Models the state machine (`states`, `initialState`, and `on` transitions).
+Each transition wires to an event (e.g., `onCheckout`) and optionally references a guard rule.
+
+## Ruleset Schema
+
+A collection of JSON rules (`rules.rules[]`) each with `when`, `then`, and optional metadata.
+Rules can mutate context/data (`setContext`, `setData`) and emit events (`emitEvent`).
+
+## API Mappings
+
+Report definitions (`apiMappingsById`) describe API calls triggered by transitions or components.
+Mappings include payload templates, response targets, and authentication configuration.

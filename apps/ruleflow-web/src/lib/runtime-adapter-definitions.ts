@@ -7,7 +7,7 @@ export type RuntimeAdapterId =
   | 'company';
 
 export type RuntimeAdapterDefinition = {
-  id: RuntimeAdapterId | (string & {});
+  id: RuntimeAdapterId | string;
   prefix: string;
   defaultEnabled: boolean;
   external: boolean;
@@ -84,4 +84,3 @@ export function externalAdapterPrefixesForIds(
     .filter((definition) => definition.external && enabled.has(definition.id))
     .map((definition) => definition.prefix);
 }
-

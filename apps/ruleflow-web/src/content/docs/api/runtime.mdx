@@ -1,0 +1,24 @@
+# Runtime API
+
+ECR exposes REST endpoints that your host apps and automation pipelines can call to inspect bundles, run flows, and enforce governance.
+
+## Session & feature toggles
+- `GET /api/session`: returns the authenticated user, locale, and tenant.
+- `GET /api/runtime-flags`: feature flags that gate preview tooling.
+- `GET /api/runtime-adapters`: available render adapters that Builder can wire into schemas.
+
+## Configuration lifecycle
+- `POST /api/config-packages`: creates a draft package (used by the **New Config** modal).
+- `GET /api/config-versions/[versionId]`: reads bundle metadata, UI schema, flow, and rules.
+- `PATCH /api/config-versions/[versionId]/ui-schema`: invoked by the Builder **Save** button.
+- `POST /api/config-versions/[versionId]/submit-review`: moves a config from `DRAFT` to `REVIEW`.
+- `POST /api/config-versions/[versionId]/promote`: approves and activates a version while deprecating the previous one.
+- `POST /api/config-versions/[versionId]/rollback`: reverts an active version to a prior release.
+
+## Governance & telemetry
+- `GET /api/approvals/[approvalId]/approve` and `request-changes`: governance actions surfaced in Console.
+- `GET /api/execution-traces`: fetches traces emitted during Playground simulations.
+- `POST /api/gitops/export` and `POST /api/gitops/import`: exchange bundles through GitOps packages.
+- `GET /api/kill-switches`: list enforced kill switches that block runtime operations.
+- `POST /api/policies/evaluate`: evaluate policy rules (used internally by the Rules page).
+- `GET /api/system/health` and `POST /api/system/reset`: probing endpoints for health checks and local resets.

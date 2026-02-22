@@ -35,6 +35,7 @@ import { apiPost, downloadFromApi } from '@/lib/demo/api-client';
 import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
 import { useOnboarding } from '@/components/onboarding/onboarding-provider';
 import { useRuntimeAdapters } from '@/lib/use-runtime-adapters';
+import { requestTourRestart } from '@/lib/tour';
 
 const navItems = [
   { href: '/console', label: 'Admin Console', icon: LayoutDashboard },
@@ -42,7 +43,9 @@ const navItems = [
   { href: '/builder', label: 'Builder', icon: Boxes },
   { href: '/playground', label: 'Playground', icon: Sparkles },
   { href: '/samples', label: 'Samples', icon: PackageOpen },
+  { href: '/examples', label: 'Examples', icon: Sparkles },
   { href: '/component-registry', label: 'Component Registry', icon: Plug },
+  { href: '/docs/getting-started/quick-start', label: 'Quick Start', icon: Sparkles },
   { href: '/docs', label: 'Documentation', icon: BookOpen },
   { href: '/integrations', label: 'Integration Hub', icon: Plug },
 ];
@@ -71,6 +74,7 @@ function helpHrefForPathname(pathname: string): string {
   if (pathname.startsWith('/console')) return '/docs/tutorial-console';
   if (pathname.startsWith('/component-registry')) return '/docs/tutorial-component-registry';
   if (pathname.startsWith('/integrations')) return '/docs/tutorial-integrations';
+  if (pathname.startsWith('/examples')) return '/docs/quickstart';
   if (pathname.startsWith('/system/templates')) return '/docs/tutorial-template-library';
   if (pathname.startsWith('/system/adapters-vue')) return '/docs/tutorial-integrations';
   if (pathname.startsWith('/system/adapters-angular')) return '/docs/tutorial-integrations';
@@ -86,6 +90,7 @@ function getPageTitle(pathname: string, tab?: string | null) {
 
   if (pathname.startsWith('/docs')) return 'Documentation';
   if (pathname.startsWith('/samples')) return 'Samples';
+  if (pathname.startsWith('/examples')) return 'Examples';
   if (pathname.startsWith('/component-registry')) return 'Component Registry';
   if (pathname.startsWith('/integrations')) return 'Integration Hub';
   if (pathname.startsWith('/builder/flow')) return 'Flow Builder';
@@ -117,6 +122,7 @@ function getScreenPreset(pathname: string): 'console' | 'builder' | 'playground'
   if (pathname.startsWith('/console') || pathname.startsWith('/branding')) return 'console';
   if (pathname.startsWith('/builder') || pathname.startsWith('/component-registry')) return 'builder';
   if (pathname.startsWith('/playground') || pathname.startsWith('/samples')) return 'playground';
+  if (pathname.startsWith('/examples')) return 'playground';
   if (pathname.startsWith('/docs') || pathname.startsWith('/integrations')) return 'docs';
   if (pathname.startsWith('/system')) return 'system';
   return 'default';
@@ -145,6 +151,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const helpHref = useMemo(() => helpHrefForPathname(pathname), [pathname]);
   const screenPreset = useMemo(() => getScreenPreset(pathname), [pathname]);
   const activeVersionId = onboarding.state.activeVersionId;
+  const restartTour = () => {
+    requestTourRestart();
+    toast({
+      variant: 'info',
+      title: 'Tour reset',
+      description: 'The guided tour will reappear the next time you open the builder.',
+    });
+  };
 
   useEffect(() => {
     setClientReady(true);
@@ -335,6 +349,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link className={cn('pf-button', 'pf-size-sm', 'pf-button--outline', 'pf-button--neutral')} href={helpHref}>
               Help
             </Link>
+            <PFButton variant="outline" intent="neutral" size="sm" onClick={restartTour}>
+              Restart Tour
+            </PFButton>
             <PFButton variant="outline" intent="neutral" size="sm" onClick={onboarding.open}>
               Get Started
             </PFButton>
@@ -384,14 +401,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <h1 className={styles.pageTitle}>{pageTitle}</h1>
               </div>
               <div className={styles.mobileActions}>
-                <ThemeToggle />
-                <DensityToggle />
-                <Link className={cn('pf-button', 'pf-size-sm', 'pf-button--outline', 'pf-button--neutral')} href={helpHref}>
-                  Help
-                </Link>
-                <PFButton size="sm" onClick={() => setNewConfigOpen(true)}>
-                  New
-                </PFButton>
+              <ThemeToggle />
+              <DensityToggle />
+              <Link className={cn('pf-button', 'pf-size-sm', 'pf-button--outline', 'pf-button--neutral')} href={helpHref}>
+                Help
+              </Link>
+              <PFButton variant="outline" intent="neutral" size="sm" onClick={restartTour}>
+                Restart Tour
+              </PFButton>
+              <PFButton size="sm" onClick={() => setNewConfigOpen(true)}>
+                New
+              </PFButton>
               </div>
             </div>
             {children}
