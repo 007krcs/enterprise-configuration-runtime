@@ -3,18 +3,17 @@ import type { ExampleId } from '@/lib/examples';
 import { exampleCatalog } from '@/lib/examples';
 import styles from './example-view.module.css';
 
-type ExamplePageProps = {
-  params: {
-    exampleId: ExampleId;
-  };
-};
-
 export function generateStaticParams() {
   return exampleCatalog.map((example) => ({ exampleId: example.id }));
 }
 
-export default function ExampleJsonPage({ params }: ExamplePageProps) {
-  const example = exampleCatalog.find((item) => item.id === params.exampleId);
+export default async function ExampleJsonPage({
+  params,
+}: {
+  params: Promise<{ exampleId: ExampleId }>;
+}) {
+  const { exampleId } = await params;
+  const example = exampleCatalog.find((item) => item.id === exampleId);
   if (!example) {
     return (
       <div className={styles.shell}>

@@ -13,19 +13,6 @@
   color: #f8fafc;
 }
 
-.kicker {
-  text-transform: uppercase;
-  letter-spacing: 0.6em;
-  font-size: 0.7rem;
-  color: rgba(226, 232, 240, 0.6);
-  margin: 0;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(2rem, 4vw, 2.8rem);
-}
-
 .message {
   max-width: 540px;
   color: rgba(226, 232, 240, 0.8);
