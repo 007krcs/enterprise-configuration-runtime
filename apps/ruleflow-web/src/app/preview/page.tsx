@@ -14,8 +14,6 @@ type PreviewSearchParams = {
 export default async function PreviewPage({ searchParams }: { searchParams: Promise<PreviewSearchParams> }) {
   const { versionId } = await searchParams;
   const snapshot = await getConsoleSnapshot();
-  const requested = versionId ? snapshot.versions.find((v: { id: string }) => v.id === versionId) ?? null : null;
-  const defaultVersion =
-    requested ?? snapshot.versions.find((v: { status: string }) => v.status === 'ACTIVE') ?? snapshot.versions[0] ?? null;
-  return <Playground initialSnapshot={snapshot} initialVersion={defaultVersion} />;
+  const requestedVersion = versionId ? snapshot.versions.find((v: { id: string }) => v.id === versionId) ?? null : null;
+  return <Playground initialSnapshot={snapshot} initialVersion={requestedVersion} />;
 }

@@ -7,8 +7,9 @@ import { RenderPage } from '@platform/react-renderer';
 import { createProviderFromBundles, EXAMPLE_TENANT_BUNDLES, PLATFORM_BUNDLES } from '@platform/i18n';
 import type { ConfigBundle } from '@/lib/demo/types';
 import { normalizeUiPages } from '@/lib/demo/ui-pages';
-import { exampleCatalog, loadExampleBundle, applyBundleToBuilder } from '@/lib/examples';
+import { exampleCatalog, loadExampleBundle } from '@/lib/examples';
 import type { ExampleDefinition } from '@/lib/examples';
+import { useProjectStore } from '@/state/projectStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -127,6 +128,7 @@ const previewData: Record<string, JSONValue> = {
 export default function ExamplesPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const loadExample = useProjectStore((state) => state.loadExample);
   const [busyAction, setBusyAction] = useState<{ exampleId: string; action: ExampleAction } | null>(null);
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
 
@@ -176,9 +178,8 @@ export default function ExamplesPage() {
   const handleOpenBuilder = async (example: ExampleDefinition) => {
     setBusyAction({ exampleId: example.id, action: 'builder' });
     try {
-      const bundle = await loadExampleBundle(example.id);
-      applyBundleToBuilder(bundle);
-      router.push('/builder');
+      await loadExample(example.id);
+      router.push(`/builder?example=${encodeURIComponent(example.id)}`);
     } catch (error) {
       toast({
         variant: 'error',

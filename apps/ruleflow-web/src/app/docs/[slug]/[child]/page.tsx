@@ -14,7 +14,40 @@ export default async function NestedDocPage({ params }: { params: Promise<Nested
   const { slug, child } = await params;
   const docSlug = `${slug}/${child}`;
   const doc = docsBySlug[docSlug];
-  if (!doc) return notFound();
+  if (!doc && slug !== 'examples') return notFound();
+
+  if (!doc && slug === 'examples') {
+    return (
+      <div className={styles.layout}>
+        <Card>
+          <CardContent>
+            <div className={styles.sidebarLinks}>
+              {docs.map((item) => (
+                <Link key={item.slug} className={styles.sidebarLink} href={`/docs/${item.slug}`}>
+                  {item.title}
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className={styles.articleWrap}>
+            <article className="rfProse">
+              <h1>Example doc coming soon</h1>
+              <p>
+                We do not have a dedicated doc page for <code>{child}</code> yet.
+              </p>
+              <p>
+                You can still explore working bundles in <Link href="/examples">Examples</Link>.
+              </p>
+            </article>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const resolvedDoc = doc!;
 
   return (
     <div className={styles.layout}>
@@ -24,7 +57,7 @@ export default async function NestedDocPage({ params }: { params: Promise<Nested
             {docs.map((item) => (
               <Link
                 key={item.slug}
-                className={item.slug === doc.slug ? `${styles.sidebarLink} ${styles.sidebarActive}` : styles.sidebarLink}
+                className={item.slug === resolvedDoc.slug ? `${styles.sidebarLink} ${styles.sidebarActive}` : styles.sidebarLink}
                 href={`/docs/${item.slug}`}
               >
                 {item.title}
@@ -36,7 +69,7 @@ export default async function NestedDocPage({ params }: { params: Promise<Nested
       <Card>
         <CardContent className={styles.articleWrap}>
           <article className="rfProse">
-            <DocRenderer slug={doc.slug} />
+            <DocRenderer slug={resolvedDoc.slug} />
           </article>
         </CardContent>
       </Card>

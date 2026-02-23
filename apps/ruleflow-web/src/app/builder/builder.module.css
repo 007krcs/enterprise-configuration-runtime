@@ -226,7 +226,7 @@
   gap: var(--rf-space-5);
   padding: var(--rf-space-5);
   width: 100%;
-  height: 100%;
+  height: auto;
   min-height: 0;
   flex: 1 1 auto;
 }

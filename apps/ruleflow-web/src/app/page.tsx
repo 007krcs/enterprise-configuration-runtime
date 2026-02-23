@@ -131,7 +131,7 @@ const docsLinks = [
   {
     title: 'API Reference',
     description: 'Runtime + builder APIs for loading bundles and exporting GitOps.',
-    href: '/docs/api',
+    href: '/docs/api/runtime',
     icon: Terminal,
   },
 ];
@@ -142,7 +142,7 @@ const footerColumns = [
     links: [
       { label: 'Quick Start', href: '/docs/getting-started/quick-start' },
       { label: 'Concepts', href: '/docs/concepts' },
-      { label: 'API Reference', href: '/docs/api' },
+      { label: 'API Reference', href: '/docs/api/runtime' },
     ],
   },
   {

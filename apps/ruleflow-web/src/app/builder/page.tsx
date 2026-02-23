@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createUISchema } from '@platform/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,14 +12,20 @@ import { useBuilderStore } from './_domain/builderStore';
 import styles from './builder.module.css';
 
 export default function BuilderHomePage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const versionId = searchParams.get('versionId')?.trim() ?? '';
+  const exampleId = searchParams.get('example')?.trim() ?? '';
   const { toast } = useToast();
 
+  const bundle = useBuilderStore((state) => state.bundle);
+  const hasHydratedFromStorage = useBuilderStore((state) => state.hasHydratedFromStorage);
   const screens = useBuilderStore((state) => state.screens);
   const addScreenToStore = useBuilderStore((state) => state.addScreen);
+  const loadExample = useBuilderStore((state) => state.loadExample);
   const loadBundleFromUrl = useBuilderStore((state) => state.loadBundleFromUrl);
   const lastLoadedVersionRef = useRef<string | null>(null);
+  const lastLoadedExampleRef = useRef<string | null>(null);
 
   const [newScreenId, setNewScreenId] = useState('');
   const [bundleLoading, setBundleLoading] = useState(false);
@@ -51,6 +57,32 @@ export default function BuilderHomePage() {
     };
   }, [loadBundleFromUrl, toast, versionId]);
 
+  useEffect(() => {
+    if (versionId) return;
+    if (!exampleId) return;
+    if (lastLoadedExampleRef.current === exampleId) return;
+    let cancelled = false;
+    lastLoadedExampleRef.current = exampleId;
+    setBundleLoading(true);
+    setBundleError(null);
+    void loadExample(exampleId).catch((error) => {
+      if (cancelled) return;
+      const message = error instanceof Error ? error.message : String(error);
+      setBundleError(message);
+      toast({
+        variant: 'error',
+        title: 'Failed to load example bundle',
+        description: message,
+      });
+    }).finally(() => {
+      if (cancelled) return;
+      setBundleLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [exampleId, loadExample, toast, versionId]);
+
   const addScreen = () => {
     const id = newScreenId.trim() || `screen-${screenEntries.length + 1}`;
     if (screens[id]) return;
@@ -59,22 +91,58 @@ export default function BuilderHomePage() {
   };
 
   const retryLoad = () => {
-    if (!versionId) return;
-    lastLoadedVersionRef.current = versionId;
+    if (!versionId && !exampleId) return;
     setBundleError(null);
     setBundleLoading(true);
-    void loadBundleFromUrl(versionId).catch((error) => {
+    const loader = versionId ? loadBundleFromUrl(versionId) : loadExample(exampleId);
+    if (versionId) {
+      lastLoadedVersionRef.current = versionId;
+    } else {
+      lastLoadedExampleRef.current = exampleId;
+    }
+    void loader.catch((error) => {
       const message = error instanceof Error ? error.message : String(error);
       setBundleError(message);
       toast({
         variant: 'error',
-        title: 'Failed to load config version',
+        title: versionId ? 'Failed to load config version' : 'Failed to load example bundle',
         description: message,
       });
     }).finally(() => {
       setBundleLoading(false);
     });
   };
+
+  if (!hasHydratedFromStorage && !bundle) {
+    return (
+      <div className={styles.builderHome}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Loading builder project...</CardTitle>
+          </CardHeader>
+          <CardContent>Hydrating your last project from local storage.</CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!bundleLoading && !bundleError && !bundle) {
+    return (
+      <div className={styles.builderHome}>
+        <Card>
+          <CardHeader>
+            <CardTitle>No project loaded</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className={styles.empty}>Start from a curated sample to open UI, flow, and rules in Builder.</p>
+            <Button size="sm" onClick={() => router.push('/examples')}>
+              Go to Examples
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.builderHome}>

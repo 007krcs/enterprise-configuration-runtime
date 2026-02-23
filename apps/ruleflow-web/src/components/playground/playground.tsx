@@ -92,6 +92,64 @@ function isExampleId(value: string): value is ExampleId {
   return exampleCatalog.some((example) => example.id === value);
 }
 
+type PreparedPreviewBundle = {
+  bundle: ConfigVersion['bundle'];
+  fallbackScreenId: string | null;
+};
+
+function prepareBundleForPreview(
+  bundle: ConfigVersion['bundle'],
+  preferredScreenId: string | null,
+): PreparedPreviewBundle {
+  const normalizedPages = normalizeUiPages({
+    uiSchema: bundle.uiSchema,
+    uiSchemasById: bundle.uiSchemasById,
+    activeUiPageId: bundle.activeUiPageId,
+    flowSchema: bundle.flowSchema,
+  });
+  const pageIds = Object.keys(normalizedPages.uiSchemasById);
+  if (pageIds.length === 0) {
+    throw new Error('Bundle has no screens. Open Builder and add at least one screen.');
+  }
+
+  const fallbackScreenId =
+    (preferredScreenId && normalizedPages.uiSchemasById[preferredScreenId] ? preferredScreenId : null) ??
+    normalizedPages.activeUiPageId ??
+    pageIds[0] ??
+    null;
+  if (!fallbackScreenId) {
+    throw new Error('Unable to determine the preview screen for this bundle.');
+  }
+
+  const reboundFlow =
+    rebindFlowSchemaToAvailablePages(bundle.flowSchema, normalizedPages.uiSchemasById, fallbackScreenId) ??
+    bundle.flowSchema;
+
+  return {
+    bundle: {
+      ...bundle,
+      uiSchema: normalizedPages.uiSchemasById[fallbackScreenId] ?? bundle.uiSchema,
+      uiSchemasById: normalizedPages.uiSchemasById,
+      activeUiPageId: fallbackScreenId,
+      flowSchema: reboundFlow,
+    },
+    fallbackScreenId,
+  };
+}
+
+function toErrorPayload(error: unknown): { message: string; stack: string | null } {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      stack: error.stack ?? null,
+    };
+  }
+  return {
+    message: String(error),
+    stack: null,
+  };
+}
+
 function OperandView({ operand }: { operand: ExplainOperand }) {
   if (operand.kind === 'path') {
     return (
@@ -212,9 +270,12 @@ export function Playground({
   const searchParams = useSearchParams();
   const isPreviewRoute = pathname.startsWith('/preview');
   const onboarding = useOnboarding();
-  const projectBundle = useProjectStore((state) => state.bundleJson);
+  const projectBundle = useProjectStore((state) => state.bundle ?? state.bundleJson);
+  const hasHydratedFromStorage = useProjectStore((state) => state.hasHydratedFromStorage);
+  const hydrateProjectStore = useProjectStore((state) => state.hydrateFromStorage);
   const selectedScreenId = useProjectStore((state) => state.activeScreenId);
   const loadBundleJson = useProjectStore((state) => state.loadBundleJson);
+  const setBundle = useProjectStore((state) => state.setBundle);
   const loadBundleFromUrlParams = useProjectStore((state) => state.loadBundleFromUrlParams);
   const setSelectedScreen = useProjectStore((state) => state.setSelectedScreen);
   const setPreviewMode = useProjectStore((state) => state.setPreviewMode);
@@ -237,6 +298,7 @@ export function Playground({
   const [exampleError, setExampleError] = useState<string | null>(null);
   const [previewBundleLoading, setPreviewBundleLoading] = useState(false);
   const [previewBundleError, setPreviewBundleError] = useState<string | null>(null);
+  const [previewBundleErrorStack, setPreviewBundleErrorStack] = useState<string | null>(null);
   const [previewReloadTick, setPreviewReloadTick] = useState(0);
 
   const [stateId, setStateId] = useState<string>(() => {
@@ -276,13 +338,20 @@ export function Playground({
   const screenParam = normalizeSearchParam(searchParams.get('screen'));
 
   useEffect(() => {
+    if (!isPreviewRoute) return;
+    hydrateProjectStore();
+  }, [hydrateProjectStore, isPreviewRoute]);
+
+  useEffect(() => {
     if (!initialVersion?.bundle) return;
+    if (isPreviewRoute) return;
     loadBundleJson(initialVersion.bundle);
-  }, [initialVersion?.bundle, loadBundleJson]);
+  }, [initialVersion?.bundle, isPreviewRoute, loadBundleJson]);
 
   useEffect(() => {
     if (!isPreviewRoute) {
       setPreviewBundleError(null);
+      setPreviewBundleErrorStack(null);
       setPreviewBundleLoading(false);
       return;
     }
@@ -291,16 +360,24 @@ export function Playground({
     const syncPreviewFromParams = async () => {
       setPreviewBundleLoading(true);
       setPreviewBundleError(null);
+      setPreviewBundleErrorStack(null);
       try {
+        hydrateProjectStore();
         await loadBundleFromUrlParams(searchParams);
         if (cancelled) return;
 
-        const loadedBundle = useProjectStore.getState().bundleJson;
+        const loadedBundle = useProjectStore.getState().bundle ?? useProjectStore.getState().bundleJson;
         if (loadedBundle) {
-          setRuntimeBundle(loadedBundle);
-          setLastLoadedBundle(loadedBundle);
-          setEditorText(JSON.stringify(loadedBundle, null, 2));
+          const prepared = prepareBundleForPreview(loadedBundle, screenParam);
+          setRuntimeBundle(prepared.bundle);
+          setLastLoadedBundle(prepared.bundle);
+          setEditorText(JSON.stringify(prepared.bundle, null, 2));
           setEditorError(null);
+          if (prepared.fallbackScreenId) {
+            setSelectedScreen(prepared.fallbackScreenId);
+          }
+        } else {
+          setRuntimeBundle(null);
         }
 
         const exampleFromUrl = normalizeSearchParam(searchParams.get('example'));
@@ -324,8 +401,9 @@ export function Playground({
         setTrace(null);
       } catch (error) {
         if (cancelled) return;
-        const message = error instanceof Error ? error.message : String(error);
+        const { message, stack } = toErrorPayload(error);
         setPreviewBundleError(message);
+        setPreviewBundleErrorStack(stack);
         toast({
           variant: 'error',
           title: 'Failed to load preview bundle',
@@ -342,7 +420,7 @@ export function Playground({
     return () => {
       cancelled = true;
     };
-  }, [isPreviewRoute, loadBundleFromUrlParams, previewReloadTick, previewSearchKey, searchParams, toast]);
+  }, [hydrateProjectStore, isPreviewRoute, loadBundleFromUrlParams, previewReloadTick, previewSearchKey, screenParam, searchParams, setSelectedScreen, toast]);
 
   useEffect(() => {
     if (!selectedVersionId) return;
@@ -383,6 +461,13 @@ export function Playground({
   }, [activeVersionId, selectedVersionId, setActiveVersionId]);
 
   const baseBundle = projectBundle ?? runtimeBundle ?? version?.bundle ?? null;
+  const showPreviewNoBundleGuard =
+    isPreviewRoute &&
+    hasHydratedFromStorage &&
+    !previewBundleLoading &&
+    !previewBundleError &&
+    !baseBundle;
+  const showRuntimePanels = !isPreviewRoute || Boolean(baseBundle);
   const flowRaw: FlowSchema | null = baseBundle?.flowSchema ?? null;
   const rules: Rule[] = baseBundle?.rules?.rules ?? [];
   const apiMappingsById: Record<string, ApiMapping> = baseBundle?.apiMappingsById ?? {};
@@ -618,21 +703,12 @@ export function Playground({
   const applyEditorChanges = () => {
     try {
       const parsed = JSON.parse(editorText) as ConfigVersion['bundle'];
-      const normalizedPages = normalizeUiPages({
-        uiSchema: parsed.uiSchema,
-        uiSchemasById: parsed.uiSchemasById,
-        activeUiPageId: parsed.activeUiPageId,
-        flowSchema: parsed.flowSchema,
-      });
-      const fallbackScreenId =
-        screenParam ??
-        normalizedPages.activeUiPageId ??
-        Object.keys(normalizedPages.uiSchemasById)[0] ??
-        null;
+      const prepared = prepareBundleForPreview(parsed, screenParam);
 
-      setRuntimeBundle(parsed);
-      setLastLoadedBundle(parsed);
-      loadBundleJson(parsed);
+      setRuntimeBundle(prepared.bundle);
+      setLastLoadedBundle(prepared.bundle);
+      setBundle(prepared.bundle, 'import');
+      const fallbackScreenId = prepared.fallbackScreenId;
       if (fallbackScreenId) {
         setSelectedScreen(fallbackScreenId);
       }
@@ -651,7 +727,7 @@ export function Playground({
 
       const draftId = globalThis.crypto?.randomUUID?.() ?? `draft-${Date.now()}`;
       try {
-        window.localStorage.setItem(`${PREVIEW_DRAFT_PREFIX}${draftId}`, JSON.stringify(parsed));
+        window.localStorage.setItem(`${PREVIEW_DRAFT_PREFIX}${draftId}`, JSON.stringify(prepared.bundle));
         next.set('draftId', draftId);
       } catch {
         // Ignore storage failures and rely on query-backed sources.
@@ -664,7 +740,8 @@ export function Playground({
         router.push(target);
       }
     } catch (error) {
-      setEditorError(error instanceof Error ? error.message : 'Unable to parse JSON');
+      const { message } = toErrorPayload(error);
+      setEditorError(message || 'Unable to parse JSON');
     }
   };
 
@@ -747,6 +824,9 @@ export function Playground({
             </CardHeader>
             <CardContent className={styles.stack}>
               <p className={styles.error}>{previewBundleError}</p>
+              {process.env.NODE_ENV === 'development' && previewBundleErrorStack ? (
+                <pre className={styles.errorStack}>{previewBundleErrorStack}</pre>
+              ) : null}
               <Button size="sm" variant="outline" onClick={() => setPreviewReloadTick((tick) => tick + 1)}>
                 Retry
               </Button>
@@ -754,6 +834,27 @@ export function Playground({
           </Card>
         ) : null}
 
+        {showPreviewNoBundleGuard ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>No bundle loaded</CardTitle>
+            </CardHeader>
+            <CardContent className={styles.stack}>
+              <p className={styles.emptyText}>Load an example or open Builder to apply a bundle before previewing.</p>
+              <div className={styles.actions}>
+                <Button size="sm" onClick={() => router.push('/examples')}>
+                  Open Examples
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => router.push('/builder')}>
+                  Open Builder
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {showRuntimePanels ? (
+          <>
         <Card className={styles.contextCard}>
           <CardHeader>
             <CardTitle>Context Simulator</CardTitle>
@@ -894,6 +995,8 @@ export function Playground({
             defaultExplain={searchParams.get('explain') === '1'}
           />
         </div>
+          </>
+        ) : null}
       </div>
     </div>
   );

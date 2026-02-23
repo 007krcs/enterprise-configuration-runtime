@@ -16,9 +16,23 @@ type QueryParamReader = {
   get: (name: string) => string | null;
 };
 
+type ProjectSource = 'blank' | 'example' | 'import';
+
+type PersistedBundleSnapshot = {
+  currentProjectId: string;
+  source: ProjectSource;
+  lastLoadedAt: number;
+  bundle: ConfigBundle;
+};
+
 const PREVIEW_DRAFT_PREFIX = 'ruleflow:preview:draft:';
+const PROJECT_BUNDLE_STORAGE_KEY = 'ecr.currentBundle.v1';
 
 type ProjectActions = {
+  hydrateFromStorage: () => void;
+  loadExample: (exampleId: string) => Promise<void>;
+  setBundle: (bundle: ConfigBundle, source: ProjectSource) => void;
+  clearBundle: () => void;
   addScreen: (id?: string, schema?: UISchema) => void;
   removeScreen: (id: string) => void;
   updateScreen: (id: string, schema: UISchema) => void;
@@ -37,6 +51,11 @@ type ProjectActions = {
 };
 
 type ProjectStoreState = BuilderState & {
+  currentProjectId: string;
+  bundle: ConfigBundle | null;
+  source: ProjectSource;
+  lastLoadedAt: number;
+  hasHydratedFromStorage: boolean;
   previewMode: boolean;
   loadedVersionId: string | null;
   bundleJson: ConfigBundle | null;
@@ -59,6 +78,11 @@ const initialState: ProjectStoreState = {
     status: 'draft',
     updatedAt: Date.now(),
   },
+  currentProjectId: '',
+  bundle: null,
+  source: 'blank',
+  lastLoadedAt: 0,
+  hasHydratedFromStorage: false,
   previewMode: false,
   loadedVersionId: null,
   bundleJson: null,
@@ -81,6 +105,76 @@ function cloneInitialState(): ProjectStoreState {
 
 export const useProjectStore = create<ProjectStore>((set, get) => ({
   ...cloneInitialState(),
+
+  hydrateFromStorage: () => {
+    if (get().hasHydratedFromStorage) return;
+    const snapshot = readPersistedBundleSnapshot();
+    if (!snapshot?.bundle) {
+      applyDraft(set, (draft) => {
+        draft.hasHydratedFromStorage = true;
+      });
+      return;
+    }
+
+    applyDraft(set, (draft) => {
+      applyBundleToDraft(draft, snapshot.bundle, {
+        currentProjectId: snapshot.currentProjectId || `restored:${snapshot.lastLoadedAt || Date.now()}`,
+        source: snapshot.source,
+        lastLoadedAt: snapshot.lastLoadedAt || Date.now(),
+        loadedVersionId: null,
+      });
+      draft.hasHydratedFromStorage = true;
+    });
+  },
+
+  loadExample: async (exampleId) => {
+    const normalizedExampleId = exampleId.trim();
+    if (!normalizedExampleId) {
+      get().clearBundle();
+      return;
+    }
+
+    const response = await fetch(`/examples/bundles/${encodeURIComponent(normalizedExampleId)}.json`, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`Unable to load example bundle (${response.status})`);
+    }
+
+    const bundle = (await response.json()) as ConfigBundle;
+    const loadedAt = Date.now();
+    applyDraft(set, (draft) => {
+      applyBundleToDraft(draft, bundle, {
+        currentProjectId: `example:${normalizedExampleId}`,
+        source: 'example',
+        lastLoadedAt: loadedAt,
+        loadedVersionId: null,
+      });
+    });
+    persistCurrentBundleSnapshot(get());
+  },
+
+  setBundle: (bundle, source) => {
+    const loadedAt = Date.now();
+    applyDraft(set, (draft) => {
+      applyBundleToDraft(draft, bundle, {
+        currentProjectId: `${source}:${loadedAt}`,
+        source,
+        lastLoadedAt: loadedAt,
+        loadedVersionId: null,
+      });
+    });
+    persistCurrentBundleSnapshot(get());
+  },
+
+  clearBundle: () => {
+    set({
+      ...cloneInitialState(),
+      source: 'blank',
+      currentProjectId: '',
+      lastLoadedAt: Date.now(),
+      hasHydratedFromStorage: true,
+    });
+    clearPersistedBundleSnapshot();
+  },
 
   addScreen: (id, schema) =>
     applyDraft(set, (draft) => {
@@ -161,7 +255,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   loadBundleFromUrl: async (versionId) => {
     const targetVersionId = versionId.trim();
     if (!targetVersionId) {
-      get().resetProject();
+      get().clearBundle();
       return;
     }
 
@@ -178,10 +272,16 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       throw new Error(payload.error);
     }
 
-    get().loadBundleJson(payload.version.bundle);
+    const loadedAt = Date.now();
     applyDraft(set, (draft) => {
-      draft.loadedVersionId = targetVersionId;
+      applyBundleToDraft(draft, payload.version.bundle, {
+        currentProjectId: `version:${targetVersionId}`,
+        source: 'import',
+        lastLoadedAt: loadedAt,
+        loadedVersionId: targetVersionId,
+      });
     });
+    persistCurrentBundleSnapshot(get());
   },
 
   loadBundleFromUrlParams: async (params) => {
@@ -196,21 +296,18 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       if (!draftBundle) {
         throw new Error('Preview draft was not found. Re-apply preview from the editor.');
       }
-      get().loadBundleJson(draftBundle);
+      const loadedAt = Date.now();
       applyDraft(set, (draft) => {
-        draft.loadedVersionId = null;
+        applyBundleToDraft(draft, draftBundle, {
+          currentProjectId: `draft:${draftId}`,
+          source: 'import',
+          lastLoadedAt: loadedAt,
+          loadedVersionId: null,
+        });
       });
+      persistCurrentBundleSnapshot(get());
     } else if (exampleId) {
-      const response = await fetch(`/examples/bundles/${encodeURIComponent(exampleId)}.json`, { cache: 'no-store' });
-      if (!response.ok) {
-        throw new Error(`Unable to load example bundle (${response.status})`);
-      }
-
-      const bundle = (await response.json()) as ConfigBundle;
-      get().loadBundleJson(bundle);
-      applyDraft(set, (draft) => {
-        draft.loadedVersionId = null;
-      });
+      await get().loadExample(exampleId);
     } else if (versionId) {
       await get().loadBundleFromUrl(versionId);
     }
@@ -227,43 +324,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }
   },
 
-  loadBundleJson: (bundle) =>
-    applyDraft(set, (draft) => {
-      const normalized = normalizeUiPages({
-        uiSchema: bundle.uiSchema,
-        uiSchemasById: bundle.uiSchemasById,
-        activeUiPageId: bundle.activeUiPageId,
-        flowSchema: bundle.flowSchema,
-      });
-
-      const flowSchema =
-        rebindFlowSchemaToAvailablePages(bundle.flowSchema, normalized.uiSchemasById, normalized.activeUiPageId) ??
-        bundle.flowSchema ??
-        createEmptyFlowSchema();
-
-      draft.screens = normalized.uiSchemasById;
-      draft.activeScreenId = normalized.activeUiPageId;
-      draft.flow = {
-        ...draft.flow,
-        startNodeId: flowSchema.initialState ?? Object.keys(flowSchema.states ?? {})[0] ?? null,
-        nodes: buildFlowNodes(flowSchema),
-        edges: buildFlowEdges(flowSchema),
-        schema: flowSchema,
-      };
-      draft.rules = toRulesRecord(bundle.rules?.rules ?? []);
-      draft.metadata.version = String(bundle.rules?.version ?? draft.metadata.version ?? '1.0.0');
-      draft.metadata.status = 'draft';
-      draft.metadata.updatedAt = Date.now();
-      draft.previewMode = false;
-      draft.loadedVersionId = null;
-      draft.bundleJson = {
-        ...bundle,
-        uiSchema: normalized.uiSchemasById[normalized.activeUiPageId] ?? bundle.uiSchema,
-        uiSchemasById: normalized.uiSchemasById,
-        activeUiPageId: normalized.activeUiPageId,
-        flowSchema,
-      };
-    }),
+  loadBundleJson: (bundle) => {
+    get().setBundle(bundle, 'import');
+  },
 
   setSelectedScreen: (screenId) =>
     applyDraft(set, (draft) => {
@@ -276,9 +339,59 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }),
 
   resetProject: () => {
-    set({ ...cloneInitialState() });
+    get().clearBundle();
   },
 }));
+
+type ApplyBundleOptions = {
+  currentProjectId: string;
+  source: ProjectSource;
+  lastLoadedAt: number;
+  loadedVersionId: string | null;
+};
+
+function applyBundleToDraft(draft: ProjectStoreState, bundle: ConfigBundle, options: ApplyBundleOptions): void {
+  const normalized = normalizeUiPages({
+    uiSchema: bundle.uiSchema,
+    uiSchemasById: bundle.uiSchemasById,
+    activeUiPageId: bundle.activeUiPageId,
+    flowSchema: bundle.flowSchema,
+  });
+
+  const flowSchema =
+    rebindFlowSchemaToAvailablePages(bundle.flowSchema, normalized.uiSchemasById, normalized.activeUiPageId) ??
+    bundle.flowSchema ??
+    createEmptyFlowSchema();
+
+  const normalizedBundle: ConfigBundle = {
+    ...bundle,
+    uiSchema: normalized.uiSchemasById[normalized.activeUiPageId] ?? bundle.uiSchema,
+    uiSchemasById: normalized.uiSchemasById,
+    activeUiPageId: normalized.activeUiPageId,
+    flowSchema,
+  };
+
+  draft.screens = normalized.uiSchemasById;
+  draft.activeScreenId = normalized.activeUiPageId;
+  draft.flow = {
+    ...draft.flow,
+    startNodeId: flowSchema.initialState ?? Object.keys(flowSchema.states ?? {})[0] ?? null,
+    nodes: buildFlowNodes(flowSchema),
+    edges: buildFlowEdges(flowSchema),
+    schema: flowSchema,
+  };
+  draft.rules = toRulesRecord(bundle.rules?.rules ?? []);
+  draft.metadata.version = String(bundle.rules?.version ?? draft.metadata.version ?? '1.0.0');
+  draft.metadata.status = 'draft';
+  draft.metadata.updatedAt = options.lastLoadedAt;
+  draft.previewMode = false;
+  draft.loadedVersionId = options.loadedVersionId;
+  draft.currentProjectId = options.currentProjectId;
+  draft.source = options.source;
+  draft.lastLoadedAt = options.lastLoadedAt;
+  draft.bundle = normalizedBundle;
+  draft.bundleJson = normalizedBundle;
+}
 
 function applyDraft(
   set: (
@@ -304,7 +417,7 @@ function upsertFlowState(schema: FlowSchema | undefined, id: string): FlowSchema
   return base;
 }
 
-function syncNodesFromSchema(flow: BuilderState['flow'], schema: FlowSchema) {
+function syncNodesFromSchema(flow: BuilderState['flow'], schema: FlowSchema): void {
   const ids = Object.keys(schema.states);
   flow.nodes = ids.map((id, idx) => ({
     id,
@@ -371,5 +484,56 @@ function readPreviewDraftBundle(draftId: string): ConfigBundle | null {
     return JSON.parse(raw) as ConfigBundle;
   } catch {
     return null;
+  }
+}
+
+function persistCurrentBundleSnapshot(state: ProjectStoreState): void {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    if (!state.bundle) {
+      window.localStorage.removeItem(PROJECT_BUNDLE_STORAGE_KEY);
+      return;
+    }
+    const snapshot: PersistedBundleSnapshot = {
+      currentProjectId: state.currentProjectId,
+      source: state.source,
+      lastLoadedAt: state.lastLoadedAt || Date.now(),
+      bundle: state.bundle,
+    };
+    window.localStorage.setItem(PROJECT_BUNDLE_STORAGE_KEY, JSON.stringify(snapshot));
+  } catch {
+    // ignore localStorage write failures
+  }
+}
+
+function readPersistedBundleSnapshot(): PersistedBundleSnapshot | null {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return null;
+    const raw = window.localStorage.getItem(PROJECT_BUNDLE_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<PersistedBundleSnapshot>;
+    if (!parsed || typeof parsed !== 'object' || !parsed.bundle || typeof parsed.bundle !== 'object') {
+      clearPersistedBundleSnapshot();
+      return null;
+    }
+    const source: ProjectSource = parsed.source === 'example' || parsed.source === 'import' ? parsed.source : 'blank';
+    return {
+      currentProjectId: typeof parsed.currentProjectId === 'string' ? parsed.currentProjectId : '',
+      source,
+      lastLoadedAt: typeof parsed.lastLoadedAt === 'number' ? parsed.lastLoadedAt : Date.now(),
+      bundle: parsed.bundle as ConfigBundle,
+    };
+  } catch {
+    clearPersistedBundleSnapshot();
+    return null;
+  }
+}
+
+function clearPersistedBundleSnapshot(): void {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    window.localStorage.removeItem(PROJECT_BUNDLE_STORAGE_KEY);
+  } catch {
+    // ignore localStorage write failures
   }
 }

@@ -37,6 +37,7 @@ import { useOnboarding } from '@/components/onboarding/onboarding-provider';
 import { useRuntimeAdapters } from '@/lib/use-runtime-adapters';
 import { requestTourRestart } from '@/lib/tour';
 import { useProjectStore } from '@/state/projectStore';
+import { DocsLayout } from '@/components/layout/docs-layout';
 
 const navItems = [
   { href: '/console', label: 'Admin Console', icon: LayoutDashboard },
@@ -65,6 +66,45 @@ const systemItems = [
   { href: '/system/health', label: 'Health', icon: HeartPulse },
   { href: '/system/roadmap', label: 'Roadmap', icon: ListTodo },
 ];
+
+const registeredShellRoutes = new Set([
+  '/console',
+  '/branding',
+  '/builder',
+  '/playground',
+  '/samples',
+  '/examples',
+  '/component-registry',
+  '/docs/getting-started/quick-start',
+  '/docs',
+  '/integrations',
+  '/system/templates',
+  '/system/theme-studio',
+  '/system/adapters-vue',
+  '/system/adapters-angular',
+  '/system/ui-kit',
+  '/system/translations',
+  '/system/layout-check',
+  '/system/health',
+  '/system/roadmap',
+]);
+
+function normalizeRoutePath(href: string): string {
+  const [path] = href.split('?');
+  if (!path || path === '/') return '/';
+  return path.endsWith('/') ? path.slice(0, -1) : path;
+}
+
+function validateShellNavRoutes(): void {
+  if (process.env.NODE_ENV !== 'development') return;
+  const allNavRoutes = [...navItems, ...systemItems].map((item) => normalizeRoutePath(item.href));
+  const invalidRoutes = Array.from(new Set(allNavRoutes.filter((route) => !registeredShellRoutes.has(route))));
+
+  if (invalidRoutes.length > 0) {
+    // eslint-disable-next-line no-console
+    console.warn(`[AppShell] Unregistered navigation routes: ${invalidRoutes.join(', ')}`);
+  }
+}
 
 function helpHrefForPathname(pathname: string): string {
   if (pathname.startsWith('/builder/flow')) return '/docs/tutorial-flow-editor';
@@ -149,12 +189,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [commandQuery, setCommandQuery] = useState('');
   const { toast } = useToast();
   const resetProject = useProjectStore((state) => state.resetProject);
+  const hydrateProjectStore = useProjectStore((state) => state.hydrateFromStorage);
 
   const tab = searchParams.get('tab');
   const pageTitle = useMemo(() => getPageTitle(pathname, tab), [pathname, tab]);
   const helpHref = useMemo(() => helpHrefForPathname(pathname), [pathname]);
   const screenPreset = useMemo(() => getScreenPreset(pathname), [pathname]);
   const isLanding = pathname === '/';
+  const isDocsRoute = pathname.startsWith('/docs');
   const showNavigation = !isLanding;
   const activeVersionId = onboarding.state.activeVersionId;
   const restartTour = () => {
@@ -165,6 +207,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       description: 'The guided tour will reappear the next time you open the builder.',
     });
   };
+
+  useEffect(() => {
+    hydrateProjectStore();
+  }, [hydrateProjectStore]);
+
+  useEffect(() => {
+    validateShellNavRoutes();
+  }, []);
 
   useEffect(() => {
     setClientReady(true);
@@ -320,6 +370,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (!q) return commandActions;
     return commandActions.filter((action) => action.label.toLowerCase().includes(q));
   }, [commandActions, commandQuery]);
+
+  if (isDocsRoute) {
+    return <DocsLayout>{children}</DocsLayout>;
+  }
 
   return (
     <div className={cn(styles.shell, 'rf-app-shell', isLanding && styles.shellLanding)} data-pf-screen={screenPreset}>

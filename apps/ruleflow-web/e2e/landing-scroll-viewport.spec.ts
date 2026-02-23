@@ -7,7 +7,7 @@ const viewports = [
 ];
 
 for (const viewport of viewports) {
-  test(`landing scroll reaches footer on ${viewport.name}`, async ({ page }) => {
+  test(`landing scroll reaches footer on ${viewport.name}`, async ({ page, baseURL }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.addInitScript(() => {
       window.localStorage.setItem(
@@ -15,7 +15,12 @@ for (const viewport of viewports) {
         JSON.stringify({ open: false, dismissed: true, activeVersionId: null, steps: {} }),
       );
     });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    const effectiveBaseUrl =
+      baseURL ??
+      process.env.PLAYWRIGHT_BASE_URL ??
+      process.env.BASE_URL ??
+      'http://localhost:3000';
+    await page.goto(new URL('/', effectiveBaseUrl).toString(), { waitUntil: 'networkidle' });
 
     const onboardingDialog = page.getByRole('dialog', { name: 'Getting Started' });
     if (await onboardingDialog.isVisible()) {
