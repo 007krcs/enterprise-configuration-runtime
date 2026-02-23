@@ -76,6 +76,7 @@
 
 .addRow {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -92,8 +93,10 @@
   border-radius: 10px;
   background: #f9fbff;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 10px;
 }
 
 .cardTitle {
@@ -114,4 +117,18 @@
 
 .empty {
   color: #4a5a73;
+}
+
+@media (max-width: 640px) {
+  .wrapper {
+    padding: 14px;
+  }
+
+  .title {
+    font-size: clamp(1.3rem, 7vw, 1.6rem);
+  }
+
+  .addRow > :first-child {
+    flex: 1 1 100%;
+  }
 }

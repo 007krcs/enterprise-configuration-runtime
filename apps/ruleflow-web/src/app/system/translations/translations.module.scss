@@ -71,6 +71,10 @@
   gap: var(--rf-space-2);
 }
 
+.keyCell code {
+  overflow-wrap: anywhere;
+}
+
 @media (min-width: 960px) {
   .controls {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -86,3 +90,12 @@
   }
 }
 
+@media (max-width: 959px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .row button {
+    justify-self: start;
+  }
+}

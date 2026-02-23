@@ -8,6 +8,7 @@
 
 .hero {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--pf-space-4);
@@ -222,6 +223,10 @@
 }
 
 @media (max-width: 760px) {
+  .hero {
+    flex-direction: column;
+  }
+
   .fieldRow {
     grid-template-columns: 1fr;
   }

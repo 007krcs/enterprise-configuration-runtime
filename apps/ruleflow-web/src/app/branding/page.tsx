@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { apiGet, apiPost } from '@/lib/demo/api-client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { useToast } from '@/components/ui/toast';
+import styles from './branding.module.css';
 
 type BrandingPayload = {
   logoUrl?: string;
@@ -58,14 +59,22 @@ export default function BrandingPage() {
     }
   };
 
+  const previewStyle = {
+    '--branding-primary': branding.primaryColor,
+    '--branding-secondary': branding.secondaryColor,
+    '--branding-radius': `${branding.radius}px`,
+    '--branding-spacing': `${branding.spacing}px`,
+    '--branding-scale': `${branding.typographyScale}rem`,
+  } as CSSProperties;
+
   return (
-    <div style={{ display: 'grid', gap: 16 }}>
+    <div className={styles.page}>
       <Card>
         <CardHeader>
           <CardTitle>Tenant Branding</CardTitle>
         </CardHeader>
-        <CardContent style={{ display: 'grid', gap: 12 }}>
-          <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+        <CardContent className={styles.formStack}>
+          <div className={styles.formGrid}>
             <div>
               <label className="rfFieldLabel">Mode</label>
               <Select
@@ -114,15 +123,8 @@ export default function BrandingPage() {
           <CardTitle>Preview</CardTitle>
         </CardHeader>
         <CardContent>
-          <div
-            style={{
-              border: `2px solid ${branding.primaryColor}`,
-              borderRadius: branding.radius,
-              padding: branding.spacing * 2,
-              background: `linear-gradient(120deg, ${branding.primaryColor}22, ${branding.secondaryColor}22)`,
-            }}
-          >
-            <p style={{ margin: 0, fontSize: `${branding.typographyScale}rem` }}>RuleFlow tenant theme preview</p>
+          <div className={styles.previewBox} style={previewStyle}>
+            <p className={styles.previewText}>RuleFlow tenant theme preview</p>
           </div>
         </CardContent>
       </Card>

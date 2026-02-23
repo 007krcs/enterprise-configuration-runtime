@@ -1,8 +1,14 @@
 .shell {
+  min-height: 100dvh;
   height: 100dvh;
   display: flex;
   flex-direction: column;
   background: transparent;
+}
+
+.shellLanding {
+  min-height: 100vh;
+  height: auto;
 }
 
 .clientReady {
@@ -87,6 +93,7 @@
 .headerActions {
   display: none;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--rf-space-3);
 }
 
@@ -126,6 +133,7 @@
 
 .pageHeader {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--rf-space-4);
@@ -138,17 +146,18 @@
 
 .pageTitle {
   margin: var(--rf-space-2) 0 0;
-  font-size: 26px;
+  font-size: clamp(1.375rem, 2.8vw, 1.625rem);
   font-weight: 900;
   letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .mobileActions {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--rf-space-2);
 }
 
@@ -379,22 +388,68 @@
   }
 }
 
+@media (max-width: 767px) {
+  .header {
+    height: auto;
+    min-height: 64px;
+  }
+
+  .headerInner {
+    min-height: 64px;
+    padding: var(--rf-space-2) 0;
+    gap: var(--rf-space-2);
+  }
+
+  .logoSubtitle {
+    display: none;
+  }
+
+  .body {
+    width: calc(100% - (2 * var(--rf-space-2)));
+    gap: var(--rf-space-4);
+    height: calc(100vh - 72px);
+    padding: var(--rf-space-4) 0;
+  }
+
+  .main {
+    padding-right: 0;
+  }
+
+  .pageHeader {
+    margin-bottom: var(--rf-space-4);
+  }
+
+  .pageTitle {
+    font-size: clamp(1.2rem, 6vw, 1.5rem);
+  }
+
+  .mobileActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
 .bodyLanding {
   width: 100%;
   padding: 0;
   margin: 0;
   gap: 0;
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: calc(100vh - 64px);
+  height: auto;
+  overflow: visible;
 }
 
 .mainLanding {
-  overflow-y: auto;
-  height: 100%;
+  overflow: visible;
+  min-height: 0;
+  height: auto;
   padding-right: 0;
+  display: block;
 }
 
 .mainInnerLanding {
   padding-bottom: 0;
-  min-height: 100%;
+  min-height: 0;
   width: 100%;
 }

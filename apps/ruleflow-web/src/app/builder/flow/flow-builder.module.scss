@@ -6,6 +6,7 @@
 
 .headerRow {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--rf-space-3);
@@ -19,6 +20,7 @@
 
 .headerActions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--rf-space-2);
 }
@@ -303,5 +305,20 @@
 
   .transitionGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 840px) {
+  .headerRow {
+    flex-direction: column;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .graphCanvas {
+    min-height: 300px;
   }
 }

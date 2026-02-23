@@ -260,6 +260,7 @@
 
 .navLinks {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: var(--rf-space-3);
   align-items: center;
 }
@@ -273,11 +274,12 @@
 .grid {
   display: grid;
   gap: var(--rf-space-4);
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
 .addRow {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--rf-space-2);
   margin-bottom: var(--rf-space-3);
 }
@@ -331,7 +333,7 @@
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .builderGrid {
     flex-direction: row;
     align-items: flex-start;
@@ -349,5 +351,28 @@
   .sideColumn {
     flex: 0 0 420px;
     width: 420px;
+  }
+}
+
+@media (max-width: 767px) {
+  .builderHome {
+    padding: var(--rf-space-4);
+  }
+
+  .title {
+    font-size: clamp(1.5rem, 8vw, 2rem);
+  }
+
+  .navLinks {
+    width: 100%;
+  }
+
+  .addRow > :first-child {
+    flex: 1 1 100%;
+  }
+
+  .listItem {
+    flex-wrap: wrap;
+    gap: var(--rf-space-2);
   }
 }

@@ -5,6 +5,7 @@
 
 .headerRow {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--rf-space-3);
@@ -18,6 +19,7 @@
 
 .headerActions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--rf-space-2);
 }
@@ -119,6 +121,7 @@
 
 .sectionHeader {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: var(--rf-space-2);
@@ -132,7 +135,8 @@
 .mappingTable {
   border: 1px solid var(--rf-border);
   border-radius: var(--rf-radius-md);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .mappingHead,
@@ -141,6 +145,7 @@
   gap: var(--rf-space-2);
   padding: 8px;
   align-items: center;
+  min-width: 560px;
 }
 
 .mappingHead {
@@ -159,11 +164,13 @@
 .mappingTableRequest .mappingHead,
 .mappingTableRequest .mappingRow {
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.3fr) minmax(0, 0.8fr) minmax(0, 0.8fr) auto;
+  min-width: 820px;
 }
 
 .mappingTableResponse .mappingHead,
 .mappingTableResponse .mappingRow {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  min-width: 620px;
 }
 
 .inlineActions {
@@ -273,5 +280,16 @@
   .formGrid,
   .testGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 840px) {
+  .headerRow {
+    flex-direction: column;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: flex-start;
   }
 }

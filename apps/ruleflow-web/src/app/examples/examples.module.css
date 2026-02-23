@@ -145,6 +145,19 @@
 }
 
 @media (max-width: 768px) {
+  .page {
+    padding: 0 0.75rem 2rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
   .previewPanel {
     position: static;
     width: 100%;

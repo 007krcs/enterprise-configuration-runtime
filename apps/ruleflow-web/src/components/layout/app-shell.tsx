@@ -317,7 +317,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [commandActions, commandQuery]);
 
   return (
-    <div className={cn(styles.shell, 'rf-app-shell')} data-pf-screen={screenPreset}>
+    <div className={cn(styles.shell, 'rf-app-shell', isLanding && styles.shellLanding)} data-pf-screen={screenPreset}>
         {clientReady ? <span data-testid="client-ready" className={styles.clientReady} aria-hidden="true" /> : null}
         <header className={cn(styles.header, 'pf-surface-panel')}>
         <div className={styles.headerInner}>

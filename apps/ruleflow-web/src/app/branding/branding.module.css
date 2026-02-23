@@ -1,0 +1,37 @@
+.page {
+  display: grid;
+  gap: var(--rf-space-4);
+}
+
+.formStack {
+  display: grid;
+  gap: var(--rf-space-3);
+}
+
+.formGrid {
+  display: grid;
+  gap: var(--rf-space-2);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.previewBox {
+  --branding-primary: #0055aa;
+  --branding-secondary: #0b2a44;
+  --branding-radius: 8px;
+  --branding-spacing: 8px;
+  --branding-scale: 1rem;
+  border: 2px solid var(--branding-primary);
+  border-radius: var(--branding-radius);
+  padding: calc(var(--branding-spacing) * 2);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--branding-primary) 16%, transparent),
+    color-mix(in srgb, var(--branding-secondary) 16%, transparent)
+  );
+}
+
+.previewText {
+  margin: 0;
+  font-size: var(--branding-scale);
+  overflow-wrap: anywhere;
+}

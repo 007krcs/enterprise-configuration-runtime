@@ -5,6 +5,7 @@
 
 .hero {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--rf-space-4);
@@ -16,3 +17,8 @@
   font-size: 13px;
 }
 
+@media (max-width: 640px) {
+  .hero {
+    flex-direction: column;
+  }
+}

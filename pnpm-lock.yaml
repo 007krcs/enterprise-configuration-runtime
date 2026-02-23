@@ -340,6 +340,9 @@ importers:
         specifier: ^4.5.2
         version: 4.5.7(@types/react@19.2.14)(immer@10.2.0)(react@19.2.4)
     devDependencies:
+      '@playwright/test':
+        specifier: 1.58.2
+        version: 1.58.2
       '@types/lunr':
         specifier: ^2.3.7
         version: 2.3.7
@@ -3833,7 +3836,6 @@ snapshots:
   '@playwright/test@1.58.2':
     dependencies:
       playwright: 1.58.2
-    optional: true
 
   '@popperjs/core@2.11.8': {}
 
@@ -4819,15 +4821,13 @@ snapshots:
 
   picomatch@4.0.3: {}
 
-  playwright-core@1.58.2:
-    optional: true
+  playwright-core@1.58.2: {}
 
   playwright@1.58.2:
     dependencies:
       playwright-core: 1.58.2
     optionalDependencies:
       fsevents: 2.3.2
-    optional: true
 
   postcss-value-parser@4.2.0: {}
 
