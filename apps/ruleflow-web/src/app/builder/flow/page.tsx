@@ -70,6 +70,7 @@ function FlowBuilderInner() {
   const { toast } = useToast();
   const flow = useBuilderStore((s) => s.flow);
   const setFlowSchema = useBuilderStore((s) => s.setFlowSchema);
+  const loadBundleJson = useBuilderStore((s) => s.loadBundleJson);
 
   const [version, setVersion] = useState<ConfigVersion | null>(null);
   const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
@@ -124,6 +125,7 @@ function FlowBuilderInner() {
         const normalizedFlow = normalizeFlowSchema(response.version.bundle.flowSchema, fallback);
 
         setVersion(response.version);
+        loadBundleJson(response.version.bundle);
         setFlowSchema(normalizedFlow);
         setSelectedStateId(normalizedFlow.initialState);
         setDirty(false);

@@ -9,6 +9,12 @@ const viewports = [
 for (const viewport of viewports) {
   test(`landing scroll reaches footer on ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'rf:onboarding:v1',
+        JSON.stringify({ open: false, dismissed: true, activeVersionId: null, steps: {} }),
+      );
+    });
     await page.goto('/', { waitUntil: 'networkidle' });
 
     const onboardingDialog = page.getByRole('dialog', { name: 'Getting Started' });
@@ -23,55 +29,37 @@ for (const viewport of viewports) {
 
     const footer = page.locator('footer').first();
 
-    const scrollInfo = await page.evaluate(() => {
-      const docEl = document.scrollingElement ?? document.documentElement;
-      const shellMain = document.querySelector('main');
-      const mainEl = shellMain instanceof HTMLElement ? shellMain : null;
-      const target =
-        mainEl && mainEl.scrollHeight > mainEl.clientHeight + 1
-          ? mainEl
-          : docEl;
+    const readScrollTops = () =>
+      page.evaluate(() => {
+        const docEl = document.scrollingElement ?? document.documentElement;
+        const shellMain = document.querySelector('main.rfScrollbar');
+        const mainEl = shellMain instanceof HTMLElement ? shellMain : null;
+        return {
+          docTop: docEl.scrollTop,
+          mainTop: mainEl?.scrollTop ?? 0,
+        };
+      });
 
-      return {
-        target: target === docEl ? 'document' : 'main',
-        scrollHeight: target.scrollHeight,
-        viewportHeight: target.clientHeight,
-        scrollTop: target.scrollTop,
-      };
-    });
+    const isFooterInViewport = () =>
+      footer.evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        return rect.top < window.innerHeight && rect.bottom > 0;
+      });
 
-    expect(scrollInfo.scrollHeight).toBeGreaterThan(scrollInfo.viewportHeight);
+    const beforeWheel = await readScrollTops();
 
     await page.mouse.move(Math.floor(viewport.width / 2), Math.floor(viewport.height / 2));
-    await page.mouse.wheel(0, Math.max(700, viewport.height));
-    await page.waitForTimeout(120);
+    let reachedFooterByWheel = await isFooterInViewport();
+    for (let i = 0; i < 24 && !reachedFooterByWheel; i += 1) {
+      await page.mouse.wheel(0, Math.max(520, Math.floor(viewport.height * 0.75)));
+      await page.waitForTimeout(60);
+      reachedFooterByWheel = await isFooterInViewport();
+    }
 
-    const wheelScrollTop = await page.evaluate((targetName) => {
-      const docEl = document.scrollingElement ?? document.documentElement;
-      const shellMain = document.querySelector('main');
-      const mainEl = shellMain instanceof HTMLElement ? shellMain : null;
-      const target = targetName === 'main' && mainEl ? mainEl : docEl;
-      return target.scrollTop;
-    }, scrollInfo.target);
-    expect(wheelScrollTop).toBeGreaterThan(scrollInfo.scrollTop);
-
-    await page.evaluate((targetName) => {
-      const docEl = document.scrollingElement ?? document.documentElement;
-      const shellMain = document.querySelector('main');
-      const mainEl = shellMain instanceof HTMLElement ? shellMain : null;
-      const target = targetName === 'main' && mainEl ? mainEl : docEl;
-      target.scrollTo({ top: target.scrollHeight, behavior: 'auto' });
-    }, scrollInfo.target);
-
-    await expect(footer).toBeInViewport();
-
-    const reachedBottom = await page.evaluate((targetName) => {
-      const docEl = document.scrollingElement ?? document.documentElement;
-      const shellMain = document.querySelector('main');
-      const mainEl = shellMain instanceof HTMLElement ? shellMain : null;
-      const target = targetName === 'main' && mainEl ? mainEl : docEl;
-      return Math.ceil(target.scrollTop + target.clientHeight) >= target.scrollHeight - 2;
-    }, scrollInfo.target);
-    expect(reachedBottom).toBeTruthy();
+    const afterWheel = await readScrollTops();
+    const wheelMoved =
+      afterWheel.docTop > beforeWheel.docTop || afterWheel.mainTop > beforeWheel.mainTop;
+    expect(wheelMoved).toBeTruthy();
+    expect(reachedFooterByWheel).toBeTruthy();
   });
 }

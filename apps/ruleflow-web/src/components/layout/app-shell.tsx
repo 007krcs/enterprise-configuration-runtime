@@ -36,6 +36,7 @@ import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
 import { useOnboarding } from '@/components/onboarding/onboarding-provider';
 import { useRuntimeAdapters } from '@/lib/use-runtime-adapters';
 import { requestTourRestart } from '@/lib/tour';
+import { useProjectStore } from '@/state/projectStore';
 
 const navItems = [
   { href: '/console', label: 'Admin Console', icon: LayoutDashboard },
@@ -70,6 +71,7 @@ function helpHrefForPathname(pathname: string): string {
   if (pathname.startsWith('/builder/api-mappings')) return '/docs/schemas';
   if (pathname.startsWith('/builder/rules')) return '/docs/tutorial-rules';
   if (pathname.startsWith('/builder')) return '/docs/tutorial-builder';
+  if (pathname.startsWith('/preview')) return '/docs/tutorial-playground';
   if (pathname.startsWith('/playground')) return '/docs/tutorial-playground';
   if (pathname.startsWith('/console')) return '/docs/tutorial-console';
   if (pathname.startsWith('/component-registry')) return '/docs/tutorial-component-registry';
@@ -96,6 +98,7 @@ function getPageTitle(pathname: string, tab?: string | null) {
   if (pathname.startsWith('/builder/flow')) return 'Flow Builder';
   if (pathname.startsWith('/builder/api-mappings')) return 'API Mapping Builder';
   if (pathname.startsWith('/builder')) return 'Builder';
+  if (pathname.startsWith('/preview')) return 'Preview';
   if (pathname.startsWith('/playground')) return 'Playground';
 
   if (pathname.startsWith('/console')) {
@@ -121,7 +124,7 @@ function getPageTitle(pathname: string, tab?: string | null) {
 function getScreenPreset(pathname: string): 'console' | 'builder' | 'playground' | 'docs' | 'system' | 'default' {
   if (pathname.startsWith('/console') || pathname.startsWith('/branding')) return 'console';
   if (pathname.startsWith('/builder') || pathname.startsWith('/component-registry')) return 'builder';
-  if (pathname.startsWith('/playground') || pathname.startsWith('/samples')) return 'playground';
+  if (pathname.startsWith('/playground') || pathname.startsWith('/preview') || pathname.startsWith('/samples')) return 'playground';
   if (pathname.startsWith('/examples')) return 'playground';
   if (pathname.startsWith('/docs') || pathname.startsWith('/integrations')) return 'docs';
   if (pathname.startsWith('/system')) return 'system';
@@ -145,6 +148,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState('');
   const { toast } = useToast();
+  const resetProject = useProjectStore((state) => state.resetProject);
 
   const tab = searchParams.get('tab');
   const pageTitle = useMemo(() => getPageTitle(pathname, tab), [pathname, tab]);
@@ -263,6 +267,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       setNewConfigId('');
       setNewConfigName('');
       setNewConfigDescription('');
+      resetProject();
       router.push(`/builder?versionId=${encodeURIComponent(result.versionId)}`);
     } catch (error) {
       toast({

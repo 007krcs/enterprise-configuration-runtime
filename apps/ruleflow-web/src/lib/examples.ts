@@ -1,8 +1,5 @@
-import type { FlowSchema } from '@platform/schema';
-import { normalizeUiPages, rebindFlowSchemaToAvailablePages } from '@/lib/demo/ui-pages';
 import type { ConfigBundle } from '@/lib/demo/types';
-import { useBuilderStore } from '@/app/builder/_domain/builderStore';
-import type { FlowEdge, FlowNode } from '@/app/builder/_domain/types';
+import { useProjectStore } from '@/state/projectStore';
 
 export type ExampleId =
   | 'e-commerce-store-demo'
@@ -70,80 +67,5 @@ export async function loadExampleBundle(exampleId: ExampleId): Promise<ConfigBun
 }
 
 export function applyBundleToBuilder(bundle: ConfigBundle): void {
-  const normalized = normalizeUiPages({
-    uiSchema: bundle.uiSchema,
-    uiSchemasById: bundle.uiSchemasById,
-    activeUiPageId: bundle.activeUiPageId,
-    flowSchema: bundle.flowSchema,
-  });
-
-  const flowSchema =
-    rebindFlowSchemaToAvailablePages(bundle.flowSchema, normalized.uiSchemasById, normalized.activeUiPageId) ??
-    bundle.flowSchema ??
-    createEmptyFlowSchema();
-
-  const startNode = flowSchema.initialState ?? Object.keys(flowSchema.states ?? {})[0] ?? null;
-  const nodes = buildFlowNodes(flowSchema);
-  const edges = buildFlowEdges(flowSchema);
-  const rules = bundle.rules?.rules ?? [];
-  const rulesById = Object.fromEntries(rules.map((rule) => [rule.ruleId, rule]));
-
-  useBuilderStore.setState((state) => ({
-    ...state,
-    screens: normalized.uiSchemasById,
-    activeScreenId: normalized.activeUiPageId,
-    flow: {
-      ...state.flow,
-      startNodeId: startNode,
-      nodes,
-      edges,
-      schema: flowSchema,
-    },
-    rules: rulesById,
-    metadata: {
-      ...state.metadata,
-      version: String(bundle.rules?.version ?? state.metadata.version ?? '1.0.0'),
-      status: 'draft',
-      updatedAt: Date.now(),
-    },
-  }));
-}
-
-function buildFlowNodes(flowSchema: FlowSchema): FlowNode[] {
-  const stateIds = Object.keys(flowSchema.states ?? {});
-  const columns = Math.max(1, Math.ceil(Math.sqrt(stateIds.length)));
-  return stateIds.map((id, index) => ({
-    id,
-    label: id,
-    position: {
-      x: 80 + ((index % columns) * 220),
-      y: 80 + Math.floor(index / columns) * 180,
-    },
-  }));
-}
-
-function buildFlowEdges(flowSchema: FlowSchema): FlowEdge[] {
-  const edges: FlowEdge[] = [];
-  for (const [stateId, state] of Object.entries(flowSchema.states ?? {})) {
-    for (const [event, transition] of Object.entries(state.on ?? {})) {
-      if (!transition || !transition.target) continue;
-      edges.push({
-        id: `${stateId}-${event}-${transition.target}`,
-        from: stateId,
-        to: transition.target,
-        onEvent: event,
-        guardRuleId: typeof transition.guard === 'string' ? transition.guard : undefined,
-      });
-    }
-  }
-  return edges;
-}
-
-function createEmptyFlowSchema(): FlowSchema {
-  return {
-    version: '1.0.0',
-    flowId: 'flow',
-    initialState: '',
-    states: {},
-  };
+  useProjectStore.getState().loadBundleJson(bundle);
 }

@@ -17,7 +17,7 @@ import { builtinComponentDefinitions, isPaletteComponentEnabled } from '@platfor
 import { createProviderFromBundles, EXAMPLE_TENANT_BUNDLES, PLATFORM_BUNDLES } from '@platform/i18n';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import type { ConfigVersion } from '@/lib/demo/types';
+import type { ConfigBundle, ConfigVersion } from '@/lib/demo/types';
 import { apiGet, apiPatch, apiPost } from '@/lib/demo/api-client';
 import { useRuntimeFlags } from '@/lib/use-runtime-flags';
 import { useRuntimeAdapters } from '@/lib/use-runtime-adapters';
@@ -79,6 +79,7 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useBuilderStore } from '../_domain/builderStore';
 
 const BUILDER_LOCAL_STORAGE_KEY = 'ruleflow:builder:schema';
 
@@ -581,8 +582,15 @@ export default function BuilderPage() {
   const checklistFromUrl = searchParams.get('checklist') === '1';
   const { toast } = useToast();
   const { completeStep, setActiveVersionId } = useOnboarding();
+  const projectBundle = useBuilderStore((state) => state.bundleJson);
+  const selectedScreenId = useBuilderStore((state) => state.activeScreenId);
+  const setSelectedUiPageId = useBuilderStore((state) => state.setSelectedScreen);
+  const previewMode = useBuilderStore((state) => state.previewMode);
+  const setPreviewMode = useBuilderStore((state) => state.setPreviewMode);
+  const loadBundleJson = useBuilderStore((state) => state.loadBundleJson);
 
   const [loading, setLoading] = useState(Boolean(versionId));
+  const [bundleLoadError, setBundleLoadError] = useState<string | null>(null);
   const [registryLoading, setRegistryLoading] = useState(false);
   const [registry, setRegistry] = useState<ComponentDefinition[]>(() => BUILTIN_COMPONENT_DEFS);
   const [showPlannedComponents, setShowPlannedComponents] = useState(false);
@@ -603,16 +611,13 @@ export default function BuilderPage() {
   const [uiSchemasById, setUiSchemasById] = useState<Record<string, UISchema>>(() =>
     versionId ? {} : { [schema.pageId]: schema },
   );
-  const [selectedUiPageId, setSelectedUiPageId] = useState<string>(() =>
-    versionId ? 'builder-preview' : schema.pageId,
-  );
   const [flowSchemaDraft, setFlowSchemaDraft] = useState<FlowSchema | null>(() =>
     versionId ? null : createBuilderFlowSchema(schema.pageId),
   );
+  const selectedUiPageId = selectedScreenId ?? (versionId ? 'builder-preview' : schema.pageId);
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(() =>
     versionId ? null : scratchComponents[0]?.id ?? null,
   );
-  const [previewMode, setPreviewMode] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<ExecutionContext['device']>('desktop');
   const [previewLocale, setPreviewLocale] = useState(previewContext.locale);
   const [activeBreakpoint, setActiveBreakpoint] = useState<LayoutBreakpoint>('lg');
@@ -725,6 +730,18 @@ export default function BuilderPage() {
     () => `${BUILDER_LOCAL_STORAGE_KEY}:${versionId ?? 'scratch'}`,
     [versionId],
   );
+  const buildBundleFromPages = (
+    nextPages: Record<string, UISchema>,
+    activePageId: string,
+    nextFlowSchema: FlowSchema,
+  ): ConfigBundle => ({
+    uiSchema: nextPages[activePageId],
+    uiSchemasById: nextPages,
+    activeUiPageId: activePageId,
+    flowSchema: nextFlowSchema,
+    rules: projectBundle?.rules ?? { version: '1.0.0', rules: [] },
+    apiMappingsById: projectBundle?.apiMappingsById ?? {},
+  });
   const runtimeFlags = useRuntimeFlags({
     env: 'prod',
     versionId: versionId ?? undefined,
@@ -773,6 +790,53 @@ export default function BuilderPage() {
   useEffect(() => {
     if (previewFromUrl === '1') setPreviewMode(true);
   }, [previewFromUrl]);
+
+  useEffect(() => {
+    if (!projectBundle) return;
+
+    const normalizedPages = normalizeUiPages({
+      uiSchema: projectBundle.uiSchema,
+      uiSchemasById: projectBundle.uiSchemasById,
+      activeUiPageId: projectBundle.activeUiPageId,
+      flowSchema: projectBundle.flowSchema,
+    });
+    const fallbackPageId =
+      selectedScreenId ??
+      normalizedPages.activeUiPageId ??
+      Object.keys(normalizedPages.uiSchemasById)[0];
+    if (!fallbackPageId) return;
+
+    const nextSchema = normalizeSchema(
+      normalizedPages.uiSchemasById[fallbackPageId] ??
+        createSchemaFromComponents([], { pageId: fallbackPageId }),
+    );
+    const reboundFlow =
+      rebindFlowSchemaToAvailablePages(
+        projectBundle.flowSchema,
+        normalizedPages.uiSchemasById,
+        fallbackPageId,
+      ) ?? createBuilderFlowSchema(fallbackPageId);
+
+    setUiSchemasById(normalizedPages.uiSchemasById);
+    setSchema(nextSchema);
+    setFlowSchemaDraft(reboundFlow);
+    setSelectedComponentId((nextSchema.components as UIComponent[])[0]?.id ?? null);
+    if (selectedScreenId !== fallbackPageId) {
+      setSelectedUiPageId(fallbackPageId);
+    }
+  }, [projectBundle, selectedScreenId, setSelectedUiPageId]);
+
+  useEffect(() => {
+    if (selectedScreenId) return;
+    const firstScreenId =
+      projectBundle?.activeUiPageId ??
+      Object.keys(projectBundle?.uiSchemasById ?? {})[0] ??
+      Object.keys(uiSchemasById)[0] ??
+      null;
+    if (firstScreenId) {
+      setSelectedUiPageId(firstScreenId);
+    }
+  }, [projectBundle, selectedScreenId, setSelectedUiPageId, uiSchemasById]);
 
   useEffect(() => {
     if (!checklistFromUrl) return;
@@ -831,11 +895,8 @@ export default function BuilderPage() {
       if (isSchemaLike(parsed)) {
         const normalizedLegacySchema = normalizeSchema(parsed);
         const pageId = normalizedLegacySchema.pageId;
-        setUiSchemasById({ [pageId]: normalizedLegacySchema });
-        setSelectedUiPageId(pageId);
-        setSchema(normalizedLegacySchema);
-        setFlowSchemaDraft(createBuilderFlowSchema(pageId));
-        setSelectedComponentId((normalizedLegacySchema.components as UIComponent[])[0]?.id ?? null);
+        const nextFlowSchema = createBuilderFlowSchema(pageId);
+        loadBundleJson(buildBundleFromPages({ [pageId]: normalizedLegacySchema }, pageId, nextFlowSchema));
         return;
       }
       if (!isBuilderDraftState(parsed)) return;
@@ -849,19 +910,18 @@ export default function BuilderPage() {
         normalizedPages.activeUiPageId ||
         Object.keys(normalizedPages.uiSchemasById)[0] ||
         createSchemaFromComponents(scratchComponents).pageId;
-      const nextSchema = normalizeSchema(
-        normalizedPages.uiSchemasById[nextPageId] ?? createSchemaFromComponents(scratchComponents),
-      );
       const reboundFlow = rebindFlowSchemaToAvailablePages(
         parsed.flowSchema ?? createBuilderFlowSchema(nextPageId),
         normalizedPages.uiSchemasById,
         nextPageId,
       );
-      setUiSchemasById(normalizedPages.uiSchemasById);
-      setSelectedUiPageId(nextPageId);
-      setSchema(nextSchema);
-      setFlowSchemaDraft(reboundFlow ?? createBuilderFlowSchema(nextPageId));
-      setSelectedComponentId((nextSchema.components as UIComponent[])[0]?.id ?? null);
+      loadBundleJson(
+        buildBundleFromPages(
+          normalizedPages.uiSchemasById,
+          nextPageId,
+          reboundFlow ?? createBuilderFlowSchema(nextPageId),
+        ),
+      );
     } catch {
       // ignore bad local state
     }
@@ -894,43 +954,22 @@ export default function BuilderPage() {
   const loadFromStore = async () => {
     if (!versionId) return;
     setLoading(true);
+    setBundleLoadError(null);
     try {
       const response = await apiGet<GetVersionResponse>(`/api/config-versions/${encodeURIComponent(versionId)}`);
       if (!response.ok) throw new Error(response.error);
-      const normalizedPages = normalizeUiPages({
-        uiSchema: response.version.bundle.uiSchema,
-        uiSchemasById: response.version.bundle.uiSchemasById,
-        activeUiPageId: response.version.bundle.activeUiPageId,
-        flowSchema: response.version.bundle.flowSchema,
-      });
-      const nextPageId = normalizedPages.activeUiPageId;
-      const normalized = normalizeSchema(
-        normalizedPages.uiSchemasById[nextPageId] ?? createSchemaFromComponents(scratchComponents, { pageId: nextPageId }),
-      );
-      const normalizedComponents = normalized.components as UIComponent[];
-      const reboundFlow =
-        rebindFlowSchemaToAvailablePages(
-          response.version.bundle.flowSchema,
-          normalizedPages.uiSchemasById,
-          nextPageId,
-        ) ?? createBuilderFlowSchema(nextPageId);
       setLoadedVersion(response.version);
-      setUiSchemasById(normalizedPages.uiSchemasById);
-      setSelectedUiPageId(nextPageId);
-      setSchema(normalized);
-      setFlowSchemaDraft(reboundFlow);
-      setSelectedComponentId(normalizedComponents[0]?.id ?? null);
+      loadBundleJson(response.version.bundle);
       setActiveVersionId(versionId);
       toast({ variant: 'info', title: 'Loaded config', description: response.version.version });
     } catch (error) {
-      toast({ variant: 'error', title: 'Failed to load config', description: error instanceof Error ? error.message : String(error) });
+      const message = error instanceof Error ? error.message : String(error);
+      setBundleLoadError(message);
+      toast({ variant: 'error', title: 'Failed to load config', description: message });
       const fallback = createSchemaFromComponents(scratchComponents);
+      const fallbackFlow = createBuilderFlowSchema(fallback.pageId);
       setLoadedVersion(null);
-      setUiSchemasById({ [fallback.pageId]: fallback });
-      setSelectedUiPageId(fallback.pageId);
-      setSchema(fallback);
-      setFlowSchemaDraft(createBuilderFlowSchema(fallback.pageId));
-      setSelectedComponentId((fallback.components as UIComponent[])[0]?.id ?? null);
+      loadBundleJson(buildBundleFromPages({ [fallback.pageId]: fallback }, fallback.pageId, fallbackFlow));
     } finally {
       setLoading(false);
     }
@@ -1154,6 +1193,8 @@ export default function BuilderPage() {
     setSchema(nextSchema);
     setFlowSchemaDraft(reboundFlow);
     setSelectedComponentId((nextSchema.components as UIComponent[])[0]?.id ?? null);
+    loadBundleJson(buildBundleFromPages(normalizedPages.uiSchemasById, resolvedPageId, reboundFlow));
+    setBundleLoadError(null);
   };
 
   const resetToScratch = () => {
@@ -1174,6 +1215,7 @@ export default function BuilderPage() {
     if (exampleLoading) return;
     setExampleLoading(exampleId);
     setLoading(true);
+    setBundleLoadError(null);
     try {
       const bundle = await loadExampleBundle(exampleId);
       const normalizedPages = normalizeUiPages({
@@ -1198,6 +1240,7 @@ export default function BuilderPage() {
         description: `${getExampleTitle(exampleId)} is ready to explore.`,
       });
     } catch (error) {
+      setBundleLoadError(error instanceof Error ? error.message : String(error));
       toast({
         variant: 'error',
         title: 'Example load failed',
@@ -1775,7 +1818,7 @@ export default function BuilderPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPreviewMode((v) => !v)}
+                onClick={() => setPreviewMode(!previewMode)}
                 disabled={loading}
                 data-tour-target="preview-toggle"
               >
@@ -2011,6 +2054,31 @@ export default function BuilderPage() {
           </div>
         </CardContent>
       </Card>
+
+      {loading && !projectBundle ? (
+        <Card data-testid="builder-bundle-loading">
+          <CardHeader>
+            <CardTitle>Loading bundle...</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className={styles.canvasHint}>Hydrating screens, flow, and rules for this config version.</p>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {bundleLoadError ? (
+        <Card data-testid="builder-bundle-error">
+          <CardHeader>
+            <CardTitle>Failed to load bundle</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className={styles.canvasHint}>{bundleLoadError}</p>
+            <Button size="sm" variant="outline" onClick={() => void loadFromStore()} disabled={!versionId || loading}>
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {dragReady ? (
         <DndContext

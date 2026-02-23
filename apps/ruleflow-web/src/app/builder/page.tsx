@@ -1,32 +1,106 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { createUISchema } from '@platform/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useBuilder } from '@/context/BuilderContext';
+import { useToast } from '@/components/ui/toast';
+import { useBuilderStore } from './_domain/builderStore';
 import styles from './builder.module.css';
 
 export default function BuilderHomePage() {
-  const {
-    state: { screens },
-    dispatch,
-  } = useBuilder();
+  const searchParams = useSearchParams();
+  const versionId = searchParams.get('versionId')?.trim() ?? '';
+  const { toast } = useToast();
+
+  const screens = useBuilderStore((state) => state.screens);
+  const addScreenToStore = useBuilderStore((state) => state.addScreen);
+  const loadBundleFromUrl = useBuilderStore((state) => state.loadBundleFromUrl);
+  const lastLoadedVersionRef = useRef<string | null>(null);
 
   const [newScreenId, setNewScreenId] = useState('');
+  const [bundleLoading, setBundleLoading] = useState(false);
+  const [bundleError, setBundleError] = useState<string | null>(null);
   const screenEntries = useMemo(() => Object.entries(screens), [screens]);
+
+  useEffect(() => {
+    if (!versionId) return;
+    if (lastLoadedVersionRef.current === versionId) return;
+    let cancelled = false;
+    lastLoadedVersionRef.current = versionId;
+    setBundleLoading(true);
+    setBundleError(null);
+    void loadBundleFromUrl(versionId).catch((error) => {
+      if (cancelled) return;
+      const message = error instanceof Error ? error.message : String(error);
+      setBundleError(message);
+      toast({
+        variant: 'error',
+        title: 'Failed to load config version',
+        description: message,
+      });
+    }).finally(() => {
+      if (cancelled) return;
+      setBundleLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [loadBundleFromUrl, toast, versionId]);
 
   const addScreen = () => {
     const id = newScreenId.trim() || `screen-${screenEntries.length + 1}`;
     if (screens[id]) return;
-    dispatch({ type: 'ADD_SCREEN', id, schema: createUISchema({ pageId: id }) });
+    addScreenToStore(id, createUISchema({ pageId: id }));
     setNewScreenId('');
+  };
+
+  const retryLoad = () => {
+    if (!versionId) return;
+    lastLoadedVersionRef.current = versionId;
+    setBundleError(null);
+    setBundleLoading(true);
+    void loadBundleFromUrl(versionId).catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      setBundleError(message);
+      toast({
+        variant: 'error',
+        title: 'Failed to load config version',
+        description: message,
+      });
+    }).finally(() => {
+      setBundleLoading(false);
+    });
   };
 
   return (
     <div className={styles.builderHome}>
+      {bundleLoading && screenEntries.length === 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Loading builder project...</CardTitle>
+          </CardHeader>
+          <CardContent>Please wait while we hydrate screens, flow, and rules.</CardContent>
+        </Card>
+      ) : null}
+
+      {bundleError ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Unable to load builder data</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className={styles.empty}>{bundleError}</p>
+            <Button onClick={retryLoad} size="sm" data-testid="builder-home-retry-load">
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <header className={styles.homeHeader}>
         <div>
           <p className={styles.kicker}>Builder Console</p>

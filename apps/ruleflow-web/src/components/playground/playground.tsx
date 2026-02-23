@@ -11,6 +11,7 @@ import { apiGet } from '@/lib/demo/api-client';
 import { useRuntimeFlags } from '@/lib/use-runtime-flags';
 import { useRuntimeAdapters } from '@/lib/use-runtime-adapters';
 import { normalizeUiPages, rebindFlowSchemaToAvailablePages } from '@/lib/demo/ui-pages';
+import { useProjectStore } from '@/state/projectStore';
 import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import styles from './playground.module.css';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useOnboarding } from '@/components/onboarding/onboarding-provider';
 import { exampleCatalog, type ExampleId, loadExampleBundle } from '@/lib/examples';
 
@@ -73,10 +74,22 @@ type GetVersionResponse = { ok: true; version: ConfigVersion } | { ok: false; er
 
 type RuntimeTrace = Awaited<ReturnType<typeof executeStep>>['trace'];
 
+const PREVIEW_DRAFT_PREFIX = 'ruleflow:preview:draft:';
+
 function renderValue(value: JSONValue | undefined): string {
   if (value === undefined) return 'undefined';
   // JSON.stringify gives quotes for strings and readable output for arrays/objects.
   return JSON.stringify(value);
+}
+
+function normalizeSearchParam(value: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function isExampleId(value: string): value is ExampleId {
+  return exampleCatalog.some((example) => example.id === value);
 }
 
 function OperandView({ operand }: { operand: ExplainOperand }) {
@@ -194,8 +207,17 @@ export function Playground({
   initialVersion: ConfigVersion | null;
 }) {
   const { toast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isPreviewRoute = pathname.startsWith('/preview');
   const onboarding = useOnboarding();
+  const projectBundle = useProjectStore((state) => state.bundleJson);
+  const selectedScreenId = useProjectStore((state) => state.activeScreenId);
+  const loadBundleJson = useProjectStore((state) => state.loadBundleJson);
+  const loadBundleFromUrlParams = useProjectStore((state) => state.loadBundleFromUrlParams);
+  const setSelectedScreen = useProjectStore((state) => state.setSelectedScreen);
+  const setPreviewMode = useProjectStore((state) => state.setPreviewMode);
   const activeVersionId = onboarding.state.activeVersionId;
   const { setActiveVersionId, completeStep } = onboarding;
 
@@ -213,6 +235,9 @@ export function Playground({
   const [selectedExample, setSelectedExample] = useState<ExampleId>('e-commerce-store-demo');
   const [loadingExample, setLoadingExample] = useState(false);
   const [exampleError, setExampleError] = useState<string | null>(null);
+  const [previewBundleLoading, setPreviewBundleLoading] = useState(false);
+  const [previewBundleError, setPreviewBundleError] = useState<string | null>(null);
+  const [previewReloadTick, setPreviewReloadTick] = useState(0);
 
   const [stateId, setStateId] = useState<string>(() => {
     const flow = (initialVersion?.bundle.flowSchema ?? null) as unknown as FlowSchema | null;
@@ -247,6 +272,77 @@ export function Playground({
 
   const traceFocusRef = useRef<HTMLDivElement | null>(null);
   const autoRunRef = useRef(false);
+  const previewSearchKey = searchParams.toString();
+  const screenParam = normalizeSearchParam(searchParams.get('screen'));
+
+  useEffect(() => {
+    if (!initialVersion?.bundle) return;
+    loadBundleJson(initialVersion.bundle);
+  }, [initialVersion?.bundle, loadBundleJson]);
+
+  useEffect(() => {
+    if (!isPreviewRoute) {
+      setPreviewBundleError(null);
+      setPreviewBundleLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    const syncPreviewFromParams = async () => {
+      setPreviewBundleLoading(true);
+      setPreviewBundleError(null);
+      try {
+        await loadBundleFromUrlParams(searchParams);
+        if (cancelled) return;
+
+        const loadedBundle = useProjectStore.getState().bundleJson;
+        if (loadedBundle) {
+          setRuntimeBundle(loadedBundle);
+          setLastLoadedBundle(loadedBundle);
+          setEditorText(JSON.stringify(loadedBundle, null, 2));
+          setEditorError(null);
+        }
+
+        const exampleFromUrl = normalizeSearchParam(searchParams.get('example'));
+        const draftFromUrl = normalizeSearchParam(searchParams.get('draftId'));
+        const versionFromUrl = normalizeSearchParam(searchParams.get('versionId'));
+
+        if (exampleFromUrl && isExampleId(exampleFromUrl)) {
+          setCurrentExampleId(exampleFromUrl);
+          setSelectedExample(exampleFromUrl);
+        } else {
+          setCurrentExampleId(null);
+        }
+
+        if (versionFromUrl && !exampleFromUrl && !draftFromUrl) {
+          setSelectedVersionId(versionFromUrl);
+        } else if (exampleFromUrl || draftFromUrl) {
+          setSelectedVersionId('');
+          setVersion(null);
+        }
+
+        setTrace(null);
+      } catch (error) {
+        if (cancelled) return;
+        const message = error instanceof Error ? error.message : String(error);
+        setPreviewBundleError(message);
+        toast({
+          variant: 'error',
+          title: 'Failed to load preview bundle',
+          description: message,
+        });
+      } finally {
+        if (!cancelled) {
+          setPreviewBundleLoading(false);
+        }
+      }
+    };
+
+    void syncPreviewFromParams();
+    return () => {
+      cancelled = true;
+    };
+  }, [isPreviewRoute, loadBundleFromUrlParams, previewReloadTick, previewSearchKey, searchParams, toast]);
 
   useEffect(() => {
     if (!selectedVersionId) return;
@@ -259,6 +355,7 @@ export function Playground({
         setVersion(resp.version);
         setRuntimeBundle(resp.version.bundle);
         setLastLoadedBundle(resp.version.bundle);
+        loadBundleJson(resp.version.bundle);
         setEditorText(JSON.stringify(resp.version.bundle, null, 2));
         setEditorError(null);
         setCurrentExampleId(null);
@@ -285,7 +382,7 @@ export function Playground({
     setActiveVersionId(selectedVersionId);
   }, [activeVersionId, selectedVersionId, setActiveVersionId]);
 
-  const baseBundle = runtimeBundle ?? version?.bundle ?? null;
+  const baseBundle = projectBundle ?? runtimeBundle ?? version?.bundle ?? null;
   const flowRaw: FlowSchema | null = baseBundle?.flowSchema ?? null;
   const rules: Rule[] = baseBundle?.rules?.rules ?? [];
   const apiMappingsById: Record<string, ApiMapping> = baseBundle?.apiMappingsById ?? {};
@@ -325,6 +422,29 @@ export function Playground({
     setTrace(null);
   }, [flow, runtimeFlags.featureFlags]);
 
+  useEffect(() => {
+    if (!flow) return;
+    const currentPageId = flow.states[stateId]?.uiPageId;
+    if (!currentPageId) return;
+    if (selectedScreenId === currentPageId) return;
+    setSelectedScreen(currentPageId);
+  }, [flow, selectedScreenId, setSelectedScreen, stateId]);
+
+  useEffect(() => {
+    if (!flow || !screenParam) return;
+    if (!uiSchemasById[screenParam]) return;
+
+    if (selectedScreenId !== screenParam) {
+      setSelectedScreen(screenParam);
+    }
+
+    const matchingStateId = Object.entries(flow.states).find(([, state]) => state.uiPageId === screenParam)?.[0];
+    if (matchingStateId && matchingStateId !== stateId) {
+      setStateId(matchingStateId);
+      setTrace(null);
+    }
+  }, [flow, screenParam, selectedScreenId, setSelectedScreen, stateId, uiSchemasById]);
+
   const baseLocale = effectiveContext.locale.split('-')[0] ?? effectiveContext.locale;
   const i18n = useMemo(
     () =>
@@ -338,12 +458,17 @@ export function Playground({
   );
 
   const currentState = flow ? flow.states[stateId] : null;
-  const currentUiSchema = currentState
-    ? uiSchemasById[currentState.uiPageId] ??
-      uiSchemasById[normalizedUiPages.activeUiPageId] ??
-      Object.values(uiSchemasById)[0] ??
-      null
-    : uiSchemasById[normalizedUiPages.activeUiPageId] ?? Object.values(uiSchemasById)[0] ?? null;
+  const queryScreenSchema = screenParam && uiSchemasById[screenParam] ? uiSchemasById[screenParam] : null;
+  const storeScreenSchema = selectedScreenId && uiSchemasById[selectedScreenId] ? uiSchemasById[selectedScreenId] : null;
+  const currentUiSchema =
+    queryScreenSchema ??
+    storeScreenSchema ??
+    (currentState
+      ? uiSchemasById[currentState.uiPageId] ??
+        uiSchemasById[normalizedUiPages.activeUiPageId] ??
+        Object.values(uiSchemasById)[0] ??
+        null
+      : uiSchemasById[normalizedUiPages.activeUiPageId] ?? Object.values(uiSchemasById)[0] ?? null);
 
   const runEvent = async (event: string) => {
     if (!flow || !currentUiSchema) return;
@@ -493,9 +618,51 @@ export function Playground({
   const applyEditorChanges = () => {
     try {
       const parsed = JSON.parse(editorText) as ConfigVersion['bundle'];
+      const normalizedPages = normalizeUiPages({
+        uiSchema: parsed.uiSchema,
+        uiSchemasById: parsed.uiSchemasById,
+        activeUiPageId: parsed.activeUiPageId,
+        flowSchema: parsed.flowSchema,
+      });
+      const fallbackScreenId =
+        screenParam ??
+        normalizedPages.activeUiPageId ??
+        Object.keys(normalizedPages.uiSchemasById)[0] ??
+        null;
+
       setRuntimeBundle(parsed);
+      setLastLoadedBundle(parsed);
+      loadBundleJson(parsed);
+      if (fallbackScreenId) {
+        setSelectedScreen(fallbackScreenId);
+      }
+      setPreviewMode(true);
       setTrace(null);
       setEditorError(null);
+
+      const next = new URLSearchParams(searchParams.toString());
+      next.set('preview', '1');
+      if (fallbackScreenId) {
+        next.set('screen', fallbackScreenId);
+      }
+      if (!next.get('example') && currentExampleId) {
+        next.set('example', currentExampleId);
+      }
+
+      const draftId = globalThis.crypto?.randomUUID?.() ?? `draft-${Date.now()}`;
+      try {
+        window.localStorage.setItem(`${PREVIEW_DRAFT_PREFIX}${draftId}`, JSON.stringify(parsed));
+        next.set('draftId', draftId);
+      } catch {
+        // Ignore storage failures and rely on query-backed sources.
+      }
+
+      const target = next.toString() ? `/preview?${next.toString()}` : '/preview';
+      if (isPreviewRoute) {
+        router.replace(target);
+      } else {
+        router.push(target);
+      }
     } catch (error) {
       setEditorError(error instanceof Error ? error.message : 'Unable to parse JSON');
     }
@@ -508,6 +675,7 @@ export function Playground({
       const bundle = await loadExampleBundle(selectedExample);
       setRuntimeBundle(bundle);
       setLastLoadedBundle(bundle);
+      loadBundleJson(bundle);
       setEditorText(JSON.stringify(bundle, null, 2));
       setEditorError(null);
       setCurrentExampleId(selectedExample);
@@ -522,6 +690,7 @@ export function Playground({
   const resetToExample = () => {
     if (!currentExampleId || !lastLoadedBundle) return;
     setRuntimeBundle(lastLoadedBundle);
+    loadBundleJson(lastLoadedBundle);
     setEditorText(JSON.stringify(lastLoadedBundle, null, 2));
     setEditorError(null);
     setTrace(null);
@@ -562,6 +731,29 @@ export function Playground({
         )}
       </aside>
       <div className={styles.playgroundMain}>
+        {isPreviewRoute && previewBundleLoading && !baseBundle ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Loading preview bundle...</CardTitle>
+            </CardHeader>
+            <CardContent>Please wait while we hydrate the preview from URL params.</CardContent>
+          </Card>
+        ) : null}
+
+        {isPreviewRoute && previewBundleError ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Unable to load preview bundle</CardTitle>
+            </CardHeader>
+            <CardContent className={styles.stack}>
+              <p className={styles.error}>{previewBundleError}</p>
+              <Button size="sm" variant="outline" onClick={() => setPreviewReloadTick((tick) => tick + 1)}>
+                Retry
+              </Button>
+            </CardContent>
+          </Card>
+        ) : null}
+
         <Card className={styles.contextCard}>
           <CardHeader>
             <CardTitle>Context Simulator</CardTitle>

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import type { RuleSet } from '@platform/schema';
+import type { Rule, RuleSet } from '@platform/schema';
 import { validateRulesSchema } from '@platform/validator';
 import type { ConfigVersion } from '@/lib/demo/types';
 import { apiGet, apiPatch } from '@/lib/demo/api-client';
@@ -20,10 +20,21 @@ import {
   type RuleDraft,
   rulesToDrafts,
 } from '@/components/rules/rule-visual-model';
-import { useBuilder } from '@/context/BuilderContext';
+import { useBuilderStore } from '../_domain/builderStore';
 import styles from './rules.module.scss';
 
 type GetVersionResponse = { ok: true; version: ConfigVersion } | { ok: false; error: string };
+
+function rulesRecordToRuleSet(version: string, rulesById: Record<string, Rule>): RuleSet {
+  return {
+    version,
+    rules: Object.values(rulesById).sort((left, right) => left.ruleId.localeCompare(right.ruleId)),
+  };
+}
+
+function ruleSetToRecord(ruleSet: RuleSet): Record<string, Rule> {
+  return Object.fromEntries((ruleSet.rules ?? []).map((rule) => [rule.ruleId, rule]));
+}
 
 function nextRuleId(existing: Set<string>, base: string): string {
   const cleaned = base.trim() || 'RULE';
@@ -49,22 +60,21 @@ export default function RulesBuilderPage() {
   const versionId = searchParams.get('versionId');
   const { toast } = useToast();
   const onboarding = useOnboarding();
-  const {
-    state: { rules },
-    dispatch,
-  } = useBuilder();
+  const rulesById = useBuilderStore((state) => state.rules);
+  const setRules = useBuilderStore((state) => state.setRules);
+  const loadBundleJson = useBuilderStore((state) => state.loadBundleJson);
 
   const [loading, setLoading] = useState(false);
   const [loadedVersion, setLoadedVersion] = useState<ConfigVersion | null>(null);
   const [selectedRuleDraftId, setSelectedRuleDraftId] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
   const [dirty, setDirty] = useState(false);
+  const [ruleVersion, setRuleVersion] = useState('1.0.0');
   const lastLoadedVersionId = useRef<string | null>(null);
 
-  const ruleDrafts = useMemo(() => rulesToDrafts(rules), [rules]);
-  const ruleVersion = useMemo(
-    () => loadedVersion?.bundle.rules.version ?? rules.version ?? '1.0.0',
-    [loadedVersion?.bundle.rules.version, rules.version],
+  const ruleDrafts = useMemo(
+    () => rulesToDrafts(rulesRecordToRuleSet(ruleVersion, rulesById)),
+    [ruleVersion, rulesById],
   );
 
   const selectedRule = useMemo(
@@ -92,7 +102,8 @@ export default function RulesBuilderPage() {
       const drafts = rulesToDrafts(response.version.bundle.rules);
 
       setLoadedVersion(response.version);
-      dispatch({ type: 'SET_RULES', rules: response.version.bundle.rules });
+      setRuleVersion(response.version.bundle.rules.version ?? '1.0.0');
+      loadBundleJson(response.version.bundle);
       setSelectedRuleDraftId(drafts[0]?.id ?? null);
       setSearchText('');
       setDirty(false);
@@ -101,7 +112,8 @@ export default function RulesBuilderPage() {
     } catch (error) {
       toast({ variant: 'error', title: 'Failed to load rules', description: error instanceof Error ? error.message : String(error) });
       setLoadedVersion(null);
-      dispatch({ type: 'SET_RULES', rules: { version: '1.0.0', rules: [] } });
+      setRuleVersion('1.0.0');
+      setRules({});
       setSelectedRuleDraftId(null);
       setDirty(false);
     } finally {
@@ -122,7 +134,7 @@ export default function RulesBuilderPage() {
 
   const applyDrafts = (drafts: RuleDraft[], opts?: { dirty?: boolean; selectedId?: string | null }) => {
     const nextRuleSet = draftsToRuleSet(ruleVersion, drafts);
-    dispatch({ type: 'SET_RULES', rules: nextRuleSet });
+    setRules(ruleSetToRecord(nextRuleSet));
     if (opts && 'selectedId' in opts) {
       setSelectedRuleDraftId(opts.selectedId ?? null);
     } else if (drafts.length && !drafts.some((d) => d.id === selectedRuleDraftId)) {
