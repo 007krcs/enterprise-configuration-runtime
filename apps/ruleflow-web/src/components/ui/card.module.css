@@ -2,7 +2,14 @@
   border: 1px solid var(--rf-border);
   border-radius: var(--rf-radius-lg);
   background: var(--rf-surface);
+  box-shadow: var(--rf-shadow-soft);
+  transition: box-shadow 250ms ease, transform 250ms ease, border-color 250ms ease;
+}
+
+.card:hover {
   box-shadow: var(--rf-shadow-card);
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--rf-primary) 20%, var(--rf-border));
 }
 
 .header {
@@ -13,8 +20,8 @@
 .title {
   margin: 0;
   font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
+  font-weight: 750;
+  letter-spacing: -0.005em;
 }
 
 .content {

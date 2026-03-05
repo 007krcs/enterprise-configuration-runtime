@@ -9,11 +9,12 @@ export default defineConfig({
     alias: {
       '@': path.join(rootDir, 'src'),
       '@platform/adapter-registry': path.join(rootDir, '../../packages/adapters/adapter-registry/src/index.ts'),
+      '@platform/schema': path.join(rootDir, '../../packages/schema/src/index.ts'),
     },
   },
   test: {
     environment: 'node',
-    include: ['tests/**/*.test.ts'],
+    include: ['tests/**/*.test.ts', 'src/__tests__/**/*.test.ts'],
     testTimeout: 30000,
   },
 });

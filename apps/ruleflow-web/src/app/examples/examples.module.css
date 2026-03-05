@@ -7,30 +7,31 @@
 
 .hero {
   border-radius: 1.25rem;
-  padding: 1.75rem;
+  padding: 2rem;
   background: radial-gradient(circle at 20% -10%, rgba(99, 102, 241, 0.35), transparent 45%), #0f172a;
   color: #f8fafc;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 30px 40px rgba(15, 23, 42, 0.35);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.3);
 }
 
 .heroTitle {
   margin-top: 0.75rem;
   margin-bottom: 0.35rem;
-  font-size: clamp(1.8rem, 2vw, 2.4rem);
-  font-weight: 600;
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .heroText {
   margin: 0;
   max-width: 60ch;
-  color: rgba(248, 250, 252, 0.9);
-  line-height: 1.6;
+  color: rgba(248, 250, 252, 0.85);
+  line-height: 1.65;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
@@ -43,8 +44,9 @@
 
 .cardDescription {
   margin: 0.5rem 0 0;
-  color: #475569;
-  line-height: 1.4;
+  color: var(--rf-muted);
+  line-height: 1.5;
+  font-size: 0.9rem;
 }
 
 .highlightList {
@@ -52,13 +54,14 @@
   margin: 1rem 0 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  color: #0f172a;
+  gap: 0.4rem;
+  color: var(--rf-fg);
+  font-size: 0.9rem;
 }
 
 .highlightItem {
   list-style: disc;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .statRow {
@@ -69,12 +72,13 @@
 }
 
 .stat {
-  padding: 0.2rem 0.75rem;
+  padding: 0.25rem 0.8rem;
   border-radius: 999px;
-  background: #eef2ff;
-  color: #312e81;
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: color-mix(in srgb, var(--rf-primary) 10%, var(--rf-surface));
+  color: var(--rf-primary);
+  font-size: 0.78rem;
+  font-weight: 650;
+  border: 1px solid color-mix(in srgb, var(--rf-primary) 18%, var(--rf-border));
 }
 
 .actions {
@@ -88,13 +92,13 @@
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  width: min(460px, calc(100% - 3rem));
+  width: min(480px, calc(100% - 3rem));
   max-height: 80vh;
   background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 40px 100px rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.5);
   z-index: 20;
   display: flex;
   flex-direction: column;
@@ -111,14 +115,16 @@
 .previewTag {
   margin: 0;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 700;
 }
 
 .previewTitle {
   margin: 0.25rem 0 0;
   font-size: 1.1rem;
+  font-weight: 700;
   color: #f8fafc;
 }
 
@@ -129,7 +135,7 @@
 .previewBody {
   background: #111827;
   border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 0.75rem;
   min-height: 320px;
   overflow: hidden;
@@ -141,12 +147,12 @@
   border-radius: 0.6rem;
   padding: 0.75rem;
   overflow: auto;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 @media (max-width: 768px) {
   .page {
-    padding: 0 0.75rem 2rem;
+    padding: 0 0.5rem 2rem;
   }
 
   .grid {
@@ -162,5 +168,9 @@
     position: static;
     width: 100%;
     max-height: none;
+  }
+
+  .hero {
+    padding: 1.5rem;
   }
 }

@@ -3,15 +3,15 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: var(--rf-radius-sm);
+  border-radius: var(--rf-radius-md);
   font-size: 14px;
   font-weight: 650;
   letter-spacing: 0.01em;
   border: 1px solid transparent;
   cursor: pointer;
   user-select: none;
-  transition: filter 120ms ease, background-color 120ms ease, border-color 120ms ease, color 120ms ease,
-    transform 80ms ease;
+  transition: filter 150ms ease, background-color 150ms ease, border-color 150ms ease, color 150ms ease,
+    transform 150ms ease, box-shadow 150ms ease;
 }
 
 .button:active:not(:disabled) {
@@ -47,10 +47,13 @@
 .variantDefault {
   background: var(--rf-primary);
   color: var(--rf-primary-fg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .variantDefault:hover:not(:disabled) {
-  filter: brightness(0.96);
+  filter: brightness(0.94);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .variantSecondary {
