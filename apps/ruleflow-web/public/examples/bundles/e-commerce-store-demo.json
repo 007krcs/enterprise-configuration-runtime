@@ -1,180 +1,180 @@
 {
   "uiSchema": {
     "version": "1.0.0",
-    "pageId": "dashboard",
+    "pageId": "home",
     "layout": {
-      "id": "root",
+      "id": "home-root",
       "type": "stack",
       "direction": "vertical",
       "children": [
         {
-          "id": "filters",
+          "id": "home-hero",
           "type": "section",
-          "title": "Filters",
-          "componentIds": ["customerNameInput", "orderTotalInput"]
+          "title": "Welcome",
+          "componentIds": ["heroText"]
         },
         {
-          "id": "table",
+          "id": "home-categories",
           "type": "section",
-          "title": "Orders",
-          "componentIds": ["ordersTable"]
+          "title": "Shop by Category",
+          "componentIds": ["categoryCard1", "categoryCard2", "categoryCard3"]
         },
         {
-          "id": "chart",
+          "id": "home-featured",
           "type": "section",
-          "title": "Revenue",
-          "componentIds": ["revenueChart"]
-        },
-        {
-          "id": "viz",
-          "type": "section",
-          "title": "Custom Insight",
-          "componentIds": ["customViz"]
+          "title": "Featured Products",
+          "componentIds": ["featuredProductsTable"]
         }
       ]
     },
     "components": [
       {
-        "id": "customerNameInput",
-        "type": "input",
+        "id": "heroText",
+        "type": "text",
         "adapterHint": "material.input",
-        "props": {},
+        "props": {
+          "text": "Welcome to ECR Commerce",
+          "variant": "h1",
+          "alignment": "center"
+        },
         "i18n": {
-          "labelKey": "runtime.filters.customerName.label",
-          "placeholderKey": "runtime.filters.customerName.placeholder",
-          "helperTextKey": "runtime.filters.customerName.helper"
-        },
-        "bindings": {
-          "data": {
-            "value": "data.filters.customerName"
-          }
-        },
-        "validations": {
-          "required": false,
-          "min": 2,
-          "max": 64,
-          "regex": "^[a-zA-Z\\s]+$"
+          "labelKey": "ecr.home.hero.title"
         },
         "accessibility": {
-          "ariaLabelKey": "runtime.filters.customerName.aria",
+          "ariaLabelKey": "ecr.home.hero.aria",
           "tabIndex": 0,
-          "role": "textbox",
-          "keyboardNav": true,
+          "role": "heading",
+          "keyboardNav": false,
           "focusOrder": 1
         },
         "responsive": {
           "breakpoints": {
             "sm": { "columns": 12, "span": 12 },
-            "md": { "columns": 12, "span": 6 }
+            "md": { "columns": 12, "span": 12 }
           }
-        },
-        "events": {
-          "onChange": [
-            { "type": "emitEvent", "payload": { "event": "filterChanged" } }
-          ]
         }
       },
       {
-        "id": "orderTotalInput",
-        "type": "input",
+        "id": "categoryCard1",
+        "type": "card",
         "adapterHint": "material.input",
         "props": {
-          "inputType": "number"
-        },
-        "i18n": {
-          "labelKey": "runtime.filters.orderTotal.label",
-          "placeholderKey": "runtime.filters.orderTotal.placeholder",
-          "helperTextKey": "runtime.filters.orderTotal.helper"
+          "title": "Electronics",
+          "subtitle": "Laptops, phones & accessories"
         },
         "bindings": {
           "data": {
-            "value": "data.orderTotal"
+            "value": "data.categories[0]"
           }
         },
+        "events": {
+          "onClick": [
+            { "type": "emitEvent", "payload": { "event": "onSelectProduct" } }
+          ]
+        },
         "accessibility": {
-          "ariaLabelKey": "runtime.filters.orderTotal.aria",
+          "ariaLabelKey": "ecr.home.category.electronics.aria",
           "tabIndex": 0,
-          "role": "spinbutton",
+          "role": "button",
           "keyboardNav": true,
           "focusOrder": 2
         },
         "responsive": {
           "breakpoints": {
             "sm": { "columns": 12, "span": 12 },
-            "md": { "columns": 12, "span": 6 }
+            "md": { "columns": 12, "span": 4 }
           }
         }
       },
       {
-        "id": "ordersTable",
+        "id": "categoryCard2",
+        "type": "card",
+        "adapterHint": "material.input",
+        "props": {
+          "title": "Clothing",
+          "subtitle": "Apparel & fashion"
+        },
+        "bindings": {
+          "data": {
+            "value": "data.categories[1]"
+          }
+        },
+        "events": {
+          "onClick": [
+            { "type": "emitEvent", "payload": { "event": "onSelectProduct" } }
+          ]
+        },
+        "accessibility": {
+          "ariaLabelKey": "ecr.home.category.clothing.aria",
+          "tabIndex": 0,
+          "role": "button",
+          "keyboardNav": true,
+          "focusOrder": 3
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 4 }
+          }
+        }
+      },
+      {
+        "id": "categoryCard3",
+        "type": "card",
+        "adapterHint": "material.input",
+        "props": {
+          "title": "Home & Garden",
+          "subtitle": "Furniture & decor"
+        },
+        "bindings": {
+          "data": {
+            "value": "data.categories[2]"
+          }
+        },
+        "events": {
+          "onClick": [
+            { "type": "emitEvent", "payload": { "event": "onSelectProduct" } }
+          ]
+        },
+        "accessibility": {
+          "ariaLabelKey": "ecr.home.category.home.aria",
+          "tabIndex": 0,
+          "role": "button",
+          "keyboardNav": true,
+          "focusOrder": 4
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 4 }
+          }
+        }
+      },
+      {
+        "id": "featuredProductsTable",
         "type": "table",
         "adapterHint": "aggrid.table",
         "props": {
           "columns": [
-            { "field": "orderId", "headerKey": "runtime.orders.table.columns.orderId" },
-            { "field": "customer", "headerKey": "runtime.orders.table.columns.customer" },
-            { "field": "total", "headerKey": "runtime.orders.table.columns.total" }
+            { "field": "name", "headerKey": "ecr.products.name" },
+            { "field": "price", "headerKey": "ecr.products.price" },
+            { "field": "category", "headerKey": "ecr.products.category" },
+            { "field": "rating", "headerKey": "ecr.products.rating" }
           ],
           "rows": []
         },
-        "i18n": {
-          "labelKey": "runtime.orders.table.label"
-        },
         "bindings": {
           "data": {
-            "rows": "data.orders"
+            "rows": "data.products"
           }
         },
+        "i18n": {
+          "labelKey": "ecr.home.featured.table"
+        },
         "accessibility": {
-          "ariaLabelKey": "runtime.orders.table.aria",
+          "ariaLabelKey": "ecr.home.featured.table.aria",
           "tabIndex": 0,
           "role": "table",
-          "keyboardNav": true,
-          "focusOrder": 3
-        }
-      },
-      {
-        "id": "revenueChart",
-        "type": "chart",
-        "adapterHint": "highcharts.chart",
-        "props": {
-          "series": []
-        },
-        "i18n": {
-          "labelKey": "runtime.revenue.chart.label"
-        },
-        "bindings": {
-          "data": {
-            "series": "data.revenueSeries"
-          }
-        },
-        "accessibility": {
-          "ariaLabelKey": "runtime.revenue.chart.aria",
-          "tabIndex": 0,
-          "role": "img",
-          "keyboardNav": true,
-          "focusOrder": 4
-        }
-      },
-      {
-        "id": "customViz",
-        "type": "custom",
-        "adapterHint": "d3.custom",
-        "props": {
-          "height": 240
-        },
-        "i18n": {
-          "labelKey": "runtime.customViz.label"
-        },
-        "bindings": {
-          "data": {
-            "dataset": "data.customViz"
-          }
-        },
-        "accessibility": {
-          "ariaLabelKey": "runtime.customViz.aria",
-          "tabIndex": 0,
-          "role": "img",
           "keyboardNav": true,
           "focusOrder": 5
         }
@@ -182,64 +182,613 @@
     ]
   },
   "uiSchemasById": {
-    "dashboard": {
+    "home": {
       "version": "1.0.0",
-      "pageId": "dashboard",
+      "pageId": "home",
       "layout": {
-        "id": "root",
+        "id": "home-root",
         "type": "stack",
         "direction": "vertical",
         "children": [
           {
-            "id": "filters",
+            "id": "home-hero",
             "type": "section",
-            "title": "Filters",
-            "componentIds": ["customerNameInput", "orderTotalInput"]
+            "title": "Welcome",
+            "componentIds": ["heroText"]
           },
           {
-            "id": "table",
+            "id": "home-categories",
             "type": "section",
-            "title": "Orders",
-            "componentIds": ["ordersTable"]
+            "title": "Shop by Category",
+            "componentIds": ["categoryCard1", "categoryCard2", "categoryCard3"]
           },
           {
-            "id": "chart",
+            "id": "home-featured",
             "type": "section",
-            "title": "Revenue",
-            "componentIds": ["revenueChart"]
-          },
-          {
-            "id": "viz",
-            "type": "section",
-            "title": "Custom Insight",
-            "componentIds": ["customViz"]
+            "title": "Featured Products",
+            "componentIds": ["featuredProductsTable"]
           }
         ]
       },
       "components": [
         {
-          "id": "customerNameInput",
-          "type": "input",
+          "id": "heroText",
+          "type": "text",
           "adapterHint": "material.input",
-          "props": {},
+          "props": {
+            "text": "Welcome to ECR Commerce",
+            "variant": "h1",
+            "alignment": "center"
+          },
           "i18n": {
-            "labelKey": "runtime.filters.customerName.label",
-            "placeholderKey": "runtime.filters.customerName.placeholder",
-            "helperTextKey": "runtime.filters.customerName.helper"
+            "labelKey": "ecr.home.hero.title"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.home.hero.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": false,
+            "focusOrder": 1
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 12 }
+            }
+          }
+        },
+        {
+          "id": "categoryCard1",
+          "type": "card",
+          "adapterHint": "material.input",
+          "props": {
+            "title": "Electronics",
+            "subtitle": "Laptops, phones & accessories"
           },
           "bindings": {
             "data": {
-              "value": "data.filters.customerName"
+              "value": "data.categories[0]"
             }
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "payload": { "event": "onSelectProduct" } }
+            ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.home.category.electronics.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 2
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
+          }
+        },
+        {
+          "id": "categoryCard2",
+          "type": "card",
+          "adapterHint": "material.input",
+          "props": {
+            "title": "Clothing",
+            "subtitle": "Apparel & fashion"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.categories[1]"
+            }
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "payload": { "event": "onSelectProduct" } }
+            ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.home.category.clothing.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 3
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
+          }
+        },
+        {
+          "id": "categoryCard3",
+          "type": "card",
+          "adapterHint": "material.input",
+          "props": {
+            "title": "Home & Garden",
+            "subtitle": "Furniture & decor"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.categories[2]"
+            }
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "payload": { "event": "onSelectProduct" } }
+            ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.home.category.home.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 4
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
+          }
+        },
+        {
+          "id": "featuredProductsTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "ecr.products.name" },
+              { "field": "price", "headerKey": "ecr.products.price" },
+              { "field": "category", "headerKey": "ecr.products.category" },
+              { "field": "rating", "headerKey": "ecr.products.rating" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.products"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.home.featured.table"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.home.featured.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 5
+          }
+        }
+      ]
+    },
+    "product": {
+      "version": "1.0.0",
+      "pageId": "product",
+      "layout": {
+        "id": "product-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "product-header",
+            "type": "section",
+            "title": "Product Details",
+            "componentIds": ["productName", "productPrice", "productDescription"]
+          },
+          {
+            "id": "product-stock",
+            "type": "section",
+            "title": "Availability",
+            "componentIds": ["stockIndicator"]
+          },
+          {
+            "id": "product-actions",
+            "type": "section",
+            "title": "Actions",
+            "componentIds": ["addToCartButton"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "productName",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "variant": "h2",
+            "text": ""
+          },
+          "bindings": {
+            "data": {
+              "value": "data.product.name"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.product.name"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.product.name.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": false,
+            "focusOrder": 1
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 8 }
+            }
+          }
+        },
+        {
+          "id": "productPrice",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "variant": "h3",
+            "text": "",
+            "format": "currency"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.product.price"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.product.price"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.product.price.aria",
+            "tabIndex": 0,
+            "role": "text",
+            "keyboardNav": false,
+            "focusOrder": 2
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
+          }
+        },
+        {
+          "id": "productDescription",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "variant": "body1",
+            "text": ""
+          },
+          "bindings": {
+            "data": {
+              "value": "data.product.description"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.product.description"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.product.description.aria",
+            "tabIndex": 0,
+            "role": "text",
+            "keyboardNav": false,
+            "focusOrder": 3
+          }
+        },
+        {
+          "id": "stockIndicator",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "variant": "body2",
+            "text": ""
+          },
+          "bindings": {
+            "data": {
+              "value": "data.product.stockStatus"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.product.stock"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.product.stock.aria",
+            "tabIndex": 0,
+            "role": "status",
+            "keyboardNav": false,
+            "focusOrder": 4
+          },
+          "rules": {
+            "visibleWhen": {
+              "op": "exists",
+              "left": { "path": "data.product.stockStatus" }
+            }
+          }
+        },
+        {
+          "id": "addToCartButton",
+          "type": "button",
+          "adapterHint": "material.input",
+          "props": {
+            "text": "Add to Cart",
+            "variant": "contained",
+            "color": "primary"
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "payload": { "event": "onAddToCart" } }
+            ]
+          },
+          "i18n": {
+            "labelKey": "ecr.product.addToCart"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.product.addToCart.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 5
+          },
+          "rules": {
+            "disabledWhen": {
+              "op": "eq",
+              "left": { "path": "data.product.stockStatus" },
+              "right": { "value": "Out of Stock" }
+            }
+          }
+        }
+      ]
+    },
+    "cart": {
+      "version": "1.0.0",
+      "pageId": "cart",
+      "layout": {
+        "id": "cart-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "cart-items-section",
+            "type": "section",
+            "title": "Your Cart",
+            "componentIds": ["cartItemsTable"]
+          },
+          {
+            "id": "cart-totals-section",
+            "type": "section",
+            "title": "Cart Summary",
+            "componentIds": ["cartTotalText"]
+          },
+          {
+            "id": "cart-discount-section",
+            "type": "section",
+            "title": "Discount",
+            "componentIds": ["discountInput", "applyDiscountButton"]
+          },
+          {
+            "id": "cart-actions-section",
+            "type": "section",
+            "title": "Actions",
+            "componentIds": ["proceedToCheckoutButton"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "cartItemsTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "ecr.cart.item.name" },
+              { "field": "quantity", "headerKey": "ecr.cart.item.quantity" },
+              { "field": "unitPrice", "headerKey": "ecr.cart.item.unitPrice" },
+              { "field": "subtotal", "headerKey": "ecr.cart.item.subtotal" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.cart.items"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.cart.items.table"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.cart.items.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 1
+          }
+        },
+        {
+          "id": "cartTotalText",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "variant": "h4",
+            "text": "",
+            "format": "currency"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.cart.total"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.cart.total"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.cart.total.aria",
+            "tabIndex": 0,
+            "role": "text",
+            "keyboardNav": false,
+            "focusOrder": 2
+          }
+        },
+        {
+          "id": "discountInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "text"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.cart.discountCode"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.cart.discount.label",
+            "placeholderKey": "ecr.cart.discount.placeholder",
+            "helperTextKey": "ecr.cart.discount.helper"
           },
           "validations": {
             "required": false,
-            "min": 2,
-            "max": 64,
-            "regex": "^[a-zA-Z\\s]+$"
+            "max": 32
           },
           "accessibility": {
-            "ariaLabelKey": "runtime.filters.customerName.aria",
+            "ariaLabelKey": "ecr.cart.discount.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 3
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 8 }
+            }
+          }
+        },
+        {
+          "id": "applyDiscountButton",
+          "type": "button",
+          "adapterHint": "material.input",
+          "props": {
+            "text": "Apply Discount",
+            "variant": "outlined",
+            "color": "secondary"
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "payload": { "event": "onApplyDiscount" } }
+            ]
+          },
+          "i18n": {
+            "labelKey": "ecr.cart.applyDiscount"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.cart.applyDiscount.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 4
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
+          }
+        },
+        {
+          "id": "proceedToCheckoutButton",
+          "type": "button",
+          "adapterHint": "material.input",
+          "props": {
+            "text": "Proceed to Checkout",
+            "variant": "contained",
+            "color": "primary"
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "payload": { "event": "onCheckout" } }
+            ]
+          },
+          "i18n": {
+            "labelKey": "ecr.cart.checkout"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.cart.checkout.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 5
+          },
+          "rules": {
+            "disabledWhen": {
+              "op": "eq",
+              "left": { "path": "data.cart.items.length" },
+              "right": { "value": 0 }
+            }
+          }
+        }
+      ]
+    },
+    "checkout": {
+      "version": "1.0.0",
+      "pageId": "checkout",
+      "layout": {
+        "id": "checkout-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "checkout-shipping-section",
+            "type": "section",
+            "title": "Shipping Address",
+            "componentIds": ["shippingAddressInput", "shippingCityInput", "shippingPostalCodeInput"]
+          },
+          {
+            "id": "checkout-payment-section",
+            "type": "section",
+            "title": "Payment",
+            "componentIds": ["paymentMethodSelect"]
+          },
+          {
+            "id": "checkout-summary-section",
+            "type": "section",
+            "title": "Order Summary",
+            "componentIds": ["orderSummaryText"]
+          },
+          {
+            "id": "checkout-actions-section",
+            "type": "section",
+            "title": "Actions",
+            "componentIds": ["placeOrderButton"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "shippingAddressInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "text"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.checkout.shipping.address"
+            }
+          },
+          "validations": {
+            "required": true,
+            "min": 5,
+            "max": 200
+          },
+          "i18n": {
+            "labelKey": "ecr.checkout.shipping.address.label",
+            "placeholderKey": "ecr.checkout.shipping.address.placeholder"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.checkout.shipping.address.aria",
             "tabIndex": 0,
             "role": "textbox",
             "keyboardNav": true,
@@ -248,36 +797,35 @@
           "responsive": {
             "breakpoints": {
               "sm": { "columns": 12, "span": 12 },
-              "md": { "columns": 12, "span": 6 }
+              "md": { "columns": 12, "span": 12 }
             }
-          },
-          "events": {
-            "onChange": [
-              { "type": "emitEvent", "payload": { "event": "filterChanged" } }
-            ]
           }
         },
         {
-          "id": "orderTotalInput",
+          "id": "shippingCityInput",
           "type": "input",
           "adapterHint": "material.input",
           "props": {
-            "inputType": "number"
-          },
-          "i18n": {
-            "labelKey": "runtime.filters.orderTotal.label",
-            "placeholderKey": "runtime.filters.orderTotal.placeholder",
-            "helperTextKey": "runtime.filters.orderTotal.helper"
+            "inputType": "text"
           },
           "bindings": {
             "data": {
-              "value": "data.orderTotal"
+              "value": "data.checkout.shipping.city"
             }
           },
+          "validations": {
+            "required": true,
+            "min": 2,
+            "max": 100
+          },
+          "i18n": {
+            "labelKey": "ecr.checkout.shipping.city.label",
+            "placeholderKey": "ecr.checkout.shipping.city.placeholder"
+          },
           "accessibility": {
-            "ariaLabelKey": "runtime.filters.orderTotal.aria",
+            "ariaLabelKey": "ecr.checkout.shipping.city.aria",
             "tabIndex": 0,
-            "role": "spinbutton",
+            "role": "textbox",
             "keyboardNav": true,
             "focusOrder": 2
           },
@@ -289,135 +837,308 @@
           }
         },
         {
-          "id": "ordersTable",
+          "id": "shippingPostalCodeInput",
+          "type": "input",
+          "adapterHint": "material.input",
+          "props": {
+            "inputType": "text"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.checkout.shipping.postalCode"
+            }
+          },
+          "validations": {
+            "required": true,
+            "min": 3,
+            "max": 20,
+            "regex": "^[A-Za-z0-9\\s-]+$"
+          },
+          "i18n": {
+            "labelKey": "ecr.checkout.shipping.postalCode.label",
+            "placeholderKey": "ecr.checkout.shipping.postalCode.placeholder"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.checkout.shipping.postalCode.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 3
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
+          }
+        },
+        {
+          "id": "paymentMethodSelect",
+          "type": "select",
+          "adapterHint": "material.input",
+          "props": {
+            "options": [
+              { "value": "credit_card", "label": "Credit Card" },
+              { "value": "debit_card", "label": "Debit Card" },
+              { "value": "paypal", "label": "PayPal" },
+              { "value": "bank_transfer", "label": "Bank Transfer" }
+            ]
+          },
+          "bindings": {
+            "data": {
+              "value": "data.checkout.paymentMethod"
+            }
+          },
+          "validations": {
+            "required": true
+          },
+          "i18n": {
+            "labelKey": "ecr.checkout.payment.method.label",
+            "placeholderKey": "ecr.checkout.payment.method.placeholder"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.checkout.payment.method.aria",
+            "tabIndex": 0,
+            "role": "combobox",
+            "keyboardNav": true,
+            "focusOrder": 4
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
+          }
+        },
+        {
+          "id": "orderSummaryText",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "variant": "body1",
+            "text": ""
+          },
+          "bindings": {
+            "data": {
+              "value": "data.checkout.orderSummary"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.checkout.summary"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.checkout.summary.aria",
+            "tabIndex": 0,
+            "role": "text",
+            "keyboardNav": false,
+            "focusOrder": 5
+          }
+        },
+        {
+          "id": "placeOrderButton",
+          "type": "button",
+          "adapterHint": "material.input",
+          "props": {
+            "text": "Place Order",
+            "variant": "contained",
+            "color": "primary"
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "payload": { "event": "onPlaceOrder" } }
+            ]
+          },
+          "i18n": {
+            "labelKey": "ecr.checkout.placeOrder"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.checkout.placeOrder.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 6
+          }
+        }
+      ]
+    },
+    "confirmation": {
+      "version": "1.0.0",
+      "pageId": "confirmation",
+      "layout": {
+        "id": "confirmation-root",
+        "type": "stack",
+        "direction": "vertical",
+        "children": [
+          {
+            "id": "confirmation-header-section",
+            "type": "section",
+            "title": "Order Confirmed",
+            "componentIds": ["orderReferenceText"]
+          },
+          {
+            "id": "confirmation-details-section",
+            "type": "section",
+            "title": "Order Details",
+            "componentIds": ["orderSummaryTable"]
+          },
+          {
+            "id": "confirmation-actions-section",
+            "type": "section",
+            "title": "Next Steps",
+            "componentIds": ["continueShoppingButton"]
+          }
+        ]
+      },
+      "components": [
+        {
+          "id": "orderReferenceText",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "variant": "h3",
+            "text": ""
+          },
+          "bindings": {
+            "data": {
+              "value": "data.order.reference"
+            }
+          },
+          "i18n": {
+            "labelKey": "ecr.confirmation.reference"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.confirmation.reference.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": false,
+            "focusOrder": 1
+          }
+        },
+        {
+          "id": "orderSummaryTable",
           "type": "table",
           "adapterHint": "aggrid.table",
           "props": {
             "columns": [
-              { "field": "orderId", "headerKey": "runtime.orders.table.columns.orderId" },
-              { "field": "customer", "headerKey": "runtime.orders.table.columns.customer" },
-              { "field": "total", "headerKey": "runtime.orders.table.columns.total" }
+              { "field": "item", "headerKey": "ecr.confirmation.item" },
+              { "field": "quantity", "headerKey": "ecr.confirmation.quantity" },
+              { "field": "price", "headerKey": "ecr.confirmation.price" },
+              { "field": "subtotal", "headerKey": "ecr.confirmation.subtotal" }
             ],
             "rows": []
           },
-          "i18n": {
-            "labelKey": "runtime.orders.table.label"
-          },
           "bindings": {
             "data": {
-              "rows": "data.orders"
+              "rows": "data.order.summary"
             }
           },
+          "i18n": {
+            "labelKey": "ecr.confirmation.summary.table"
+          },
           "accessibility": {
-            "ariaLabelKey": "runtime.orders.table.aria",
+            "ariaLabelKey": "ecr.confirmation.summary.table.aria",
             "tabIndex": 0,
             "role": "table",
             "keyboardNav": true,
+            "focusOrder": 2
+          }
+        },
+        {
+          "id": "continueShoppingButton",
+          "type": "button",
+          "adapterHint": "material.input",
+          "props": {
+            "text": "Continue Shopping",
+            "variant": "outlined",
+            "color": "primary"
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "payload": { "event": "onContinueShopping" } }
+            ]
+          },
+          "i18n": {
+            "labelKey": "ecr.confirmation.continueShopping"
+          },
+          "accessibility": {
+            "ariaLabelKey": "ecr.confirmation.continueShopping.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
             "focusOrder": 3
-          }
-        },
-        {
-          "id": "revenueChart",
-          "type": "chart",
-          "adapterHint": "highcharts.chart",
-          "props": {
-            "series": []
-          },
-          "i18n": {
-            "labelKey": "runtime.revenue.chart.label"
-          },
-          "bindings": {
-            "data": {
-              "series": "data.revenueSeries"
-            }
-          },
-          "accessibility": {
-            "ariaLabelKey": "runtime.revenue.chart.aria",
-            "tabIndex": 0,
-            "role": "img",
-            "keyboardNav": true,
-            "focusOrder": 4
-          }
-        },
-        {
-          "id": "customViz",
-          "type": "custom",
-          "adapterHint": "d3.custom",
-          "props": {
-            "height": 240
-          },
-          "i18n": {
-            "labelKey": "runtime.customViz.label"
-          },
-          "bindings": {
-            "data": {
-              "dataset": "data.customViz"
-            }
-          },
-          "accessibility": {
-            "ariaLabelKey": "runtime.customViz.aria",
-            "tabIndex": 0,
-            "role": "img",
-            "keyboardNav": true,
-            "focusOrder": 5
           }
         }
       ]
     }
   },
-  "activeUiPageId": "dashboard",
+  "activeUiPageId": "home",
   "flowSchema": {
     "version": "1.0.0",
-    "flowId": "store-flow",
-    "initialState": "browse",
+    "flowId": "ecr-commerce-flow",
+    "initialState": "home",
     "states": {
-      "browse": {
-        "uiPageId": "dashboard",
+      "home": {
+        "uiPageId": "home",
         "on": {
-          "next": {
-            "target": "details",
+          "onSelectProduct": {
+            "target": "product"
+          }
+        }
+      },
+      "product": {
+        "uiPageId": "product",
+        "on": {
+          "onAddToCart": {
+            "target": "cart",
+            "actions": ["evaluateRules"]
+          }
+        }
+      },
+      "cart": {
+        "uiPageId": "cart",
+        "on": {
+          "onCheckout": {
+            "target": "checkout",
             "guard": {
-              "op": "eq",
-              "left": { "path": "data.acceptedTerms" },
-              "right": { "value": true }
+              "op": "gt",
+              "left": { "path": "data.cart.items.length" },
+              "right": { "value": 0 }
             }
           }
         }
       },
-      "details": {
-        "uiPageId": "dashboard",
+      "checkout": {
+        "uiPageId": "checkout",
         "on": {
-          "back": { "target": "browse" },
-          "next": {
-            "target": "review",
+          "onPlaceOrder": {
+            "target": "confirmation",
             "guard": {
-              "op": "eq",
-              "left": { "path": "data.formValid" },
-              "right": { "value": true }
-            }
-          }
-        }
-      },
-      "review": {
-        "uiPageId": "dashboard",
-        "on": {
-          "back": { "target": "details" },
-          "submit": {
-            "target": "complete",
-            "guard": {
-              "op": "eq",
-              "left": { "path": "data.readyToSubmit" },
-              "right": { "value": true }
+              "all": [
+                {
+                  "op": "exists",
+                  "left": { "path": "data.checkout.shipping.address" }
+                },
+                {
+                  "op": "exists",
+                  "left": { "path": "data.checkout.shipping.city" }
+                },
+                {
+                  "op": "exists",
+                  "left": { "path": "data.checkout.shipping.postalCode" }
+                }
+              ]
             },
             "actions": ["evaluateRules", "callApi"],
             "apiId": "submitOrder"
           }
         }
       },
-      "complete": {
-        "uiPageId": "dashboard",
+      "confirmation": {
+        "uiPageId": "confirmation",
         "on": {
-          "back": { "target": "review" }
+          "onContinueShopping": {
+            "target": "home"
+          }
         }
       }
     }
@@ -426,54 +1147,72 @@
     "version": "1.0.0",
     "rules": [
       {
-        "ruleId": "US_ADMIN_DISCOUNT",
-        "description": "Apply admin discount for US orders over 1000",
+        "ruleId": "CartNotEmpty",
+        "description": "Ensure at least one item exists in the cart before allowing checkout",
         "priority": 100,
-        "scope": {
-          "countries": ["US"],
-          "roles": ["admin"]
-        },
         "when": {
           "op": "gt",
-          "left": { "path": "data.orderTotal" },
-          "right": { "value": 1000 }
-        },
-        "actions": [
-          { "type": "setField", "path": "data.discount", "value": 0.1 },
-          { "type": "emitEvent", "event": "discountApplied", "payload": { "level": "admin" } }
-        ]
+          "left": { "path": "data.cart.items.length" },
+          "right": { "value": 0 }
+        }
       },
       {
-        "ruleId": "EU_GDPR_NOTICE",
-        "description": "Flag GDPR notice for EU visitors",
-        "priority": 50,
-        "scope": {
-          "countries": ["DE", "FR", "ES"],
-          "roles": ["user", "admin"]
-        },
+        "ruleId": "ApplyDiscount",
+        "description": "Apply a 10% discount when cart total exceeds $100",
+        "priority": 90,
         "when": {
-          "op": "exists",
-          "left": { "path": "context.locale" }
+          "op": "gt",
+          "left": { "path": "data.cart.total" },
+          "right": { "value": 100 }
         },
         "actions": [
-          { "type": "setContext", "path": "context.gdprNotice", "value": true }
+          {
+            "type": "setField",
+            "path": "data.cart.discountPercent",
+            "value": 10
+          },
+          {
+            "type": "setField",
+            "path": "data.cart.discountApplied",
+            "value": true
+          },
+          {
+            "type": "emitEvent",
+            "event": "discountApplied",
+            "payload": { "percent": 10 }
+          }
         ]
       },
       {
-        "ruleId": "BLOCK_GUEST_RESTRICTED",
-        "description": "Block guest access to restricted data",
-        "priority": 10,
-        "scope": {
-          "roles": ["guest"]
-        },
+        "ruleId": "RequiredFieldsPresent",
+        "description": "Validate that all required shipping fields are present before order placement",
+        "priority": 80,
+        "when": {
+          "all": [
+            {
+              "op": "exists",
+              "left": { "path": "data.checkout.shipping.address" }
+            },
+            {
+              "op": "exists",
+              "left": { "path": "data.checkout.shipping.city" }
+            },
+            {
+              "op": "exists",
+              "left": { "path": "data.checkout.shipping.postalCode" }
+            }
+          ]
+        }
+      },
+      {
+        "ruleId": "UserIsAdmin",
+        "description": "Check if the current user has admin role for admin panel access",
+        "priority": 70,
         "when": {
           "op": "eq",
-          "left": { "path": "data.restricted" },
-          "right": { "value": true }
-        },
-        "actions": [
-          { "type": "throwError", "message": "Guest access not permitted", "code": "GUEST_BLOCK" }
-        ]
+          "left": { "path": "data.user.role" },
+          "right": { "value": "admin" }
+        }
       }
     ]
   },
@@ -483,38 +1222,46 @@
       "apiId": "submitOrder",
       "type": "rest",
       "method": "POST",
-      "endpoint": "https://api.example.com/orders",
+      "endpoint": "https://api.ecr-commerce.example.com/orders",
       "requestMap": {
         "body": {
-          "orderId": { "from": "data.orderId" },
-          "customerId": { "from": "data.customerId" },
-          "total": { "from": "data.orderTotal" },
-          "locale": { "from": "context.locale", "transform": "upper($)" }
+          "cartItems": { "from": "data.cart.items" },
+          "cartTotal": { "from": "data.cart.total" },
+          "discountApplied": { "from": "data.cart.discountApplied" },
+          "discountPercent": { "from": "data.cart.discountPercent" },
+          "shippingAddress": { "from": "data.checkout.shipping.address" },
+          "shippingCity": { "from": "data.checkout.shipping.city" },
+          "shippingPostalCode": { "from": "data.checkout.shipping.postalCode" },
+          "paymentMethod": { "from": "data.checkout.paymentMethod" },
+          "customerId": { "from": "context.userId" },
+          "locale": { "from": "context.locale" }
         },
         "headers": {
+          "authorization": { "from": "context.permissions[0]" },
           "x-tenant": { "from": "context.tenantId" }
         }
       },
       "responseMap": {
         "data": {
-          "orderId": "response.orderId",
-          "status": "response.status"
+          "order.reference": "response.orderReference",
+          "order.status": "response.status",
+          "order.summary": "response.summary"
         },
         "context": {
-          "lastRequestId": "response.requestId"
+          "lastOrderId": "response.orderId"
         }
       },
-      "transforms": [
-        { "name": "upper", "expression": "upper($)" }
-      ],
+      "transforms": [],
       "errorHandling": {
         "map": {
-          "400": "BAD_REQUEST",
+          "400": "INVALID_ORDER",
+          "401": "UNAUTHORIZED",
+          "422": "VALIDATION_FAILED",
           "500": "SERVER_ERROR"
         },
         "retry": {
           "maxAttempts": 2,
-          "backoffMs": 250
+          "backoffMs": 500
         }
       }
     }

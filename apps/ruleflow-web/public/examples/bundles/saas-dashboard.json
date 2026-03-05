@@ -3,36 +3,59 @@
     "version": "1.0.0",
     "pageId": "login",
     "layout": {
-      "id": "login-root",
+      "id": "root",
       "type": "stack",
       "direction": "vertical",
       "children": [
         {
+          "id": "login-header",
+          "type": "section",
+          "title": "SaaS Insights Platform",
+          "componentIds": ["appTitle"]
+        },
+        {
           "id": "login-form",
           "type": "section",
-          "title": "Sign in",
-          "componentIds": ["loginEmail", "loginPassword", "loginButton"]
+          "title": "Sign In",
+          "componentIds": ["loginUsername", "loginPassword", "loginButton", "forgotPasswordLink"]
         }
       ]
     },
     "components": [
       {
-        "id": "loginEmail",
+        "id": "appTitle",
+        "type": "text",
+        "adapterHint": "material.input",
+        "props": {
+          "text": "SaaS Insights Platform",
+          "variant": "h4"
+        }
+      },
+      {
+        "id": "loginUsername",
         "type": "input",
         "adapterHint": "material.input",
         "props": {
-          "inputType": "email"
+          "inputType": "text"
         },
         "bindings": {
           "data": {
-            "value": "data.user.email"
+            "value": "data.user.username"
           }
         },
         "validations": {
           "required": true
         },
         "i18n": {
-          "labelKey": "examples.saas.login.email"
+          "labelKey": "examples.saas.login.username",
+          "placeholderKey": "examples.saas.login.username.placeholder"
+        },
+        "accessibility": {
+          "ariaLabelKey": "examples.saas.login.username.aria",
+          "tabIndex": 0,
+          "role": "textbox",
+          "keyboardNav": true,
+          "focusOrder": 1
         }
       },
       {
@@ -51,21 +74,53 @@
           "required": true
         },
         "i18n": {
-          "labelKey": "examples.saas.login.password"
+          "labelKey": "examples.saas.login.password",
+          "placeholderKey": "examples.saas.login.password.placeholder"
+        },
+        "accessibility": {
+          "ariaLabelKey": "examples.saas.login.password.aria",
+          "tabIndex": 0,
+          "role": "textbox",
+          "keyboardNav": true,
+          "focusOrder": 2
         }
       },
       {
         "id": "loginButton",
-        "type": "custom",
+        "type": "button",
         "adapterHint": "d3.custom",
         "props": {
-          "text": "Login",
-          "height": 60
+          "text": "Sign In",
+          "variant": "primary",
+          "height": 56
         },
         "events": {
           "onClick": [
-            { "type": "emitEvent", "payload": { "event": "onLoginSuccess" } }
+            { "type": "emitEvent", "event": "onLogin" }
           ]
+        },
+        "accessibility": {
+          "ariaLabelKey": "examples.saas.login.submit.aria",
+          "tabIndex": 0,
+          "role": "button",
+          "keyboardNav": true,
+          "focusOrder": 3
+        }
+      },
+      {
+        "id": "forgotPasswordLink",
+        "type": "text",
+        "adapterHint": "material.input",
+        "props": {
+          "text": "Forgot Password?",
+          "variant": "link"
+        },
+        "accessibility": {
+          "ariaLabelKey": "examples.saas.login.forgot.aria",
+          "tabIndex": 0,
+          "role": "link",
+          "keyboardNav": true,
+          "focusOrder": 4
         }
       }
     ]
@@ -75,33 +130,59 @@
       "version": "1.0.0",
       "pageId": "login",
       "layout": {
-        "id": "login-root",
+        "id": "root",
         "type": "stack",
         "direction": "vertical",
         "children": [
           {
+            "id": "login-header",
+            "type": "section",
+            "title": "SaaS Insights Platform",
+            "componentIds": ["appTitle"]
+          },
+          {
             "id": "login-form",
             "type": "section",
-            "title": "Sign in",
-            "componentIds": ["loginEmail", "loginPassword", "loginButton"]
+            "title": "Sign In",
+            "componentIds": ["loginUsername", "loginPassword", "loginButton", "forgotPasswordLink"]
           }
         ]
       },
       "components": [
         {
-          "id": "loginEmail",
+          "id": "appTitle",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "text": "SaaS Insights Platform",
+            "variant": "h4"
+          }
+        },
+        {
+          "id": "loginUsername",
           "type": "input",
           "adapterHint": "material.input",
           "props": {
-            "inputType": "email"
+            "inputType": "text"
           },
           "bindings": {
             "data": {
-              "value": "data.user.email"
+              "value": "data.user.username"
             }
           },
           "validations": {
             "required": true
+          },
+          "i18n": {
+            "labelKey": "examples.saas.login.username",
+            "placeholderKey": "examples.saas.login.username.placeholder"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.login.username.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
@@ -118,20 +199,55 @@
           },
           "validations": {
             "required": true
+          },
+          "i18n": {
+            "labelKey": "examples.saas.login.password",
+            "placeholderKey": "examples.saas.login.password.placeholder"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.login.password.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 2
           }
         },
         {
           "id": "loginButton",
-          "type": "custom",
+          "type": "button",
           "adapterHint": "d3.custom",
           "props": {
-            "text": "Login",
-            "height": 60
+            "text": "Sign In",
+            "variant": "primary",
+            "height": 56
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onLoginSuccess" }
+              { "type": "emitEvent", "event": "onLogin" }
             ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.login.submit.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 3
+          }
+        },
+        {
+          "id": "forgotPasswordLink",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "text": "Forgot Password?",
+            "variant": "link"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.login.forgot.aria",
+            "tabIndex": 0,
+            "role": "link",
+            "keyboardNav": true,
+            "focusOrder": 4
           }
         }
       ]
@@ -140,73 +256,221 @@
       "version": "1.0.0",
       "pageId": "dashboard",
       "layout": {
-        "id": "dashboard-root",
+        "id": "root",
         "type": "stack",
         "direction": "vertical",
         "children": [
           {
+            "id": "dashboard-welcome",
+            "type": "section",
+            "title": "Welcome",
+            "componentIds": ["welcomeMessage"]
+          },
+          {
             "id": "dashboard-kpis",
             "type": "section",
-            "title": "KPI Snapshot",
-            "componentIds": ["kpiTable"]
+            "title": "Key Performance Indicators",
+            "componentIds": ["kpiRevenue", "kpiActiveUsers", "kpiCSAT"]
           },
           {
             "id": "dashboard-chart",
             "type": "section",
-            "title": "Revenue trends",
-            "componentIds": ["dashboardChart"]
+            "title": "Revenue Trends",
+            "componentIds": ["revenueTrendChart"]
           },
           {
             "id": "dashboard-reports",
             "type": "section",
-            "title": "Report access",
-            "componentIds": ["reportButton"]
+            "title": "Recent Reports",
+            "componentIds": ["recentReportsTable"]
+          },
+          {
+            "id": "dashboard-actions",
+            "type": "section",
+            "title": "Actions",
+            "componentIds": ["viewReportsButton"]
           }
         ]
       },
       "components": [
         {
-          "id": "kpiTable",
-          "type": "table",
-          "adapterHint": "aggrid.table",
+          "id": "welcomeMessage",
+          "type": "text",
+          "adapterHint": "material.input",
           "props": {
-            "columns": [
-              { "field": "label", "headerKey": "examples.saas.kpi.label" },
-              { "field": "value", "headerKey": "examples.saas.kpi.value" }
-            ],
-            "rows": []
+            "text": "Welcome back, {{user.name}}",
+            "variant": "h5"
           },
           "bindings": {
             "data": {
-              "rows": "data.metrics.kpis"
+              "value": "data.user.name"
             }
           }
         },
         {
-          "id": "dashboardChart",
+          "id": "kpiRevenue",
+          "type": "card",
+          "adapterHint": "material.input",
+          "props": {
+            "title": "Revenue",
+            "value": "$152k",
+            "icon": "trending_up",
+            "color": "success"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.metrics.revenue"
+            }
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.dashboard.kpi.revenue.aria",
+            "tabIndex": 0,
+            "role": "status",
+            "keyboardNav": true,
+            "focusOrder": 1
+          }
+        },
+        {
+          "id": "kpiActiveUsers",
+          "type": "card",
+          "adapterHint": "material.input",
+          "props": {
+            "title": "Active Users",
+            "value": "2,847",
+            "icon": "people",
+            "color": "primary"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.metrics.activeUsers"
+            }
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.dashboard.kpi.activeUsers.aria",
+            "tabIndex": 0,
+            "role": "status",
+            "keyboardNav": true,
+            "focusOrder": 2
+          }
+        },
+        {
+          "id": "kpiCSAT",
+          "type": "card",
+          "adapterHint": "material.input",
+          "props": {
+            "title": "CSAT",
+            "value": "92%",
+            "icon": "sentiment_satisfied",
+            "color": "info"
+          },
+          "bindings": {
+            "data": {
+              "value": "data.metrics.csat"
+            }
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.dashboard.kpi.csat.aria",
+            "tabIndex": 0,
+            "role": "status",
+            "keyboardNav": true,
+            "focusOrder": 3
+          }
+        },
+        {
+          "id": "revenueTrendChart",
           "type": "chart",
           "adapterHint": "highcharts.chart",
           "props": {
-            "series": []
+            "chartType": "line",
+            "title": "Revenue Over Time",
+            "series": [],
+            "xAxisLabel": "Month",
+            "yAxisLabel": "Revenue ($)"
           },
           "bindings": {
             "data": {
               "series": "data.metrics.revenueSeries"
             }
+          },
+          "i18n": {
+            "labelKey": "examples.saas.dashboard.chart.revenue.label"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.dashboard.chart.revenue.aria",
+            "tabIndex": 0,
+            "role": "img",
+            "keyboardNav": true,
+            "focusOrder": 4
           }
         },
         {
-          "id": "reportButton",
-          "type": "custom",
+          "id": "recentReportsTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "name", "headerKey": "examples.saas.dashboard.reports.name" },
+              { "field": "status", "headerKey": "examples.saas.dashboard.reports.status" },
+              { "field": "owner", "headerKey": "examples.saas.dashboard.reports.owner" },
+              { "field": "date", "headerKey": "examples.saas.dashboard.reports.date" }
+            ],
+            "rows": [],
+            "pageSize": 5
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.reports"
+            }
+          },
+          "i18n": {
+            "labelKey": "examples.saas.dashboard.reports.label"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.dashboard.reports.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 5
+          }
+        },
+        {
+          "id": "viewReportsButton",
+          "type": "button",
           "adapterHint": "d3.custom",
           "props": {
-            "text": "View reports",
-            "height": 56
+            "text": "View Reports",
+            "variant": "primary",
+            "height": 52
           },
           "events": {
             "onClick": [
               { "type": "emitEvent", "event": "onViewReports" }
             ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.dashboard.viewReports.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 6
           }
         }
       ]
@@ -215,25 +479,46 @@
       "version": "1.0.0",
       "pageId": "reports",
       "layout": {
-        "id": "reports-root",
+        "id": "root",
         "type": "stack",
         "direction": "vertical",
         "children": [
           {
+            "id": "reports-header",
+            "type": "section",
+            "title": "Reports Detail",
+            "componentIds": ["reportsPageTitle"]
+          },
+          {
             "id": "reports-grid",
             "type": "section",
-            "title": "Reports grid",
+            "title": "All Reports",
             "componentIds": ["reportsTable"]
+          },
+          {
+            "id": "reports-region",
+            "type": "section",
+            "title": "Revenue by Region",
+            "componentIds": ["regionRevenueTable"]
           },
           {
             "id": "reports-actions",
             "type": "section",
             "title": "Actions",
-            "componentIds": ["reportsBack"]
+            "componentIds": ["exportButton", "backToDashboardButton"]
           }
         ]
       },
       "components": [
+        {
+          "id": "reportsPageTitle",
+          "type": "text",
+          "adapterHint": "material.input",
+          "props": {
+            "text": "Reports",
+            "variant": "h5"
+          }
+        },
         {
           "id": "reportsTable",
           "type": "table",
@@ -250,20 +535,88 @@
             "data": {
               "rows": "data.reports"
             }
+          },
+          "i18n": {
+            "labelKey": "examples.saas.reports.table.label"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.reports.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
-          "id": "reportsBack",
-          "type": "custom",
+          "id": "regionRevenueTable",
+          "type": "table",
+          "adapterHint": "aggrid.table",
+          "props": {
+            "columns": [
+              { "field": "region", "headerKey": "examples.saas.reports.region.name" },
+              { "field": "revenue", "headerKey": "examples.saas.reports.region.revenue" },
+              { "field": "growth", "headerKey": "examples.saas.reports.region.growth" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.metrics.byRegion"
+            }
+          },
+          "i18n": {
+            "labelKey": "examples.saas.reports.regionRevenue.label"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.reports.regionRevenue.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 2
+          }
+        },
+        {
+          "id": "exportButton",
+          "type": "button",
           "adapterHint": "d3.custom",
           "props": {
-            "text": "Back to dashboard",
+            "text": "Export",
+            "variant": "secondary",
             "height": 48
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onBack" }
+              { "type": "emitEvent", "event": "onExportReport" }
             ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.reports.export.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 3
+          }
+        },
+        {
+          "id": "backToDashboardButton",
+          "type": "button",
+          "adapterHint": "d3.custom",
+          "props": {
+            "text": "Back to Dashboard",
+            "variant": "outlined",
+            "height": 48
+          },
+          "events": {
+            "onClick": [
+              { "type": "emitEvent", "event": "onBackToDashboard" }
+            ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.reports.back.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 4
           }
         }
       ]
@@ -278,8 +631,14 @@
       "login": {
         "uiPageId": "login",
         "on": {
-          "onLoginSuccess": {
-            "target": "dashboard"
+          "onLogin": {
+            "target": "dashboard",
+            "guard": {
+              "op": "exists",
+              "left": {
+                "path": "data.user.token"
+              }
+            }
           }
         }
       },
@@ -291,7 +650,7 @@
             "guard": {
               "op": "eq",
               "left": {
-                "path": "data.user.role"
+                "path": "context.role"
               },
               "right": {
                 "value": "admin"
@@ -315,8 +674,25 @@
       "reports": {
         "uiPageId": "reports",
         "on": {
-          "onBack": {
+          "onBackToDashboard": {
             "target": "dashboard"
+          },
+          "onExportReport": {
+            "target": "reports",
+            "actions": ["callApi"],
+            "apiId": "exportReport"
+          },
+          "onInactivityTimeout": {
+            "target": "login",
+            "guard": {
+              "op": "eq",
+              "left": {
+                "path": "data.hostEvent"
+              },
+              "right": {
+                "value": "onInactivityTimeout"
+              }
+            }
           }
         }
       }
@@ -326,23 +702,48 @@
     "version": "1.0.0",
     "rules": [
       {
-        "ruleId": "IsAdmin",
-        "description": "Only admins may reach reports",
+        "ruleId": "IsAuthenticated",
+        "description": "Checks that the user has a valid authentication token before allowing login transition",
         "priority": 100,
+        "when": {
+          "op": "exists",
+          "left": {
+            "path": "data.user.token"
+          }
+        },
+        "actions": [
+          {
+            "type": "setContext",
+            "path": "context.authenticated",
+            "value": true
+          }
+        ]
+      },
+      {
+        "ruleId": "IsAdmin",
+        "description": "Checks that the current user has admin role, granting access to reports",
+        "priority": 90,
         "when": {
           "op": "eq",
           "left": {
-            "path": "data.user.role"
+            "path": "context.role"
           },
           "right": {
             "value": "admin"
           }
-        }
+        },
+        "actions": [
+          {
+            "type": "setContext",
+            "path": "context.adminAccess",
+            "value": true
+          }
+        ]
       },
       {
         "ruleId": "InactivityLogout",
-        "description": "Emit logout event when host reports inactivity",
-        "priority": 90,
+        "description": "Simulated timeout rule that forces redirect to login when host reports inactivity",
+        "priority": 80,
         "when": {
           "op": "eq",
           "left": {
@@ -355,16 +756,131 @@
         "actions": [
           {
             "type": "emitEvent",
-            "event": "logout"
+            "event": "onInactivityTimeout"
           },
           {
             "type": "setField",
             "path": "data.user.token",
             "value": null
+          },
+          {
+            "type": "setContext",
+            "path": "context.authenticated",
+            "value": false
+          }
+        ]
+      },
+      {
+        "ruleId": "RoleBasedAccess",
+        "description": "Restricts access to reports screen to users with admin role only",
+        "priority": 70,
+        "scope": {
+          "roles": ["user", "viewer"]
+        },
+        "when": {
+          "op": "neq",
+          "left": {
+            "path": "context.role"
+          },
+          "right": {
+            "value": "admin"
+          }
+        },
+        "actions": [
+          {
+            "type": "setContext",
+            "path": "context.adminAccess",
+            "value": false
+          },
+          {
+            "type": "throwError",
+            "message": "Access denied: admin role required to view reports",
+            "code": "ROLE_ACCESS_DENIED"
           }
         ]
       }
     ]
   },
-  "apiMappingsById": {}
+  "apiMappingsById": {
+    "fetchMetrics": {
+      "version": "1.0.0",
+      "apiId": "fetchMetrics",
+      "type": "rest",
+      "method": "GET",
+      "endpoint": "https://api.example.com/metrics",
+      "requestMap": {
+        "headers": {
+          "Authorization": { "from": "data.user.token", "transform": "concat('Bearer ', $)" },
+          "x-tenant": { "from": "context.tenantId" }
+        },
+        "query": {
+          "period": { "from": "context.metricsPeriod" }
+        }
+      },
+      "responseMap": {
+        "data": {
+          "metrics.revenue": "response.revenue",
+          "metrics.activeUsers": "response.activeUsers",
+          "metrics.csat": "response.csat",
+          "metrics.revenueSeries": "response.revenueSeries",
+          "metrics.byRegion": "response.byRegion"
+        }
+      },
+      "transforms": [
+        { "name": "concat", "expression": "concat($1, $2)" }
+      ],
+      "errorHandling": {
+        "map": {
+          "401": "UNAUTHORIZED",
+          "403": "FORBIDDEN",
+          "500": "SERVER_ERROR"
+        },
+        "retry": {
+          "maxAttempts": 3,
+          "backoffMs": 500
+        }
+      }
+    },
+    "exportReport": {
+      "version": "1.0.0",
+      "apiId": "exportReport",
+      "type": "rest",
+      "method": "POST",
+      "endpoint": "https://api.example.com/reports/export",
+      "requestMap": {
+        "body": {
+          "reportIds": { "from": "data.selectedReportIds" },
+          "format": { "from": "context.exportFormat" },
+          "requestedBy": { "from": "data.user.username" }
+        },
+        "headers": {
+          "Authorization": { "from": "data.user.token", "transform": "concat('Bearer ', $)" },
+          "x-tenant": { "from": "context.tenantId" }
+        }
+      },
+      "responseMap": {
+        "data": {
+          "exportUrl": "response.downloadUrl",
+          "exportStatus": "response.status"
+        },
+        "context": {
+          "lastExportRequestId": "response.requestId"
+        }
+      },
+      "transforms": [
+        { "name": "concat", "expression": "concat($1, $2)" }
+      ],
+      "errorHandling": {
+        "map": {
+          "400": "BAD_REQUEST",
+          "401": "UNAUTHORIZED",
+          "500": "SERVER_ERROR"
+        },
+        "retry": {
+          "maxAttempts": 2,
+          "backoffMs": 1000
+        }
+      }
+    }
+  }
 }

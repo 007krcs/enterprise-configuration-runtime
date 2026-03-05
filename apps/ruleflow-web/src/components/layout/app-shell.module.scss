@@ -4,11 +4,13 @@
   display: flex;
   flex-direction: column;
   background: transparent;
+  overflow: hidden;
 }
 
 .shellLanding {
   min-height: 100vh;
   height: auto;
+  overflow: visible;
 }
 
 .clientReady {
@@ -106,6 +108,7 @@
   gap: var(--rf-space-6);
   overflow: hidden;
   padding: var(--rf-space-6) 0;
+  height: 0;
 }
 
 .sidebar {
@@ -440,6 +443,11 @@
   min-height: calc(100vh - 64px);
   height: auto;
   overflow: visible;
+}
+
+/* Non-landing pages need the body to flex-grow so main can scroll */
+.body:not(.bodyLanding) {
+  flex: 1 1 0;
 }
 
 .mainLanding {

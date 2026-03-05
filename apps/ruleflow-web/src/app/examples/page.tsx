@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { JSONValue, ExecutionContext } from '@platform/schema';
 import { RenderPage } from '@platform/react-renderer';
 import { createProviderFromBundles, EXAMPLE_TENANT_BUNDLES, PLATFORM_BUNDLES } from '@platform/i18n';
@@ -127,12 +127,38 @@ const previewData: Record<string, JSONValue> = {
 
 export default function ExamplesPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const loadExample = useProjectStore((state) => state.loadExample);
   const [busyAction, setBusyAction] = useState<{ exampleId: string; action: ExampleAction } | null>(null);
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
+  const autoOpenRef = useRef(false);
 
   const baseLocale = previewContext.locale.split('-')[0] ?? previewContext.locale;
+
+  // Handle ?open=exampleId auto-open
+  useEffect(() => {
+    const openId = searchParams.get('open')?.trim();
+    if (!openId || autoOpenRef.current) return;
+    const example = exampleCatalog.find((e) => e.id === openId);
+    if (!example) return;
+    autoOpenRef.current = true;
+    setBusyAction({ exampleId: example.id, action: 'builder' });
+    void loadExample(example.id)
+      .then(() => {
+        router.push(`/builder?example=${encodeURIComponent(example.id)}`);
+      })
+      .catch((error) => {
+        toast({
+          variant: 'error',
+          title: 'Failed to load example',
+          description: error instanceof Error ? error.message : 'Unable to load example.',
+        });
+      })
+      .finally(() => {
+        setBusyAction(null);
+      });
+  }, [searchParams, loadExample, router, toast]);
 
   const previewPages = useMemo(() => {
     if (!previewState) return null;
