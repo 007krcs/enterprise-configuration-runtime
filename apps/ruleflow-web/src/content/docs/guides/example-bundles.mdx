@@ -1,0 +1,122 @@
+# Example Bundles
+
+ECR ships with curated example bundles that demonstrate real-world application patterns. This guide explains how they work and how to add new ones.
+
+## Included Examples
+
+| Example | Pages | Key Patterns |
+|---|---|---|
+| **E-Commerce Store** | 5 (home, products, cart, checkout, confirmation) | Product catalog, cart state, checkout flow, conditional discounts |
+| **SaaS Dashboard** | 3 (login, dashboard, reports) | Authentication guard, metric cards, data tables, chart integration |
+| **Onboarding Journey** | 4 (welcome, account, preferences, finish) | Multi-step wizard, form validation, conditional steps |
+
+## How Examples Work
+
+### Bundle Structure
+
+Each example is defined in `/lib/examples/` and provides a full `ConfigBundle`:
+
+```
+lib/examples/
+  index.ts          — catalog registry + loadExampleBundle()
+  ecommerce.ts      — E-commerce store bundle
+  saas-dashboard.ts — SaaS dashboard bundle
+  onboarding.ts     — Onboarding journey bundle
+```
+
+The `exampleCatalog` array in `index.ts` defines metadata (title, description, highlights, stats, tags) used by the Examples page UI.
+
+### Translation Resolution
+
+Example bundles reference i18n keys across three namespaces:
+
+- **`ecr`** — E-commerce labels (product names, cart actions, checkout fields)
+- **`onboarding`** — Onboarding step labels (welcome text, form fields, progress indicators)
+- **`examples`** — SaaS dashboard labels (login form, metric titles, report headers)
+
+Translations are provided by `EXAMPLE_DEMO_BUNDLES` in `@platform/i18n`. The i18n system resolves keys by splitting on `.` — the first segment is the namespace, the rest is the entry key.
+
+```
+"ecr.home.hero.title"
+  └─ namespace: "ecr"
+  └─ entry key: "home.hero.title"
+  └─ resolved: "Welcome to ECR Commerce"
+```
+
+### Preview Data
+
+The Examples page provides `previewData` and `previewContext` objects that simulate a realistic runtime environment with:
+
+- Product catalogs and pricing
+- Shopping cart state
+- User profile and roles
+- Revenue metrics and reports
+- Order history
+
+## Adding a New Example
+
+### 1. Create the Bundle File
+
+Create a new file in `lib/examples/`:
+
+```ts
+// lib/examples/my-example.ts
+import type { ConfigBundle } from '@/lib/demo/types';
+
+export const myExampleBundle: ConfigBundle = {
+  uiSchema: { /* first page schema */ },
+  uiSchemasById: {
+    'page-1': { /* ... */ },
+    'page-2': { /* ... */ },
+  },
+  activeUiPageId: 'page-1',
+  flowSchema: {
+    initialState: 'page-1',
+    states: { /* state machine */ },
+  },
+  rules: [],
+  apiMappingsById: {},
+};
+```
+
+### 2. Register in the Catalog
+
+Add your example to `exampleCatalog` in `lib/examples/index.ts`:
+
+```ts
+{
+  id: 'my-example',
+  title: 'My Example App',
+  description: 'Description of what this example demonstrates.',
+  tag: 'Custom',
+  highlights: [
+    'Feature A demonstrated',
+    'Feature B demonstrated',
+  ],
+  stats: ['3 pages', '2 rules', '1 API mapping'],
+}
+```
+
+### 3. Add Translations
+
+Add translation entries for your example's i18n keys to `EXAMPLE_DEMO_BUNDLES` in `packages/i18n/src/index.ts`:
+
+```ts
+{
+  locale: 'en',
+  namespace: 'myapp',
+  messages: {
+    'home.title': 'Welcome to My App',
+    'home.subtitle': 'Get started with...',
+    // ... all keys referenced by your UI schemas
+  },
+}
+```
+
+### 4. Add Preview Data
+
+If your example uses data bindings, add corresponding entries to the `previewData` object in `app/examples/page.tsx`.
+
+## Multi-Page Preview
+
+Examples with multiple pages display a tab bar in the preview panel. Users can click tabs to switch between pages. The tab bar appears automatically when `uiSchemasById` contains more than one page.

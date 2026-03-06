@@ -25,12 +25,13 @@
 
 .button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px var(--rf-focus);
+  box-shadow: 0 0 0 3px var(--rf-focus);
 }
 
 .sizeSm {
   height: 32px;
   padding: 0 12px;
+  font-size: 13px;
 }
 
 .sizeMd {
@@ -47,12 +48,12 @@
 .variantDefault {
   background: var(--rf-primary);
   color: var(--rf-primary-fg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .variantDefault:hover:not(:disabled) {
-  filter: brightness(0.94);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  filter: brightness(0.92);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
 
@@ -63,7 +64,8 @@
 }
 
 .variantSecondary:hover:not(:disabled) {
-  filter: brightness(0.98);
+  background: color-mix(in srgb, var(--rf-surface-2) 70%, var(--rf-border));
+  border-color: color-mix(in srgb, var(--rf-primary) 30%, var(--rf-border));
 }
 
 .variantOutline {
@@ -74,6 +76,7 @@
 
 .variantOutline:hover:not(:disabled) {
   background: var(--rf-surface-2);
+  border-color: color-mix(in srgb, var(--rf-primary) 30%, var(--rf-border));
 }
 
 .variantGhost {
@@ -85,3 +88,14 @@
   background: var(--rf-surface-2);
 }
 
+.variantDanger {
+  background: var(--rf-danger);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.variantDanger:hover:not(:disabled) {
+  filter: brightness(0.92);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+  transform: translateY(-1px);
+}

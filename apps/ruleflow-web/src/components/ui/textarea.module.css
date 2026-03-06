@@ -9,20 +9,25 @@
   font-size: 14px;
   color: var(--rf-fg);
   line-height: 1.35;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
 .textarea::placeholder {
   color: color-mix(in srgb, var(--rf-muted) 78%, transparent);
 }
 
+.textarea:hover:not(:disabled):not(:focus-visible) {
+  border-color: color-mix(in srgb, var(--rf-primary) 40%, var(--rf-border));
+}
+
 .textarea:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px var(--rf-focus);
+  box-shadow: 0 0 0 3px var(--rf-focus);
   border-color: color-mix(in srgb, var(--rf-primary) 60%, var(--rf-border));
 }
 
 .textarea:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
+  background: color-mix(in srgb, var(--rf-surface-2) 60%, var(--rf-surface));
 }
-

@@ -2,7 +2,7 @@ import * as React from 'react';
 import styles from './button.module.css';
 import { cn } from '@/lib/utils';
 
-export type ButtonVariant = 'default' | 'secondary' | 'ghost' | 'outline';
+export type ButtonVariant = 'default' | 'secondary' | 'ghost' | 'outline' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export type ButtonClassNameInput = {
@@ -24,7 +24,9 @@ export function buttonClassName(input: ButtonClassNameInput = {}): string {
         ? styles.variantGhost
         : variant === 'outline'
           ? styles.variantOutline
-          : styles.variantDefault,
+          : variant === 'danger'
+            ? styles.variantDanger
+            : styles.variantDefault,
     input.className,
   );
 }
