@@ -148,9 +148,11 @@
 
 .speedDialPreview {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 280px;
+  padding: 24px;
+  position: relative;
 }
 
 .masonry {

@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode, TableHTMLAttributes } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode, SVGAttributes, TableHTMLAttributes } from 'react';
 import { cn, intentClass, variantClass, type PFBaseProps, type PFIntent } from './utils';
 
 export interface PFCardProps extends HTMLAttributes<HTMLDivElement> {
@@ -262,6 +262,232 @@ export function PFDivider({
       className={cn('pf-divider', `pf-divider--${orientation}`, inset && 'pf-divider--inset', className)}
       {...rest}
     />
+  );
+}
+
+/* ──── PFList ──── */
+
+export interface PFListProps extends HTMLAttributes<HTMLUListElement> {
+  dense?: boolean;
+}
+
+export function PFList({ className, dense = false, ...rest }: PFListProps) {
+  return <ul className={cn('pf-list', dense && 'pf-list--dense', className)} {...rest} />;
+}
+
+export interface PFListItemProps extends Omit<HTMLAttributes<HTMLLIElement>, 'onClick'> {
+  icon?: ReactNode;
+  primary?: ReactNode;
+  secondary?: ReactNode;
+  action?: ReactNode;
+  selected?: boolean;
+  button?: boolean;
+  href?: string;
+  onClick?: () => void;
+}
+
+export function PFListItem({
+  className,
+  icon,
+  primary,
+  secondary,
+  action,
+  selected = false,
+  button = false,
+  href,
+  children,
+  onClick,
+  ...rest
+}: PFListItemProps) {
+  const content = (
+    <>
+      {icon ? <span className="pf-list-item__icon" aria-hidden="true">{icon}</span> : null}
+      {primary || secondary ? (
+        <span className="pf-list-item__text">
+          {primary ? <span className="pf-list-item__primary">{primary}</span> : null}
+          {secondary ? <span className="pf-list-item__secondary">{secondary}</span> : null}
+        </span>
+      ) : (
+        <span className="pf-list-item__text">{children}</span>
+      )}
+      {action ? <span className="pf-list-item__action">{action}</span> : null}
+    </>
+  );
+
+  if (href) {
+    return (
+      <li {...rest}>
+        <a className={cn('pf-list-item', selected && 'is-selected', className)} href={href} onClick={() => onClick?.()}>
+          {content}
+        </a>
+      </li>
+    );
+  }
+
+  if (button || onClick) {
+    return (
+      <li {...rest}>
+        <button
+          type="button"
+          className={cn('pf-list-item', selected && 'is-selected', className)}
+          onClick={() => onClick?.()}
+        >
+          {content}
+        </button>
+      </li>
+    );
+  }
+
+  return (
+    <li className={cn('pf-list-item', selected && 'is-selected', className)} {...rest}>
+      {content}
+    </li>
+  );
+}
+
+export function PFListDivider({ className, ...rest }: HTMLAttributes<HTMLHRElement>) {
+  return <hr className={cn('pf-list-divider', className)} {...rest} />;
+}
+
+export function PFListSubheader({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('pf-list-subheader', className)} {...rest} />;
+}
+
+/* ──── PFPaper ──── */
+
+export interface PFPaperProps extends HTMLAttributes<HTMLDivElement> {
+  elevation?: 0 | 1 | 2 | 3 | 4;
+  variant?: 'elevation' | 'outlined';
+  square?: boolean;
+  padded?: boolean;
+}
+
+export function PFPaper({
+  className,
+  elevation = 1,
+  variant = 'elevation',
+  square = false,
+  padded = false,
+  ...rest
+}: PFPaperProps) {
+  return (
+    <div
+      className={cn(
+        'pf-paper',
+        variant === 'outlined' ? 'pf-paper--outlined' : `pf-paper--elevation-${elevation}`,
+        square && 'pf-paper--square',
+        padded && 'pf-paper--padded',
+        className,
+      )}
+      {...rest}
+    />
+  );
+}
+
+/* ──── PFImageList ──── */
+
+export interface PFImageListProps extends HTMLAttributes<HTMLUListElement> {
+  variant?: 'standard' | 'masonry';
+  cols?: number;
+  colWidth?: string;
+}
+
+export function PFImageList({
+  className,
+  variant = 'standard',
+  cols = 3,
+  colWidth = '200px',
+  style,
+  ...rest
+}: PFImageListProps) {
+  const mergedStyle = {
+    ...style,
+    '--pf-image-list-col-width': colWidth,
+    '--pf-image-list-cols': String(cols),
+  } as CSSProperties;
+  return (
+    <ul
+      className={cn('pf-image-list', variant === 'masonry' && 'pf-image-list--masonry', className)}
+      style={mergedStyle}
+      {...rest}
+    />
+  );
+}
+
+export interface PFImageListItemProps extends HTMLAttributes<HTMLLIElement> {
+  src?: string;
+  alt?: string;
+  overlayTitle?: string;
+}
+
+export function PFImageListItem({
+  className,
+  src,
+  alt = '',
+  overlayTitle,
+  children,
+  ...rest
+}: PFImageListItemProps) {
+  return (
+    <li className={cn('pf-image-list__item', className)} {...rest}>
+      {src ? <img src={src} alt={alt} /> : children}
+      {overlayTitle ? <div className="pf-image-list__overlay">{overlayTitle}</div> : null}
+    </li>
+  );
+}
+
+/* ──── PFLink ──── */
+
+export interface PFLinkProps extends HTMLAttributes<HTMLAnchorElement> {
+  href?: string;
+  target?: string;
+  rel?: string;
+  muted?: boolean;
+}
+
+export function PFLink({
+  className,
+  muted = false,
+  ...rest
+}: PFLinkProps) {
+  return (
+    <a className={cn('pf-link', muted && 'pf-link--muted', className)} {...rest} />
+  );
+}
+
+/* ──── PFSvgIcon ──── */
+
+export interface PFSvgIconProps extends SVGAttributes<SVGSVGElement> {
+  size?: number | string;
+  color?: string;
+  title?: string;
+}
+
+export function PFSvgIcon({
+  className,
+  size = 24,
+  color = 'currentColor',
+  viewBox = '0 0 24 24',
+  title,
+  children,
+  ...rest
+}: PFSvgIconProps) {
+  const resolvedSize = typeof size === 'number' ? `${size}px` : size;
+  return (
+    <svg
+      className={cn('pf-svg-icon', className)}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={viewBox}
+      width={resolvedSize}
+      height={resolvedSize}
+      fill={color}
+      aria-hidden={title ? undefined : true}
+      role={title ? 'img' : undefined}
+      {...rest}
+    >
+      {title ? <title>{title}</title> : null}
+      {children}
+    </svg>
   );
 }
 

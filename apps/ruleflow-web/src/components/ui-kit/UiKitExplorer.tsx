@@ -460,7 +460,7 @@ function getUiKitImportName(adapterHint: string): string | null {
     'platform.numberField': 'PFTextField',
     'platform.select': 'PFSelect',
     'platform.checkbox': 'PFCheckbox',
-    'platform.radioGroup': 'PFRadio',
+    'platform.radioGroup': 'PFRadioGroup',
     'platform.switch': 'PFSwitch',
     'platform.slider': 'PFSlider',
     'platform.autocomplete': 'PFAutocomplete',
@@ -501,6 +501,13 @@ function getUiKitImportName(adapterHint: string): string | null {
     'platform.grid': 'PFGrid',
     'platform.stack': 'PFStack',
     'platform.popover': 'PFPopover',
+    'platform.list': 'PFList',
+    'platform.paper': 'PFPaper',
+    'platform.link': 'PFLink',
+    'platform.imageList': 'PFImageList',
+    'platform.bottomNavigation': 'PFBottomNavigation',
+    'platform.speedDial': 'PFSpeedDial',
+    'platform.svgIcon': 'PFSvgIcon',
   };
   return map[adapterHint] ?? null;
 }

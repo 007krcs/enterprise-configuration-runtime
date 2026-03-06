@@ -49,6 +49,7 @@ import {
   PFDateTimeField,
   PFCalendar,
   PFClock,
+  PFSpeedDial,
 } from '@platform/ui-kit';
 import styles from './UiKitPreview.module.scss';
 
@@ -867,19 +868,15 @@ function renderPreview(
       );
     case 'platform.speedDial': {
       const actions = readSpeedDialActions(values.actions);
+      const direction = typeof values.direction === 'string' ? values.direction as 'up' | 'down' | 'left' | 'right' : 'up';
       return (
-        <PFCard>
-          <PFCardHeader>
-            <PFTypography variant="h5">Speed Dial</PFTypography>
-          </PFCardHeader>
-          <PFCardContent className={styles.speedDialPreview}>
-            {actions.map((action) => (
-              <PFButton key={action.id} size="sm" variant="outline" intent="neutral">
-                {action.label}
-              </PFButton>
-            ))}
-          </PFCardContent>
-        </PFCard>
+        <div className={styles.speedDialPreview}>
+          <PFSpeedDial
+            ariaLabel={stringValue(values.ariaLabel, 'Quick actions')}
+            direction={direction}
+            actions={actions.map((a) => ({ id: a.id, label: a.label }))}
+          />
+        </div>
       );
     }
     case 'platform.stepper':

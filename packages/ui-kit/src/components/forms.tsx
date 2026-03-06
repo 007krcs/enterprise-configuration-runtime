@@ -223,6 +223,68 @@ export function PFRadio({
   );
 }
 
+/* ──── PFRadioGroup ──── */
+
+export interface PFRadioGroupOption {
+  value: string;
+  label: ReactNode;
+  helperText?: ReactNode;
+  disabled?: boolean;
+}
+
+export interface PFRadioGroupProps extends PFBaseProps {
+  name: string;
+  value?: string;
+  options?: PFRadioGroupOption[];
+  onChange?: (value: string) => void;
+  label?: ReactNode;
+  helperText?: ReactNode;
+  error?: boolean;
+  direction?: 'column' | 'row';
+  className?: string;
+  children?: ReactNode;
+}
+
+export function PFRadioGroup({
+  name,
+  value,
+  options = [],
+  onChange,
+  label: groupLabel,
+  helperText: groupHelper,
+  error = false,
+  direction = 'column',
+  size = 'md',
+  className,
+  children,
+}: PFRadioGroupProps) {
+  return (
+    <fieldset
+      className={cn('pf-radio-group', direction === 'row' && 'pf-radio-group--row', sizeClass(size), className)}
+      role="radiogroup"
+    >
+      {groupLabel ? <legend className="pf-radio-group__label">{groupLabel}</legend> : null}
+      {children ??
+        options.map((option) => (
+          <PFRadio
+            key={option.value}
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={() => onChange?.(option.value)}
+            label={option.label}
+            helperText={option.helperText}
+            disabled={option.disabled}
+            size={size}
+          />
+        ))}
+      {groupHelper ? (
+        <span className={cn('pf-radio-group__helper', error && 'is-error')}>{groupHelper}</span>
+      ) : null}
+    </fieldset>
+  );
+}
+
 export interface PFSwitchProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'>,
     PFBaseProps {
