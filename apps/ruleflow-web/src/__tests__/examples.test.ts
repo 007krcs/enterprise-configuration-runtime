@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { exampleCatalog, loadExampleBundle } from '@/lib/examples';
+import { exampleCatalog } from '@/lib/examples';
 import type { ExampleDefinition } from '@/lib/examples';
 import type { ConfigBundle } from '@/lib/demo/types';
 

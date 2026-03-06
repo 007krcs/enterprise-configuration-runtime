@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { FlowSchema, UISchema } from '@platform/schema';
 import type { ConfigBundle } from '@/lib/demo/types';
+import type { useProjectStore as UseProjectStoreFn } from '@/state/projectStore';
 
 /* ---------- helpers for building test fixtures ---------- */
 
@@ -50,7 +51,7 @@ const localStorageMock: Storage = {
 /* ---------- test suite ---------- */
 
 describe('projectStore', () => {
-  let useProjectStore: typeof import('@/state/projectStore').useProjectStore;
+  let useProjectStore: typeof UseProjectStoreFn;
 
   beforeEach(async () => {
     vi.resetModules();
