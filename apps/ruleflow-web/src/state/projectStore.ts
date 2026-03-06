@@ -7,6 +7,7 @@ import { createUISchema } from '@platform/schema';
 import { normalizeUiPages, rebindFlowSchemaToAvailablePages } from '@/lib/demo/ui-pages';
 import type { ConfigBundle } from '@/lib/demo/types';
 import type { BuilderState, FlowEdge, FlowNode } from '@/app/builder/_domain/types';
+import { validateBundle } from '@/lib/bundle-validation';
 
 type LoadVersionResponse =
   | { ok: true; version: { bundle: ConfigBundle } }
@@ -25,8 +26,12 @@ type PersistedBundleSnapshot = {
   bundle: ConfigBundle;
 };
 
-const PREVIEW_DRAFT_PREFIX = 'ruleflow:preview:draft:';
-const PROJECT_BUNDLE_STORAGE_KEY = 'ecr.currentBundle.v1';
+import {
+  PREVIEW_DRAFT_PREFIX,
+  PROJECT_BUNDLE_STORAGE_KEY,
+  STORAGE_QUOTA_WARN_THRESHOLD,
+  ESTIMATED_STORAGE_QUOTA,
+} from '@/lib/constants';
 
 type ProjectActions = {
   hydrateFromStorage: () => void;
@@ -153,6 +158,15 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   setBundle: (bundle, source) => {
+    // Validate incoming bundle shape for imported data
+    if (source === 'import') {
+      const result = validateBundle(bundle);
+      if (!result.valid) {
+        const message = `Invalid bundle: ${result.errors.join(' ')}`;
+        console.error('[ECR]', message);
+        throw new Error(message);
+      }
+    }
     const loadedAt = Date.now();
     applyDraft(set, (draft) => {
       applyBundleToDraft(draft, bundle, {
@@ -487,6 +501,19 @@ function readPreviewDraftBundle(draftId: string): ConfigBundle | null {
   }
 }
 
+function estimateLocalStorageUsage(): number {
+  if (typeof window === 'undefined' || !window.localStorage) return 0;
+  let total = 0;
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const key = window.localStorage.key(i);
+    if (!key) continue;
+    const val = window.localStorage.getItem(key);
+    // Each char in JS is 2 bytes (UTF-16), but localStorage typically stores 1 byte per char
+    total += key.length + (val?.length ?? 0);
+  }
+  return total;
+}
+
 function persistCurrentBundleSnapshot(state: ProjectStoreState): void {
   try {
     if (typeof window === 'undefined' || !window.localStorage) return;
@@ -501,8 +528,24 @@ function persistCurrentBundleSnapshot(state: ProjectStoreState): void {
       bundle: state.bundle,
     };
     window.localStorage.setItem(PROJECT_BUNDLE_STORAGE_KEY, JSON.stringify(snapshot));
-  } catch {
-    // ignore localStorage write failures
+
+    // Warn when localStorage usage exceeds threshold
+    const usage = estimateLocalStorageUsage();
+    if (usage > ESTIMATED_STORAGE_QUOTA * STORAGE_QUOTA_WARN_THRESHOLD) {
+      const pct = Math.round((usage / ESTIMATED_STORAGE_QUOTA) * 100);
+      console.warn(
+        `[ECR] localStorage usage is at ~${pct}% of the estimated 5 MB quota. ` +
+          'Consider exporting your project and clearing unused data.',
+      );
+    }
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'QuotaExceededError') {
+      console.error(
+        '[ECR] localStorage quota exceeded! Your project could not be saved locally. ' +
+          'Please export your bundle (Builder > JSON Export) and clear browser storage.',
+      );
+    }
+    // other write failures are silently ignored
   }
 }
 

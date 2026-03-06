@@ -132,17 +132,17 @@ export default function ExamplesPage() {
   const loadExample = useProjectStore((state) => state.loadExample);
   const [busyAction, setBusyAction] = useState<{ exampleId: string; action: ExampleAction } | null>(null);
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
-  const autoOpenRef = useRef(false);
+  const autoOpenRef = useRef<string | null>(null);
 
   const baseLocale = previewContext.locale.split('-')[0] ?? previewContext.locale;
 
   // Handle ?open=exampleId auto-open
   useEffect(() => {
     const openId = searchParams.get('open')?.trim();
-    if (!openId || autoOpenRef.current) return;
+    if (!openId || autoOpenRef.current === openId) return;
     const example = exampleCatalog.find((e) => e.id === openId);
     if (!example) return;
-    autoOpenRef.current = true;
+    autoOpenRef.current = openId;
     setBusyAction({ exampleId: example.id, action: 'builder' });
     void loadExample(example.id)
       .then(() => {
