@@ -74,7 +74,7 @@ type GetVersionResponse = { ok: true; version: ConfigVersion } | { ok: false; er
 
 type RuntimeTrace = Awaited<ReturnType<typeof executeStep>>['trace'];
 
-const PREVIEW_DRAFT_PREFIX = 'ruleflow:preview:draft:';
+import { PREVIEW_DRAFT_PREFIX } from '@/lib/constants';
 
 function renderValue(value: JSONValue | undefined): string {
   if (value === undefined) return 'undefined';

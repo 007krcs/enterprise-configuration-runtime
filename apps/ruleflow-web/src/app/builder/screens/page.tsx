@@ -33,12 +33,11 @@ export default function ScreensPage() {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.banner}>NEW BUILDER SHELL ✅</div>
       <header className={styles.header}>
         <div>
           <p className={styles.kicker}>Workspace</p>
           <h1 className={styles.title}>Screens</h1>
-          <p className={styles.subtitle}>Design screens here (canvas comes next).</p>
+          <p className={styles.subtitle}>Add, edit, and manage your application screens.</p>
         </div>
       </header>
 

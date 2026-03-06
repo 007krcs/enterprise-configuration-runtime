@@ -216,11 +216,25 @@ export default function LandingPage() {
       </header>
 
       {mobileMenuOpen && (
-        <div className={styles.mobileMenuBackdrop} onClick={() => setMobileMenuOpen(false)} />
+        <div
+          className={styles.mobileMenuBackdrop}
+          role="presentation"
+          onClick={() => setMobileMenuOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setMobileMenuOpen(false);
+          }}
+        />
       )}
 
       {mobileMenuOpen && (
-        <div className={styles.mobileMenu} aria-label="Mobile navigation">
+        <nav
+          className={styles.mobileMenu}
+          aria-label="Mobile navigation"
+          role="navigation"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setMobileMenuOpen(false);
+          }}
+        >
           {navLinks.map((link) => (
             <Link
               key={link.label}
@@ -239,7 +253,7 @@ export default function LandingPage() {
               View Examples
             </Link>
           </div>
-        </div>
+        </nav>
       )}
 
       <main className={styles.content}>
