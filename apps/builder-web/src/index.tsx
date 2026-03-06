@@ -11,7 +11,7 @@ export type BuilderState = {
 const defaultComponent: UIComponent = {
   id: 'customerName',
   type: 'input',
-  adapterHint: 'material.input',
+  adapterHint: 'platform.textField',
   props: { label: 'Customer name' },
   i18n: {
     labelKey: 'runtime.filters.customerName.label',
@@ -78,7 +78,7 @@ export function BuilderApp({ initialState }: { initialState?: BuilderState }) {
   const [state, setState] = useState<BuilderState>(createBuilderState(initialState));
   const [draft, setDraft] = useState({
     id: '',
-    adapterHint: 'material.input',
+    adapterHint: 'platform.textField',
     labelKey: 'runtime.filters.customerName.label',
     ariaLabelKey: 'runtime.filters.customerName.aria',
   });

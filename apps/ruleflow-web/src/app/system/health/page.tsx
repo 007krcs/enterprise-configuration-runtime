@@ -148,7 +148,7 @@ export default function HealthPage() {
       {
         id: 'materialInput',
         type: 'input',
-        adapterHint: 'material.input',
+        adapterHint: 'platform.textField',
         props: {},
         i18n: { labelKey: 'runtime.filters.customerName.label' },
         accessibility: { ariaLabelKey: 'runtime.filters.customerName.aria', keyboardNav: true, focusOrder: 1 },
