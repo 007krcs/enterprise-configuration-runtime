@@ -407,6 +407,45 @@ export function PFPagination({
   );
 }
 
+/* ──── PFBottomNavigation ──── */
+
+export interface PFBottomNavAction {
+  id: string;
+  label: ReactNode;
+  icon?: ReactNode;
+}
+
+export interface PFBottomNavigationProps extends PFBaseProps {
+  actions: PFBottomNavAction[];
+  value?: string;
+  onChange?: (id: string) => void;
+  className?: string;
+}
+
+export function PFBottomNavigation({
+  actions,
+  value,
+  onChange,
+  className,
+}: PFBottomNavigationProps) {
+  return (
+    <nav className={cn('pf-bottom-nav', className)} aria-label="Bottom navigation">
+      {actions.map((action) => (
+        <button
+          key={action.id}
+          type="button"
+          className={cn('pf-bottom-nav__action', value === action.id && 'is-active')}
+          onClick={() => onChange?.(action.id)}
+          aria-current={value === action.id ? 'page' : undefined}
+        >
+          {action.icon ? <span className="pf-bottom-nav__icon" aria-hidden="true">{action.icon}</span> : null}
+          <span>{action.label}</span>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
 export interface PFStep {
   id: string;
   label: ReactNode;
