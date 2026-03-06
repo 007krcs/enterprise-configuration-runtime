@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes, ReactNode, TableHTMLAttributes } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode, SVGAttributes, TableHTMLAttributes } from 'react';
 import { cn, intentClass, variantClass, type PFBaseProps, type PFIntent } from './utils';
 
 export interface PFCardProps extends HTMLAttributes<HTMLDivElement> {
@@ -452,6 +452,42 @@ export function PFLink({
 }: PFLinkProps) {
   return (
     <a className={cn('pf-link', muted && 'pf-link--muted', className)} {...rest} />
+  );
+}
+
+/* ──── PFSvgIcon ──── */
+
+export interface PFSvgIconProps extends SVGAttributes<SVGSVGElement> {
+  size?: number | string;
+  color?: string;
+  title?: string;
+}
+
+export function PFSvgIcon({
+  className,
+  size = 24,
+  color = 'currentColor',
+  viewBox = '0 0 24 24',
+  title,
+  children,
+  ...rest
+}: PFSvgIconProps) {
+  const resolvedSize = typeof size === 'number' ? `${size}px` : size;
+  return (
+    <svg
+      className={cn('pf-svg-icon', className)}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={viewBox}
+      width={resolvedSize}
+      height={resolvedSize}
+      fill={color}
+      aria-hidden={title ? undefined : true}
+      role={title ? 'img' : undefined}
+      {...rest}
+    >
+      {title ? <title>{title}</title> : null}
+      {children}
+    </svg>
   );
 }
 

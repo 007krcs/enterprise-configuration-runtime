@@ -2232,6 +2232,15 @@
     color: var(--pf-surface-text-muted);
   }
 
+  /* ──── PFSvgIcon ──── */
+  .pf-svg-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    user-select: none;
+    fill: currentColor;
+    transition: fill var(--pf-motion-fast) var(--pf-motion-easing-standard);
+  }
+
   .pf-divider {
     border: 0;
     border-block-end: 1px solid var(--pf-surface-border);
@@ -2636,6 +2645,194 @@
     color: #fff;
     font-size: var(--pf-font-size-sm);
     font-weight: var(--pf-font-weight-medium);
+  }
+
+  /* ──── PFSpeedDial ──── */
+  .pf-speed-dial {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--pf-z-fab, 1050);
+  }
+
+  .pf-speed-dial__fab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 56px;
+    block-size: 56px;
+    border-radius: var(--pf-radius-full, 50%);
+    border: 0;
+    background: var(--pf-color-primary-500);
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2),
+                0 6px 10px 0 rgba(0, 0, 0, 0.14),
+                0 1px 18px 0 rgba(0, 0, 0, 0.12);
+    transition: background var(--pf-motion-fast) var(--pf-motion-easing-standard),
+                box-shadow var(--pf-motion-fast) var(--pf-motion-easing-standard),
+                transform var(--pf-motion-fast) var(--pf-motion-easing-standard);
+    z-index: 1;
+  }
+
+  .pf-speed-dial__fab:hover {
+    background: var(--pf-color-primary-600);
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+
+  .pf-speed-dial__fab:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--pf-surface-focus, rgba(47, 106, 245, 0.4)),
+                0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14);
+  }
+
+  .pf-speed-dial__fab:active {
+    transform: scale(0.95);
+  }
+
+  .pf-speed-dial__fab-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--pf-motion-normal) var(--pf-motion-easing-standard);
+    line-height: 1;
+  }
+
+  .pf-speed-dial__fab-icon.is-rotated {
+    transform: rotate(45deg);
+  }
+
+  .pf-speed-dial__actions {
+    position: absolute;
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--pf-space-3);
+  }
+
+  /* Direction modifiers for action placement */
+  .pf-speed-dial--up .pf-speed-dial__actions {
+    flex-direction: column-reverse;
+    inset-block-end: calc(100% + var(--pf-space-3));
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  .pf-speed-dial--down .pf-speed-dial__actions {
+    flex-direction: column;
+    inset-block-start: calc(100% + var(--pf-space-3));
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  .pf-speed-dial--left .pf-speed-dial__actions {
+    flex-direction: row-reverse;
+    inset-inline-end: calc(100% + var(--pf-space-3));
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+  }
+
+  .pf-speed-dial--right .pf-speed-dial__actions {
+    flex-direction: row;
+    inset-inline-start: calc(100% + var(--pf-space-3));
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+  }
+
+  .pf-speed-dial__action {
+    display: flex;
+    align-items: center;
+    gap: var(--pf-space-2);
+    animation: pf-speed-dial-fade-in var(--pf-motion-normal) var(--pf-motion-easing-standard) both;
+  }
+
+  /* Stagger animation for each action */
+  .pf-speed-dial__action:nth-child(1) { animation-delay: 0ms; }
+  .pf-speed-dial__action:nth-child(2) { animation-delay: 30ms; }
+  .pf-speed-dial__action:nth-child(3) { animation-delay: 60ms; }
+  .pf-speed-dial__action:nth-child(4) { animation-delay: 90ms; }
+  .pf-speed-dial__action:nth-child(5) { animation-delay: 120ms; }
+  .pf-speed-dial__action:nth-child(6) { animation-delay: 150ms; }
+
+  @keyframes pf-speed-dial-fade-in {
+    from {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .pf-speed-dial__action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--pf-radius-full, 50%);
+    border: 0;
+    background: var(--pf-surface-layer);
+    color: var(--pf-surface-text);
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2),
+                0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    transition: background var(--pf-motion-fast) var(--pf-motion-easing-standard),
+                box-shadow var(--pf-motion-fast) var(--pf-motion-easing-standard),
+                transform var(--pf-motion-fast) var(--pf-motion-easing-standard);
+  }
+
+  .pf-speed-dial__action-btn:hover {
+    background: color-mix(in srgb, var(--pf-color-neutral-100) 50%, var(--pf-surface-layer));
+    box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.2),
+                0 6px 10px 0 rgba(0, 0, 0, 0.14),
+                0 2px 14px 0 rgba(0, 0, 0, 0.12);
+    transform: scale(1.1);
+  }
+
+  .pf-speed-dial__action-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--pf-surface-focus, rgba(47, 106, 245, 0.4)),
+                0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  .pf-speed-dial__action-btn:active {
+    transform: scale(0.92);
+  }
+
+  .pf-speed-dial__action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  .pf-speed-dial__action-label {
+    font-size: var(--pf-font-size-xs);
+    font-weight: var(--pf-font-weight-medium);
+    color: var(--pf-surface-text);
+    white-space: nowrap;
+    background: var(--pf-surface-layer);
+    padding: var(--pf-space-1) var(--pf-space-2);
+    border-radius: var(--pf-radius-sm);
+    box-shadow: var(--pf-shadow-sm);
+    pointer-events: none;
+  }
+
+  /* In horizontal modes, labels need vertical positioning */
+  .pf-speed-dial--left .pf-speed-dial__action,
+  .pf-speed-dial--right .pf-speed-dial__action {
+    flex-direction: column;
   }
 
   /* ──── PFBottomNavigation ──── */

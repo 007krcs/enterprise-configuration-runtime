@@ -506,6 +506,8 @@ function getUiKitImportName(adapterHint: string): string | null {
     'platform.link': 'PFLink',
     'platform.imageList': 'PFImageList',
     'platform.bottomNavigation': 'PFBottomNavigation',
+    'platform.speedDial': 'PFSpeedDial',
+    'platform.svgIcon': 'PFSvgIcon',
   };
   return map[adapterHint] ?? null;
 }

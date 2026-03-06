@@ -446,6 +446,118 @@ export function PFBottomNavigation({
   );
 }
 
+/* ──── PFSpeedDial ──── */
+
+export interface PFSpeedDialAction {
+  id: string;
+  label: ReactNode;
+  icon?: ReactNode;
+}
+
+export interface PFSpeedDialProps extends PFBaseProps {
+  actions: PFSpeedDialAction[];
+  ariaLabel?: string;
+  direction?: 'up' | 'down' | 'left' | 'right';
+  icon?: ReactNode;
+  openIcon?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onActionClick?: (id: string) => void;
+  className?: string;
+}
+
+export function PFSpeedDial({
+  actions,
+  ariaLabel = 'Quick actions',
+  direction = 'up',
+  icon,
+  openIcon,
+  open,
+  onOpenChange,
+  onActionClick,
+  className,
+}: PFSpeedDialProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const dialRef = useRef<HTMLDivElement>(null);
+  const isOpen = open ?? internalOpen;
+
+  const setOpen = (next: boolean): void => {
+    onOpenChange?.(next);
+    if (open === undefined) setInternalOpen(next);
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onDocumentClick = (event: MouseEvent): void => {
+      if (!dialRef.current) return;
+      if (event.target instanceof Node && !dialRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    const onEscape = (event: KeyboardEvent): void => {
+      if (event.key !== 'Escape') return;
+      setOpen(false);
+    };
+    document.addEventListener('mousedown', onDocumentClick);
+    window.addEventListener('keydown', onEscape);
+    return () => {
+      document.removeEventListener('mousedown', onDocumentClick);
+      window.removeEventListener('keydown', onEscape);
+    };
+  }, [isOpen]);
+
+  const fabIcon = isOpen ? (openIcon ?? icon ?? '+') : (icon ?? '+');
+
+  return (
+    <div
+      ref={dialRef}
+      className={cn(
+        'pf-speed-dial',
+        `pf-speed-dial--${direction}`,
+        isOpen && 'is-open',
+        className,
+      )}
+    >
+      <button
+        type="button"
+        className="pf-speed-dial__fab"
+        aria-label={ariaLabel}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        onClick={() => setOpen(!isOpen)}
+      >
+        <span className={cn('pf-speed-dial__fab-icon', isOpen && 'is-rotated')} aria-hidden="true">
+          {fabIcon}
+        </span>
+      </button>
+
+      {isOpen ? (
+        <ul className="pf-speed-dial__actions" role="menu">
+          {actions.map((action) => (
+            <li key={action.id} className="pf-speed-dial__action" role="none">
+              <button
+                type="button"
+                className="pf-speed-dial__action-btn"
+                role="menuitem"
+                aria-label={typeof action.label === 'string' ? action.label : undefined}
+                onClick={() => {
+                  onActionClick?.(action.id);
+                  setOpen(false);
+                }}
+              >
+                {action.icon ? (
+                  <span className="pf-speed-dial__action-icon" aria-hidden="true">{action.icon}</span>
+                ) : null}
+              </button>
+              <span className="pf-speed-dial__action-label">{action.label}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
 export interface PFStep {
   id: string;
   label: ReactNode;
