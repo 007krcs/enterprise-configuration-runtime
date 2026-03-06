@@ -46,8 +46,11 @@
       {
         "id": "customerNameInput",
         "type": "input",
-        "adapterHint": "material.input",
-        "props": {},
+        "adapterHint": "platform.textField",
+        "props": {
+          "label": "Customer Name",
+          "placeholder": "Enter customer name"
+        },
         "i18n": {
           "labelKey": "runtime.filters.customerName.label",
           "placeholderKey": "runtime.filters.customerName.placeholder",
@@ -97,9 +100,10 @@
       {
         "id": "orderTotalInput",
         "type": "input",
-        "adapterHint": "material.input",
+        "adapterHint": "platform.textField",
         "props": {
-          "inputType": "number"
+          "label": "Order Total",
+          "placeholder": "Enter order total"
         },
         "i18n": {
           "labelKey": "runtime.filters.orderTotal.label",
@@ -264,8 +268,11 @@
         {
           "id": "customerNameInput",
           "type": "input",
-          "adapterHint": "material.input",
-          "props": {},
+          "adapterHint": "platform.textField",
+          "props": {
+            "label": "Customer Name",
+            "placeholder": "Enter customer name"
+          },
           "i18n": {
             "labelKey": "runtime.filters.customerName.label",
             "placeholderKey": "runtime.filters.customerName.placeholder",
@@ -315,9 +322,10 @@
         {
           "id": "orderTotalInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "number"
+            "label": "Order Total",
+            "placeholder": "Enter order total"
           },
           "i18n": {
             "labelKey": "runtime.filters.orderTotal.label",
