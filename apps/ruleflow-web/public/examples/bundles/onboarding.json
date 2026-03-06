@@ -31,63 +31,132 @@
       {
         "id": "welcomeTitle",
         "type": "text",
-        "adapterHint": "material.text",
+        "adapterHint": "platform.alert",
         "props": {
-          "text": "Welcome to ECR Platform",
-          "variant": "h4",
-          "alignment": "center"
+          "title": "Welcome to ECR Platform",
+          "intent": "primary"
+        },
+        "i18n": {
+          "labelKey": "onboarding.welcome.title"
+        },
+        "accessibility": {
+          "ariaLabelKey": "onboarding.welcome.title.aria",
+          "tabIndex": 0,
+          "role": "heading",
+          "keyboardNav": true,
+          "focusOrder": 1
         }
       },
       {
         "id": "welcomeSubtitle",
         "type": "text",
-        "adapterHint": "material.text",
+        "adapterHint": "platform.alert",
         "props": {
-          "text": "Let's set up your workspace in a few simple steps",
-          "variant": "subtitle1",
-          "alignment": "center"
+          "title": "Getting Started",
+          "description": "Let's set up your workspace in a few simple steps",
+          "intent": "neutral"
+        },
+        "i18n": {
+          "labelKey": "onboarding.welcome.subtitle"
+        },
+        "accessibility": {
+          "ariaLabelKey": "onboarding.welcome.subtitle.aria",
+          "tabIndex": 0,
+          "role": "status",
+          "keyboardNav": true,
+          "focusOrder": 2
         }
       },
       {
         "id": "featureCard1",
         "type": "text",
-        "adapterHint": "material.text",
+        "adapterHint": "platform.alert",
         "props": {
-          "text": "Rule Engine - Build and deploy business rules with a visual editor",
-          "variant": "body1"
+          "title": "Rule Engine",
+          "description": "Build and deploy business rules with a visual editor",
+          "intent": "success"
+        },
+        "accessibility": {
+          "ariaLabelKey": "onboarding.feature.ruleEngine.aria",
+          "tabIndex": 0,
+          "role": "region",
+          "keyboardNav": true,
+          "focusOrder": 3
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 4 }
+          }
         }
       },
       {
         "id": "featureCard2",
         "type": "text",
-        "adapterHint": "material.text",
+        "adapterHint": "platform.alert",
         "props": {
-          "text": "Flow Designer - Create multi-step workflows with drag-and-drop simplicity",
-          "variant": "body1"
+          "title": "Flow Designer",
+          "description": "Create multi-step workflows with drag-and-drop simplicity",
+          "intent": "primary"
+        },
+        "accessibility": {
+          "ariaLabelKey": "onboarding.feature.flowDesigner.aria",
+          "tabIndex": 0,
+          "role": "region",
+          "keyboardNav": true,
+          "focusOrder": 4
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 4 }
+          }
         }
       },
       {
         "id": "featureCard3",
         "type": "text",
-        "adapterHint": "material.text",
+        "adapterHint": "platform.alert",
         "props": {
-          "text": "Analytics Dashboard - Monitor performance with real-time insights",
-          "variant": "body1"
+          "title": "Analytics Dashboard",
+          "description": "Monitor performance with real-time insights",
+          "intent": "neutral"
+        },
+        "accessibility": {
+          "ariaLabelKey": "onboarding.feature.analytics.aria",
+          "tabIndex": 0,
+          "role": "region",
+          "keyboardNav": true,
+          "focusOrder": 5
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 4 }
+          }
         }
       },
       {
         "id": "getStartedButton",
         "type": "button",
-        "adapterHint": "material.button",
+        "adapterHint": "platform.button",
         "props": {
           "label": "Get Started",
-          "variant": "contained",
-          "color": "primary"
+          "variant": "solid",
+          "intent": "primary",
+          "size": "lg"
         },
         "events": {
           "onClick": [
-            { "type": "emitEvent", "event": "onGetStarted" }
+            { "type": "emitEvent", "payload": { "event": "onGetStarted" } }
           ]
+        },
+        "accessibility": {
+          "ariaLabelKey": "onboarding.getStarted.aria",
+          "tabIndex": 0,
+          "role": "button",
+          "keyboardNav": true,
+          "focusOrder": 6
         }
       }
     ]
@@ -125,63 +194,132 @@
         {
           "id": "welcomeTitle",
           "type": "text",
-          "adapterHint": "material.text",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Welcome to ECR Platform",
-            "variant": "h4",
-            "alignment": "center"
+            "title": "Welcome to ECR Platform",
+            "intent": "primary"
+          },
+          "i18n": {
+            "labelKey": "onboarding.welcome.title"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.welcome.title.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
           "id": "welcomeSubtitle",
           "type": "text",
-          "adapterHint": "material.text",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Let's set up your workspace in a few simple steps",
-            "variant": "subtitle1",
-            "alignment": "center"
+            "title": "Getting Started",
+            "description": "Let's set up your workspace in a few simple steps",
+            "intent": "neutral"
+          },
+          "i18n": {
+            "labelKey": "onboarding.welcome.subtitle"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.welcome.subtitle.aria",
+            "tabIndex": 0,
+            "role": "status",
+            "keyboardNav": true,
+            "focusOrder": 2
           }
         },
         {
           "id": "featureCard1",
           "type": "text",
-          "adapterHint": "material.text",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Rule Engine - Build and deploy business rules with a visual editor",
-            "variant": "body1"
+            "title": "Rule Engine",
+            "description": "Build and deploy business rules with a visual editor",
+            "intent": "success"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.feature.ruleEngine.aria",
+            "tabIndex": 0,
+            "role": "region",
+            "keyboardNav": true,
+            "focusOrder": 3
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
           }
         },
         {
           "id": "featureCard2",
           "type": "text",
-          "adapterHint": "material.text",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Flow Designer - Create multi-step workflows with drag-and-drop simplicity",
-            "variant": "body1"
+            "title": "Flow Designer",
+            "description": "Create multi-step workflows with drag-and-drop simplicity",
+            "intent": "primary"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.feature.flowDesigner.aria",
+            "tabIndex": 0,
+            "role": "region",
+            "keyboardNav": true,
+            "focusOrder": 4
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
           }
         },
         {
           "id": "featureCard3",
           "type": "text",
-          "adapterHint": "material.text",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Analytics Dashboard - Monitor performance with real-time insights",
-            "variant": "body1"
+            "title": "Analytics Dashboard",
+            "description": "Monitor performance with real-time insights",
+            "intent": "neutral"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.feature.analytics.aria",
+            "tabIndex": 0,
+            "role": "region",
+            "keyboardNav": true,
+            "focusOrder": 5
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 4 }
+            }
           }
         },
         {
           "id": "getStartedButton",
           "type": "button",
-          "adapterHint": "material.button",
+          "adapterHint": "platform.button",
           "props": {
             "label": "Get Started",
-            "variant": "contained",
-            "color": "primary"
+            "variant": "solid",
+            "intent": "primary",
+            "size": "lg"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onGetStarted" }
+              { "type": "emitEvent", "payload": { "event": "onGetStarted" } }
             ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.getStarted.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 6
           }
         }
       ]
@@ -218,21 +356,31 @@
         {
           "id": "accountSectionTitle",
           "type": "text",
-          "adapterHint": "material.text",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Account Details",
-            "variant": "h5",
-            "alignment": "left"
+            "title": "Account Details",
+            "description": "Fill in your personal information to create your account",
+            "intent": "primary"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.accountSection.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
           "id": "accountFullName",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
             "label": "Full Name",
-            "placeholder": "Enter your full name",
-            "inputType": "text"
+            "placeholder": "Enter your full name"
+          },
+          "i18n": {
+            "labelKey": "onboarding.accountName.label",
+            "placeholderKey": "onboarding.accountName.placeholder"
           },
           "bindings": {
             "data": {
@@ -249,17 +397,26 @@
             "tabIndex": 0,
             "role": "textbox",
             "keyboardNav": true,
-            "focusOrder": 1
+            "focusOrder": 2
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "accountEmail",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
             "label": "Email Address",
-            "placeholder": "you@example.com",
-            "inputType": "email"
+            "placeholder": "you@example.com"
+          },
+          "i18n": {
+            "labelKey": "onboarding.accountEmail.label",
+            "placeholderKey": "onboarding.accountEmail.placeholder"
           },
           "bindings": {
             "data": {
@@ -275,17 +432,26 @@
             "tabIndex": 0,
             "role": "textbox",
             "keyboardNav": true,
-            "focusOrder": 2
+            "focusOrder": 3
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "accountOrg",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
             "label": "Organization Name",
-            "placeholder": "Your company or team name",
-            "inputType": "text"
+            "placeholder": "Your company or team name"
+          },
+          "i18n": {
+            "labelKey": "onboarding.accountOrg.label",
+            "placeholderKey": "onboarding.accountOrg.placeholder"
           },
           "bindings": {
             "data": {
@@ -300,42 +466,59 @@
             "tabIndex": 0,
             "role": "textbox",
             "keyboardNav": true,
-            "focusOrder": 3
+            "focusOrder": 4
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "accountBackButton",
           "type": "button",
-          "adapterHint": "material.button",
+          "adapterHint": "platform.button",
           "props": {
             "label": "Back",
-            "variant": "outlined",
-            "color": "secondary"
+            "variant": "outline",
+            "intent": "neutral",
+            "size": "md"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onBack" }
+              { "type": "emitEvent", "payload": { "event": "onBack" } }
             ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.accountBack.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 5
           }
         },
         {
           "id": "accountNextButton",
           "type": "button",
-          "adapterHint": "material.button",
+          "adapterHint": "platform.button",
           "props": {
             "label": "Next",
-            "variant": "contained",
-            "color": "primary"
+            "variant": "solid",
+            "intent": "primary",
+            "size": "md"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onNext" }
+              { "type": "emitEvent", "payload": { "event": "onNext" } }
             ]
           },
-          "disabledWhen": {
-            "op": "eq",
-            "left": { "path": "context.onboarding.nextEnabled" },
-            "right": { "value": false }
+          "accessibility": {
+            "ariaLabelKey": "onboarding.accountNext.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 6
           }
         }
       ]
@@ -372,19 +555,27 @@
         {
           "id": "preferencesSectionTitle",
           "type": "text",
-          "adapterHint": "material.text",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Configure Preferences",
-            "variant": "h5",
-            "alignment": "left"
+            "title": "Configure Preferences",
+            "description": "Choose your subscription tier, region, and notification settings",
+            "intent": "primary"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.preferencesSection.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
           "id": "preferenceTier",
           "type": "select",
-          "adapterHint": "material.select",
+          "adapterHint": "platform.select",
           "props": {
             "label": "Subscription Tier",
+            "placeholder": "Select a tier",
             "options": [
               { "label": "Free", "value": "free" },
               { "label": "Pro", "value": "pro" },
@@ -404,15 +595,22 @@
             "tabIndex": 0,
             "role": "listbox",
             "keyboardNav": true,
-            "focusOrder": 1
+            "focusOrder": 2
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "preferenceRegion",
           "type": "select",
-          "adapterHint": "material.select",
+          "adapterHint": "platform.select",
           "props": {
             "label": "Region",
+            "placeholder": "Select a region",
             "options": [
               { "label": "Americas", "value": "americas" },
               { "label": "EMEA", "value": "emea" },
@@ -432,15 +630,22 @@
             "tabIndex": 0,
             "role": "listbox",
             "keyboardNav": true,
-            "focusOrder": 2
+            "focusOrder": 3
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "preferenceNotifications",
           "type": "select",
-          "adapterHint": "material.select",
+          "adapterHint": "platform.select",
           "props": {
             "label": "Notifications",
+            "placeholder": "Select notification preference",
             "options": [
               { "label": "Enabled", "value": "enabled" },
               { "label": "Disabled", "value": "disabled" }
@@ -459,42 +664,59 @@
             "tabIndex": 0,
             "role": "listbox",
             "keyboardNav": true,
-            "focusOrder": 3
+            "focusOrder": 4
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "preferencesBackButton",
           "type": "button",
-          "adapterHint": "material.button",
+          "adapterHint": "platform.button",
           "props": {
             "label": "Back",
-            "variant": "outlined",
-            "color": "secondary"
+            "variant": "outline",
+            "intent": "neutral",
+            "size": "md"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onBack" }
+              { "type": "emitEvent", "payload": { "event": "onBack" } }
             ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.preferencesBack.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 5
           }
         },
         {
           "id": "preferencesNextButton",
           "type": "button",
-          "adapterHint": "material.button",
+          "adapterHint": "platform.button",
           "props": {
             "label": "Next",
-            "variant": "contained",
-            "color": "primary"
+            "variant": "solid",
+            "intent": "primary",
+            "size": "md"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onNext" }
+              { "type": "emitEvent", "payload": { "event": "onNext" } }
             ]
           },
-          "disabledWhen": {
-            "op": "eq",
-            "left": { "path": "context.onboarding.preferencesValid" },
-            "right": { "value": false }
+          "accessibility": {
+            "ariaLabelKey": "onboarding.preferencesNext.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 6
           }
         }
       ]
@@ -517,7 +739,7 @@
             "id": "finish-details",
             "type": "section",
             "title": "Account Summary",
-            "componentIds": ["finishAccountCard"]
+            "componentIds": ["finishAccountTable"]
           },
           {
             "id": "finish-actions",
@@ -531,76 +753,107 @@
         {
           "id": "finishTitle",
           "type": "text",
-          "adapterHint": "material.text",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "You're All Set!",
-            "variant": "h4",
-            "alignment": "center"
-          }
-        },
-        {
-          "id": "finishSummary",
-          "type": "text",
-          "adapterHint": "material.text",
-          "props": {
-            "text": "Your account has been configured successfully. Review your details below or jump straight to the dashboard.",
-            "variant": "body1",
-            "alignment": "center"
-          }
-        },
-        {
-          "id": "finishAccountCard",
-          "type": "card",
-          "adapterHint": "material.card",
-          "props": {
-            "title": "Account Information"
-          },
-          "bindings": {
-            "data": {
-              "name": "data.onboarding.accountName",
-              "email": "data.onboarding.accountEmail",
-              "organization": "data.onboarding.accountOrg",
-              "tier": "data.onboarding.preferenceTier",
-              "region": "data.onboarding.preferenceRegion",
-              "notifications": "data.onboarding.preferenceNotifications"
-            }
+            "title": "You're All Set!",
+            "intent": "success"
           },
           "accessibility": {
-            "ariaLabelKey": "onboarding.finishCard.aria",
+            "ariaLabelKey": "onboarding.finish.title.aria",
             "tabIndex": 0,
-            "role": "region",
+            "role": "heading",
             "keyboardNav": true,
             "focusOrder": 1
           }
         },
         {
+          "id": "finishSummary",
+          "type": "text",
+          "adapterHint": "platform.alert",
+          "props": {
+            "title": "Account Configured",
+            "description": "Your account has been configured successfully. Review your details below or jump straight to the dashboard.",
+            "intent": "neutral"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.finish.summary.aria",
+            "tabIndex": 0,
+            "role": "status",
+            "keyboardNav": true,
+            "focusOrder": 2
+          }
+        },
+        {
+          "id": "finishAccountTable",
+          "type": "table",
+          "adapterHint": "platform.table",
+          "props": {
+            "columns": [
+              { "field": "field", "headerKey": "onboarding.finish.table.field" },
+              { "field": "value", "headerKey": "onboarding.finish.table.value" }
+            ],
+            "rows": []
+          },
+          "bindings": {
+            "data": {
+              "rows": "data.onboarding.summaryRows"
+            }
+          },
+          "i18n": {
+            "labelKey": "onboarding.finish.table.label"
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.finish.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 3
+          }
+        },
+        {
           "id": "openDashboardButton",
           "type": "button",
-          "adapterHint": "material.button",
+          "adapterHint": "platform.button",
           "props": {
             "label": "Open Dashboard",
-            "variant": "contained",
-            "color": "primary"
+            "variant": "solid",
+            "intent": "primary",
+            "size": "lg"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onOpenDashboard" }
+              { "type": "emitEvent", "payload": { "event": "onOpenDashboard" } }
             ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.finish.openDashboard.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 4
           }
         },
         {
           "id": "reviewSettingsButton",
           "type": "button",
-          "adapterHint": "material.button",
+          "adapterHint": "platform.button",
           "props": {
             "label": "Review Settings",
-            "variant": "outlined",
-            "color": "secondary"
+            "variant": "outline",
+            "intent": "neutral",
+            "size": "md"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onRestart" }
+              { "type": "emitEvent", "payload": { "event": "onRestart" } }
             ]
+          },
+          "accessibility": {
+            "ariaLabelKey": "onboarding.finish.reviewSettings.aria",
+            "tabIndex": 0,
+            "role": "button",
+            "keyboardNav": true,
+            "focusOrder": 5
           }
         }
       ]

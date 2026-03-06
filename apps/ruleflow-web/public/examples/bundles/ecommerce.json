@@ -39,6 +39,13 @@
         },
         "i18n": {
           "labelKey": "examples.home.hero"
+        },
+        "accessibility": {
+          "ariaLabelKey": "examples.home.hero.aria",
+          "tabIndex": 0,
+          "role": "banner",
+          "keyboardNav": true,
+          "focusOrder": 1
         }
       },
       {
@@ -60,6 +67,13 @@
         },
         "i18n": {
           "labelKey": "examples.categories.table"
+        },
+        "accessibility": {
+          "ariaLabelKey": "examples.categories.table.aria",
+          "tabIndex": 0,
+          "role": "table",
+          "keyboardNav": true,
+          "focusOrder": 2
         }
       },
       {
@@ -81,6 +95,13 @@
         },
         "i18n": {
           "labelKey": "examples.products.table"
+        },
+        "accessibility": {
+          "ariaLabelKey": "examples.products.table.aria",
+          "tabIndex": 0,
+          "role": "table",
+          "keyboardNav": true,
+          "focusOrder": 3
         }
       }
     ]
@@ -126,6 +147,13 @@
           },
           "i18n": {
             "labelKey": "examples.home.hero"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.home.hero.aria",
+            "tabIndex": 0,
+            "role": "banner",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
@@ -147,6 +175,13 @@
           },
           "i18n": {
             "labelKey": "examples.categories.table"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.categories.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 2
           }
         },
         {
@@ -168,6 +203,13 @@
           },
           "i18n": {
             "labelKey": "examples.products.table"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.products.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 3
           }
         }
       ]
@@ -202,6 +244,13 @@
           "props": {
             "text": "Filter the catalog by attributes, pricing, and promotions.",
             "height": 120
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.category.filters.aria",
+            "tabIndex": 0,
+            "role": "region",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
@@ -220,6 +269,13 @@
             "data": {
               "rows": "data.products"
             }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.category.products.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 2
           }
         }
       ]
@@ -254,6 +310,13 @@
           "props": {
             "text": "High-resolution product carousel placeholder",
             "height": 200
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.product.carousel.aria",
+            "tabIndex": 0,
+            "role": "img",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
@@ -272,6 +335,13 @@
             "data": {
               "rows": "data.products"
             }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.product.specs.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 2
           }
         }
       ]
@@ -315,6 +385,13 @@
             "data": {
               "rows": "data.cart.items"
             }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.cart.table.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
@@ -324,6 +401,13 @@
           "props": {
             "text": "Totals update once discounts apply.",
             "height": 140
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.cart.totals.aria",
+            "tabIndex": 0,
+            "role": "status",
+            "keyboardNav": true,
+            "focusOrder": 2
           }
         }
       ]
@@ -353,9 +437,10 @@
         {
           "id": "checkoutAddressInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "Address",
+            "placeholder": "Enter your street address"
           },
           "bindings": {
             "data": {
@@ -364,14 +449,28 @@
           },
           "validations": {
             "required": true
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.checkout.address.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 1
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 12 }
+            }
           }
         },
         {
           "id": "checkoutCityInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "City",
+            "placeholder": "Enter your city"
           },
           "bindings": {
             "data": {
@@ -380,14 +479,28 @@
           },
           "validations": {
             "required": true
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.checkout.city.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 2
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "checkoutPostalInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "Postal Code",
+            "placeholder": "Enter postal code"
           },
           "bindings": {
             "data": {
@@ -396,14 +509,28 @@
           },
           "validations": {
             "required": true
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.checkout.postal.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 3
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "checkoutCountryInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "Country",
+            "placeholder": "Enter your country"
           },
           "bindings": {
             "data": {
@@ -412,6 +539,19 @@
           },
           "validations": {
             "required": true
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.checkout.country.aria",
+            "tabIndex": 0,
+            "role": "textbox",
+            "keyboardNav": true,
+            "focusOrder": 4
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         }
       ]
@@ -446,6 +586,13 @@
           "props": {
             "text": "Thank you! Your order is in review.",
             "height": 120
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.confirmation.message.aria",
+            "tabIndex": 0,
+            "role": "status",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
@@ -463,6 +610,13 @@
             "data": {
               "rows": "data.order.summary"
             }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.confirmation.summary.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 2
           }
         }
       ]
@@ -501,6 +655,13 @@
             "data": {
               "series": "data.metrics.revenueSeries"
             }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.admin.chart.aria",
+            "tabIndex": 0,
+            "role": "img",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
@@ -518,6 +679,13 @@
             "data": {
               "rows": "data.metrics.byRegion"
             }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.admin.regionTable.aria",
+            "tabIndex": 0,
+            "role": "table",
+            "keyboardNav": true,
+            "focusOrder": 2
           }
         }
       ]

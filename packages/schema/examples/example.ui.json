@@ -36,7 +36,7 @@
     {
       "id": "customerNameInput",
       "type": "input",
-      "adapterHint": "material.input",
+      "adapterHint": "platform.textField",
       "props": {},
       "i18n": {
         "labelKey": "runtime.filters.customerName.label",
@@ -76,7 +76,7 @@
     {
       "id": "orderTotalInput",
       "type": "input",
-      "adapterHint": "material.input",
+      "adapterHint": "platform.textField",
       "props": {
         "inputType": "number"
       },

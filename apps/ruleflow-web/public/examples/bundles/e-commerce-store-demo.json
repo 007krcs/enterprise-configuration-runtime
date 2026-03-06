@@ -31,11 +31,11 @@
       {
         "id": "heroText",
         "type": "text",
-        "adapterHint": "material.input",
+        "adapterHint": "platform.alert",
         "props": {
-          "text": "Welcome to ECR Commerce",
-          "variant": "h1",
-          "alignment": "center"
+          "title": "Welcome to ECR Commerce",
+          "description": "Discover our curated collection of products across electronics, clothing, and home & garden",
+          "intent": "primary"
         },
         "i18n": {
           "labelKey": "ecr.home.hero.title"
@@ -44,7 +44,7 @@
           "ariaLabelKey": "ecr.home.hero.aria",
           "tabIndex": 0,
           "role": "heading",
-          "keyboardNav": false,
+          "keyboardNav": true,
           "focusOrder": 1
         },
         "responsive": {
@@ -57,10 +57,11 @@
       {
         "id": "categoryCard1",
         "type": "card",
-        "adapterHint": "material.input",
+        "adapterHint": "platform.alert",
         "props": {
           "title": "Electronics",
-          "subtitle": "Laptops, phones & accessories"
+          "description": "Laptops, phones & accessories",
+          "intent": "neutral"
         },
         "bindings": {
           "data": {
@@ -89,10 +90,11 @@
       {
         "id": "categoryCard2",
         "type": "card",
-        "adapterHint": "material.input",
+        "adapterHint": "platform.alert",
         "props": {
           "title": "Clothing",
-          "subtitle": "Apparel & fashion"
+          "description": "Apparel & fashion",
+          "intent": "neutral"
         },
         "bindings": {
           "data": {
@@ -121,10 +123,11 @@
       {
         "id": "categoryCard3",
         "type": "card",
-        "adapterHint": "material.input",
+        "adapterHint": "platform.alert",
         "props": {
           "title": "Home & Garden",
-          "subtitle": "Furniture & decor"
+          "description": "Furniture & decor",
+          "intent": "neutral"
         },
         "bindings": {
           "data": {
@@ -214,11 +217,11 @@
         {
           "id": "heroText",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Welcome to ECR Commerce",
-            "variant": "h1",
-            "alignment": "center"
+            "title": "Welcome to ECR Commerce",
+            "description": "Discover our curated collection of products across electronics, clothing, and home & garden",
+            "intent": "primary"
           },
           "i18n": {
             "labelKey": "ecr.home.hero.title"
@@ -227,7 +230,7 @@
             "ariaLabelKey": "ecr.home.hero.aria",
             "tabIndex": 0,
             "role": "heading",
-            "keyboardNav": false,
+            "keyboardNav": true,
             "focusOrder": 1
           },
           "responsive": {
@@ -240,10 +243,11 @@
         {
           "id": "categoryCard1",
           "type": "card",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
             "title": "Electronics",
-            "subtitle": "Laptops, phones & accessories"
+            "description": "Laptops, phones & accessories",
+            "intent": "neutral"
           },
           "bindings": {
             "data": {
@@ -272,10 +276,11 @@
         {
           "id": "categoryCard2",
           "type": "card",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
             "title": "Clothing",
-            "subtitle": "Apparel & fashion"
+            "description": "Apparel & fashion",
+            "intent": "neutral"
           },
           "bindings": {
             "data": {
@@ -304,10 +309,11 @@
         {
           "id": "categoryCard3",
           "type": "card",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
             "title": "Home & Garden",
-            "subtitle": "Furniture & decor"
+            "description": "Furniture & decor",
+            "intent": "neutral"
           },
           "bindings": {
             "data": {
@@ -396,10 +402,10 @@
         {
           "id": "productName",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
-            "variant": "h2",
-            "text": ""
+            "title": "Product Name",
+            "intent": "primary"
           },
           "bindings": {
             "data": {
@@ -413,7 +419,7 @@
             "ariaLabelKey": "ecr.product.name.aria",
             "tabIndex": 0,
             "role": "heading",
-            "keyboardNav": false,
+            "keyboardNav": true,
             "focusOrder": 1
           },
           "responsive": {
@@ -426,11 +432,9 @@
         {
           "id": "productPrice",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.badge",
           "props": {
-            "variant": "h3",
-            "text": "",
-            "format": "currency"
+            "label": "$0.00"
           },
           "bindings": {
             "data": {
@@ -443,8 +447,8 @@
           "accessibility": {
             "ariaLabelKey": "ecr.product.price.aria",
             "tabIndex": 0,
-            "role": "text",
-            "keyboardNav": false,
+            "role": "status",
+            "keyboardNav": true,
             "focusOrder": 2
           },
           "responsive": {
@@ -457,10 +461,11 @@
         {
           "id": "productDescription",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
-            "variant": "body1",
-            "text": ""
+            "title": "Description",
+            "description": "Product description will appear here",
+            "intent": "neutral"
           },
           "bindings": {
             "data": {
@@ -473,18 +478,17 @@
           "accessibility": {
             "ariaLabelKey": "ecr.product.description.aria",
             "tabIndex": 0,
-            "role": "text",
-            "keyboardNav": false,
+            "role": "region",
+            "keyboardNav": true,
             "focusOrder": 3
           }
         },
         {
           "id": "stockIndicator",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.chip",
           "props": {
-            "variant": "body2",
-            "text": ""
+            "label": "In Stock"
           },
           "bindings": {
             "data": {
@@ -498,24 +502,19 @@
             "ariaLabelKey": "ecr.product.stock.aria",
             "tabIndex": 0,
             "role": "status",
-            "keyboardNav": false,
+            "keyboardNav": true,
             "focusOrder": 4
-          },
-          "rules": {
-            "visibleWhen": {
-              "op": "exists",
-              "left": { "path": "data.product.stockStatus" }
-            }
           }
         },
         {
           "id": "addToCartButton",
           "type": "button",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "Add to Cart",
-            "variant": "contained",
-            "color": "primary"
+            "label": "Add to Cart",
+            "variant": "solid",
+            "intent": "primary",
+            "size": "lg"
           },
           "events": {
             "onClick": [
@@ -531,13 +530,6 @@
             "role": "button",
             "keyboardNav": true,
             "focusOrder": 5
-          },
-          "rules": {
-            "disabledWhen": {
-              "op": "eq",
-              "left": { "path": "data.product.stockStatus" },
-              "right": { "value": "Out of Stock" }
-            }
           }
         }
       ]
@@ -609,11 +601,11 @@
         {
           "id": "cartTotalText",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
-            "variant": "h4",
-            "text": "",
-            "format": "currency"
+            "title": "Cart Total",
+            "description": "$0.00",
+            "intent": "primary"
           },
           "bindings": {
             "data": {
@@ -626,17 +618,18 @@
           "accessibility": {
             "ariaLabelKey": "ecr.cart.total.aria",
             "tabIndex": 0,
-            "role": "text",
-            "keyboardNav": false,
+            "role": "status",
+            "keyboardNav": true,
             "focusOrder": 2
           }
         },
         {
           "id": "discountInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "Discount Code",
+            "placeholder": "Enter discount code"
           },
           "bindings": {
             "data": {
@@ -669,11 +662,12 @@
         {
           "id": "applyDiscountButton",
           "type": "button",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "Apply Discount",
-            "variant": "outlined",
-            "color": "secondary"
+            "label": "Apply Discount",
+            "variant": "outline",
+            "intent": "secondary",
+            "size": "md"
           },
           "events": {
             "onClick": [
@@ -700,11 +694,12 @@
         {
           "id": "proceedToCheckoutButton",
           "type": "button",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "Proceed to Checkout",
-            "variant": "contained",
-            "color": "primary"
+            "label": "Proceed to Checkout",
+            "variant": "solid",
+            "intent": "primary",
+            "size": "lg"
           },
           "events": {
             "onClick": [
@@ -720,13 +715,6 @@
             "role": "button",
             "keyboardNav": true,
             "focusOrder": 5
-          },
-          "rules": {
-            "disabledWhen": {
-              "op": "eq",
-              "left": { "path": "data.cart.items.length" },
-              "right": { "value": 0 }
-            }
           }
         }
       ]
@@ -752,12 +740,6 @@
             "componentIds": ["paymentMethodSelect"]
           },
           {
-            "id": "checkout-summary-section",
-            "type": "section",
-            "title": "Order Summary",
-            "componentIds": ["orderSummaryText"]
-          },
-          {
             "id": "checkout-actions-section",
             "type": "section",
             "title": "Actions",
@@ -769,9 +751,10 @@
         {
           "id": "shippingAddressInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "Street Address",
+            "placeholder": "Enter your street address"
           },
           "bindings": {
             "data": {
@@ -804,9 +787,10 @@
         {
           "id": "shippingCityInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "City",
+            "placeholder": "Enter your city"
           },
           "bindings": {
             "data": {
@@ -839,9 +823,10 @@
         {
           "id": "shippingPostalCodeInput",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "Postal Code",
+            "placeholder": "Enter postal code"
           },
           "bindings": {
             "data": {
@@ -875,8 +860,10 @@
         {
           "id": "paymentMethodSelect",
           "type": "select",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.select",
           "props": {
+            "label": "Payment Method",
+            "placeholder": "Select payment method",
             "options": [
               { "value": "credit_card", "label": "Credit Card" },
               { "value": "debit_card", "label": "Debit Card" },
@@ -911,37 +898,14 @@
           }
         },
         {
-          "id": "orderSummaryText",
-          "type": "text",
-          "adapterHint": "material.input",
-          "props": {
-            "variant": "body1",
-            "text": ""
-          },
-          "bindings": {
-            "data": {
-              "value": "data.checkout.orderSummary"
-            }
-          },
-          "i18n": {
-            "labelKey": "ecr.checkout.summary"
-          },
-          "accessibility": {
-            "ariaLabelKey": "ecr.checkout.summary.aria",
-            "tabIndex": 0,
-            "role": "text",
-            "keyboardNav": false,
-            "focusOrder": 5
-          }
-        },
-        {
           "id": "placeOrderButton",
           "type": "button",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "Place Order",
-            "variant": "contained",
-            "color": "primary"
+            "label": "Place Order",
+            "variant": "solid",
+            "intent": "primary",
+            "size": "lg"
           },
           "events": {
             "onClick": [
@@ -956,7 +920,7 @@
             "tabIndex": 0,
             "role": "button",
             "keyboardNav": true,
-            "focusOrder": 6
+            "focusOrder": 5
           }
         }
       ]
@@ -973,7 +937,7 @@
             "id": "confirmation-header-section",
             "type": "section",
             "title": "Order Confirmed",
-            "componentIds": ["orderReferenceText"]
+            "componentIds": ["orderConfirmationAlert"]
           },
           {
             "id": "confirmation-details-section",
@@ -991,12 +955,13 @@
       },
       "components": [
         {
-          "id": "orderReferenceText",
+          "id": "orderConfirmationAlert",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
-            "variant": "h3",
-            "text": ""
+            "title": "Order Placed Successfully!",
+            "description": "Your order has been confirmed. Check your email for order details and tracking information.",
+            "intent": "success"
           },
           "bindings": {
             "data": {
@@ -1009,8 +974,8 @@
           "accessibility": {
             "ariaLabelKey": "ecr.confirmation.reference.aria",
             "tabIndex": 0,
-            "role": "heading",
-            "keyboardNav": false,
+            "role": "status",
+            "keyboardNav": true,
             "focusOrder": 1
           }
         },
@@ -1046,11 +1011,12 @@
         {
           "id": "continueShoppingButton",
           "type": "button",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "Continue Shopping",
-            "variant": "outlined",
-            "color": "primary"
+            "label": "Continue Shopping",
+            "variant": "outline",
+            "intent": "primary",
+            "size": "md"
           },
           "events": {
             "onClick": [

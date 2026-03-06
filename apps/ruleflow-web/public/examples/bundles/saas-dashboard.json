@@ -17,7 +17,7 @@
           "id": "login-form",
           "type": "section",
           "title": "Sign In",
-          "componentIds": ["loginUsername", "loginPassword", "loginButton", "forgotPasswordLink"]
+          "componentIds": ["loginUsername", "loginPassword", "loginButton"]
         }
       ]
     },
@@ -25,18 +25,27 @@
       {
         "id": "appTitle",
         "type": "text",
-        "adapterHint": "material.input",
+        "adapterHint": "platform.alert",
         "props": {
-          "text": "SaaS Insights Platform",
-          "variant": "h4"
+          "title": "SaaS Insights Platform",
+          "description": "Sign in to access your analytics dashboard",
+          "intent": "primary"
+        },
+        "accessibility": {
+          "ariaLabelKey": "examples.saas.appTitle.aria",
+          "tabIndex": 0,
+          "role": "heading",
+          "keyboardNav": true,
+          "focusOrder": 1
         }
       },
       {
         "id": "loginUsername",
         "type": "input",
-        "adapterHint": "material.input",
+        "adapterHint": "platform.textField",
         "props": {
-          "inputType": "text"
+          "label": "Username",
+          "placeholder": "Enter your username"
         },
         "bindings": {
           "data": {
@@ -55,15 +64,22 @@
           "tabIndex": 0,
           "role": "textbox",
           "keyboardNav": true,
-          "focusOrder": 1
+          "focusOrder": 2
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 6 }
+          }
         }
       },
       {
         "id": "loginPassword",
         "type": "input",
-        "adapterHint": "material.input",
+        "adapterHint": "platform.textField",
         "props": {
-          "inputType": "password"
+          "label": "Password",
+          "placeholder": "Enter your password"
         },
         "bindings": {
           "data": {
@@ -82,43 +98,34 @@
           "tabIndex": 0,
           "role": "textbox",
           "keyboardNav": true,
-          "focusOrder": 2
+          "focusOrder": 3
+        },
+        "responsive": {
+          "breakpoints": {
+            "sm": { "columns": 12, "span": 12 },
+            "md": { "columns": 12, "span": 6 }
+          }
         }
       },
       {
         "id": "loginButton",
         "type": "button",
-        "adapterHint": "d3.custom",
+        "adapterHint": "platform.button",
         "props": {
-          "text": "Sign In",
-          "variant": "primary",
-          "height": 56
+          "label": "Sign In",
+          "variant": "solid",
+          "intent": "primary",
+          "size": "lg"
         },
         "events": {
           "onClick": [
-            { "type": "emitEvent", "event": "onLogin" }
+            { "type": "emitEvent", "payload": { "event": "onLogin" } }
           ]
         },
         "accessibility": {
           "ariaLabelKey": "examples.saas.login.submit.aria",
           "tabIndex": 0,
           "role": "button",
-          "keyboardNav": true,
-          "focusOrder": 3
-        }
-      },
-      {
-        "id": "forgotPasswordLink",
-        "type": "text",
-        "adapterHint": "material.input",
-        "props": {
-          "text": "Forgot Password?",
-          "variant": "link"
-        },
-        "accessibility": {
-          "ariaLabelKey": "examples.saas.login.forgot.aria",
-          "tabIndex": 0,
-          "role": "link",
           "keyboardNav": true,
           "focusOrder": 4
         }
@@ -144,7 +151,7 @@
             "id": "login-form",
             "type": "section",
             "title": "Sign In",
-            "componentIds": ["loginUsername", "loginPassword", "loginButton", "forgotPasswordLink"]
+            "componentIds": ["loginUsername", "loginPassword", "loginButton"]
           }
         ]
       },
@@ -152,18 +159,27 @@
         {
           "id": "appTitle",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "SaaS Insights Platform",
-            "variant": "h4"
+            "title": "SaaS Insights Platform",
+            "description": "Sign in to access your analytics dashboard",
+            "intent": "primary"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.appTitle.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
           "id": "loginUsername",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "text"
+            "label": "Username",
+            "placeholder": "Enter your username"
           },
           "bindings": {
             "data": {
@@ -182,15 +198,22 @@
             "tabIndex": 0,
             "role": "textbox",
             "keyboardNav": true,
-            "focusOrder": 1
+            "focusOrder": 2
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "loginPassword",
           "type": "input",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.textField",
           "props": {
-            "inputType": "password"
+            "label": "Password",
+            "placeholder": "Enter your password"
           },
           "bindings": {
             "data": {
@@ -209,43 +232,34 @@
             "tabIndex": 0,
             "role": "textbox",
             "keyboardNav": true,
-            "focusOrder": 2
+            "focusOrder": 3
+          },
+          "responsive": {
+            "breakpoints": {
+              "sm": { "columns": 12, "span": 12 },
+              "md": { "columns": 12, "span": 6 }
+            }
           }
         },
         {
           "id": "loginButton",
           "type": "button",
-          "adapterHint": "d3.custom",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "Sign In",
-            "variant": "primary",
-            "height": 56
+            "label": "Sign In",
+            "variant": "solid",
+            "intent": "primary",
+            "size": "lg"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onLogin" }
+              { "type": "emitEvent", "payload": { "event": "onLogin" } }
             ]
           },
           "accessibility": {
             "ariaLabelKey": "examples.saas.login.submit.aria",
             "tabIndex": 0,
             "role": "button",
-            "keyboardNav": true,
-            "focusOrder": 3
-          }
-        },
-        {
-          "id": "forgotPasswordLink",
-          "type": "text",
-          "adapterHint": "material.input",
-          "props": {
-            "text": "Forgot Password?",
-            "variant": "link"
-          },
-          "accessibility": {
-            "ariaLabelKey": "examples.saas.login.forgot.aria",
-            "tabIndex": 0,
-            "role": "link",
             "keyboardNav": true,
             "focusOrder": 4
           }
@@ -296,26 +310,33 @@
         {
           "id": "welcomeMessage",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Welcome back, {{user.name}}",
-            "variant": "h5"
+            "title": "Welcome back!",
+            "description": "Here is your dashboard overview",
+            "intent": "primary"
           },
           "bindings": {
             "data": {
               "value": "data.user.name"
             }
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.dashboard.welcome.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
           "id": "kpiRevenue",
           "type": "card",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
             "title": "Revenue",
-            "value": "$152k",
-            "icon": "trending_up",
-            "color": "success"
+            "description": "$152k",
+            "intent": "success"
           },
           "bindings": {
             "data": {
@@ -333,18 +354,17 @@
             "tabIndex": 0,
             "role": "status",
             "keyboardNav": true,
-            "focusOrder": 1
+            "focusOrder": 2
           }
         },
         {
           "id": "kpiActiveUsers",
           "type": "card",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
             "title": "Active Users",
-            "value": "2,847",
-            "icon": "people",
-            "color": "primary"
+            "description": "2,847",
+            "intent": "primary"
           },
           "bindings": {
             "data": {
@@ -362,18 +382,17 @@
             "tabIndex": 0,
             "role": "status",
             "keyboardNav": true,
-            "focusOrder": 2
+            "focusOrder": 3
           }
         },
         {
           "id": "kpiCSAT",
           "type": "card",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
             "title": "CSAT",
-            "value": "92%",
-            "icon": "sentiment_satisfied",
-            "color": "info"
+            "description": "92%",
+            "intent": "neutral"
           },
           "bindings": {
             "data": {
@@ -391,7 +410,7 @@
             "tabIndex": 0,
             "role": "status",
             "keyboardNav": true,
-            "focusOrder": 3
+            "focusOrder": 4
           }
         },
         {
@@ -418,7 +437,7 @@
             "tabIndex": 0,
             "role": "img",
             "keyboardNav": true,
-            "focusOrder": 4
+            "focusOrder": 5
           }
         },
         {
@@ -448,21 +467,22 @@
             "tabIndex": 0,
             "role": "table",
             "keyboardNav": true,
-            "focusOrder": 5
+            "focusOrder": 6
           }
         },
         {
           "id": "viewReportsButton",
           "type": "button",
-          "adapterHint": "d3.custom",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "View Reports",
-            "variant": "primary",
-            "height": 52
+            "label": "View Reports",
+            "variant": "solid",
+            "intent": "primary",
+            "size": "md"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onViewReports" }
+              { "type": "emitEvent", "payload": { "event": "onViewReports" } }
             ]
           },
           "accessibility": {
@@ -470,7 +490,7 @@
             "tabIndex": 0,
             "role": "button",
             "keyboardNav": true,
-            "focusOrder": 6
+            "focusOrder": 7
           }
         }
       ]
@@ -513,10 +533,18 @@
         {
           "id": "reportsPageTitle",
           "type": "text",
-          "adapterHint": "material.input",
+          "adapterHint": "platform.alert",
           "props": {
-            "text": "Reports",
-            "variant": "h5"
+            "title": "Reports",
+            "description": "View detailed reports and export data",
+            "intent": "primary"
+          },
+          "accessibility": {
+            "ariaLabelKey": "examples.saas.reports.title.aria",
+            "tabIndex": 0,
+            "role": "heading",
+            "keyboardNav": true,
+            "focusOrder": 1
           }
         },
         {
@@ -544,7 +572,7 @@
             "tabIndex": 0,
             "role": "table",
             "keyboardNav": true,
-            "focusOrder": 1
+            "focusOrder": 2
           }
         },
         {
@@ -572,21 +600,22 @@
             "tabIndex": 0,
             "role": "table",
             "keyboardNav": true,
-            "focusOrder": 2
+            "focusOrder": 3
           }
         },
         {
           "id": "exportButton",
           "type": "button",
-          "adapterHint": "d3.custom",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "Export",
-            "variant": "secondary",
-            "height": 48
+            "label": "Export",
+            "variant": "outline",
+            "intent": "secondary",
+            "size": "md"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onExportReport" }
+              { "type": "emitEvent", "payload": { "event": "onExportReport" } }
             ]
           },
           "accessibility": {
@@ -594,21 +623,22 @@
             "tabIndex": 0,
             "role": "button",
             "keyboardNav": true,
-            "focusOrder": 3
+            "focusOrder": 4
           }
         },
         {
           "id": "backToDashboardButton",
           "type": "button",
-          "adapterHint": "d3.custom",
+          "adapterHint": "platform.button",
           "props": {
-            "text": "Back to Dashboard",
-            "variant": "outlined",
-            "height": 48
+            "label": "Back to Dashboard",
+            "variant": "outline",
+            "intent": "neutral",
+            "size": "md"
           },
           "events": {
             "onClick": [
-              { "type": "emitEvent", "event": "onBackToDashboard" }
+              { "type": "emitEvent", "payload": { "event": "onBackToDashboard" } }
             ]
           },
           "accessibility": {
@@ -616,7 +646,7 @@
             "tabIndex": 0,
             "role": "button",
             "keyboardNav": true,
-            "focusOrder": 4
+            "focusOrder": 5
           }
         }
       ]

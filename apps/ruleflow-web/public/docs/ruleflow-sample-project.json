@@ -36,7 +36,7 @@
                   {
                     "id": "orderTotal",
                     "type": "input",
-                    "adapterHint": "material.input",
+                    "adapterHint": "platform.textField",
                     "props": {
                       "label": "Order total",
                       "inputType": "number"
@@ -58,7 +58,7 @@
                   {
                     "id": "submitButton",
                     "type": "button",
-                    "adapterHint": "material.button",
+                    "adapterHint": "platform.button",
                     "props": {
                       "label": "Submit"
                     },
