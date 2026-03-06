@@ -1,0 +1,175 @@
+# Creating Applications
+
+This guide walks through creating a complete ECR application from scratch using the builder and the ConfigBundle structure.
+
+## Architecture Overview
+
+Every ECR application is defined by a **ConfigBundle** — a portable JSON object that contains:
+
+| Property | Purpose |
+|---|---|
+| `uiSchema` | The active screen's component tree (layout + components) |
+| `uiSchemasById` | All screens keyed by page ID |
+| `activeUiPageId` | Which screen is currently displayed |
+| `flowSchema` | State machine defining navigation transitions |
+| `rules` | Conditional guards evaluated during transitions |
+| `apiMappingsById` | Endpoint bindings for data fetching / mutation |
+
+## Step 1: Define Screens
+
+Each screen is a `UISchema` object containing a `pageId`, `layout`, and `components` array.
+
+```json
+{
+  "pageId": "home",
+  "layout": {
+    "type": "stack",
+    "direction": "vertical",
+    "gap": 16,
+    "padding": { "top": 24, "right": 24, "bottom": 24, "left": 24 }
+  },
+  "components": [
+    {
+      "id": "title",
+      "type": "heading",
+      "adapterHint": "platform.heading",
+      "props": { "level": 1 },
+      "i18n": { "labelKey": "app.home.title" }
+    },
+    {
+      "id": "mainAction",
+      "type": "button",
+      "adapterHint": "platform.button",
+      "props": { "variant": "primary" },
+      "i18n": { "labelKey": "app.home.cta" },
+      "events": { "onClick": "onNavigateNext" }
+    }
+  ]
+}
+```
+
+### Multi-page Setup
+
+For multi-page applications, populate `uiSchemasById` with each screen:
+
+```json
+{
+  "uiSchemasById": {
+    "home": { "pageId": "home", "layout": { ... }, "components": [ ... ] },
+    "settings": { "pageId": "settings", "layout": { ... }, "components": [ ... ] },
+    "confirm": { "pageId": "confirm", "layout": { ... }, "components": [ ... ] }
+  },
+  "activeUiPageId": "home"
+}
+```
+
+## Step 2: Wire Flow Navigation
+
+The `flowSchema` is a finite state machine that controls page transitions:
+
+```json
+{
+  "initialState": "home",
+  "states": {
+    "home": {
+      "uiPageId": "home",
+      "transitions": {
+        "onNavigateNext": { "target": "settings" }
+      }
+    },
+    "settings": {
+      "uiPageId": "settings",
+      "transitions": {
+        "onSave": { "target": "confirm" },
+        "onBack": { "target": "home" }
+      }
+    },
+    "confirm": {
+      "uiPageId": "confirm",
+      "transitions": {
+        "onRestart": { "target": "home" }
+      }
+    }
+  }
+}
+```
+
+Each state maps to a `uiPageId` and defines named transitions that components can trigger via `events.onClick`.
+
+## Step 3: Add Conditional Rules
+
+Rules let you guard transitions or conditionally show/hide components:
+
+```json
+{
+  "rules": [
+    {
+      "id": "require-terms",
+      "name": "Terms must be accepted",
+      "condition": {
+        "field": "acceptedTerms",
+        "operator": "equals",
+        "value": true
+      },
+      "actions": [
+        { "type": "block-transition", "transition": "onSubmit" }
+      ]
+    }
+  ]
+}
+```
+
+Rules are evaluated by the runtime engine before executing transitions.
+
+## Step 4: Add API Mappings
+
+API mappings bind data-fetching or mutation endpoints to component lifecycle events:
+
+```json
+{
+  "apiMappingsById": {
+    "fetchProducts": {
+      "url": "/api/products",
+      "method": "GET",
+      "trigger": "onMount",
+      "targetDataPath": "products"
+    },
+    "submitOrder": {
+      "url": "/api/orders",
+      "method": "POST",
+      "trigger": "onSubmit",
+      "bodyMapping": { "items": "cart.items", "total": "cart.total" }
+    }
+  }
+}
+```
+
+## Step 5: Add Internationalization
+
+Every user-facing string should use i18n keys. See the [I18n Guide](/docs/guides/i18n-guide) for details.
+
+```json
+{
+  "i18n": {
+    "labelKey": "namespace.section.label",
+    "placeholderKey": "namespace.section.placeholder",
+    "helperTextKey": "namespace.section.helper",
+    "ariaLabelKey": "namespace.section.ariaLabel"
+  }
+}
+```
+
+## Step 6: Preview and Test
+
+1. Open the **Builder** at `/builder` to visually edit screens
+2. Use the **Playground** at `/playground` to test runtime behavior with sample data
+3. Check the **Examples** at `/examples` for reference implementations
+
+## Step 7: Export
+
+Export the final ConfigBundle as JSON from **Console** > **GitOps** > **Export**. This JSON file is the complete, portable application definition that can be:
+
+- Deployed to any ECR-compatible runtime
+- Version-controlled in Git
+- Diffed and merged like any configuration file
+- Imported into another tenant environment

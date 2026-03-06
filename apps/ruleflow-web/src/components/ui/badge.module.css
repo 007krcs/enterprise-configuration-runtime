@@ -7,6 +7,7 @@
   font-weight: 650;
   letter-spacing: 0.02em;
   border: 1px solid transparent;
+  transition: filter 150ms ease, box-shadow 150ms ease;
 }
 
 .default {
@@ -25,6 +26,18 @@
   background: color-mix(in srgb, var(--rf-warning) 11%, var(--rf-surface));
   color: var(--pf-color-warning-800, #874514);
   border-color: color-mix(in srgb, var(--rf-warning) 28%, var(--rf-border));
+}
+
+.danger {
+  background: color-mix(in srgb, var(--rf-danger) 10%, var(--rf-surface));
+  color: var(--pf-color-error-800, #991b1b);
+  border-color: color-mix(in srgb, var(--rf-danger) 26%, var(--rf-border));
+}
+
+.info {
+  background: color-mix(in srgb, var(--rf-accent) 10%, var(--rf-surface));
+  color: var(--pf-color-primary-600, #2563eb);
+  border-color: color-mix(in srgb, var(--rf-accent) 26%, var(--rf-border));
 }
 
 .muted {

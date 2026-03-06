@@ -12,6 +12,10 @@
   border-color: color-mix(in srgb, var(--rf-primary) 20%, var(--rf-border));
 }
 
+.card:focus-within {
+  box-shadow: 0 0 0 3px var(--rf-focus), var(--rf-shadow-soft);
+}
+
 .header {
   padding: var(--rf-space-5) var(--rf-space-6);
   border-bottom: 1px solid var(--rf-border);
@@ -27,4 +31,3 @@
 .content {
   padding: var(--rf-space-5) var(--rf-space-6);
 }
-

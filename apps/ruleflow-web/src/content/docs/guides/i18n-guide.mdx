@@ -1,0 +1,189 @@
+# I18n Guide
+
+This guide explains how the ECR internationalization system works, how to add translations, and how keys are resolved at runtime.
+
+## Key Concepts
+
+### Namespaces
+
+Every i18n key belongs to a **namespace**. The namespace is derived from the first segment of the dot-separated key:
+
+```
+"ecr.home.hero.title"
+ ├── namespace: "ecr"
+ └── entry key: "home.hero.title"
+
+"runtime.submit"
+ ├── namespace: "runtime"
+ └── entry key: "submit"
+```
+
+### Translation Bundles
+
+A `TranslationBundle` is an object with three properties:
+
+```ts
+{
+  locale: string;      // e.g. "en", "fr", "de"
+  namespace: string;   // e.g. "ecr", "runtime", "onboarding"
+  messages: Record<string, string>;  // entry key → translated text
+}
+```
+
+### Bundle Types
+
+ECR uses three layers of translation bundles, applied in priority order:
+
+| Layer | Constant | Purpose |
+|---|---|---|
+| Platform | `PLATFORM_BUNDLES` | Core runtime labels (Submit, Cancel, Next, Back, etc.) |
+| Example Demos | `EXAMPLE_DEMO_BUNDLES` | Translations for example applications |
+| Tenant Overrides | `EXAMPLE_TENANT_BUNDLES` | Per-tenant customizations that override platform defaults |
+
+## Resolution Algorithm
+
+When `t(key)` is called, the i18n provider:
+
+1. Splits the key on `.` to extract namespace and entry key
+2. Searches bundles in reverse priority order (tenant → example → platform)
+3. Returns the first matching translation for the current locale
+4. Falls back to the fallback locale (typically `en`) if the current locale has no match
+5. In `dev` mode: returns the raw key string if no translation exists
+6. In `prod` mode: returns a configured fallback string
+
+## Adding Translations
+
+### Adding to Platform Bundles
+
+Platform bundles contain universal labels shared across all applications:
+
+```ts
+// packages/i18n/src/index.ts
+export const PLATFORM_BUNDLES: TranslationBundle[] = [
+  {
+    locale: 'en',
+    namespace: 'runtime',
+    messages: {
+      'submit': 'Submit',
+      'cancel': 'Cancel',
+      'next': 'Next',
+      'back': 'Back',
+      // ...
+    },
+  },
+];
+```
+
+### Adding to Example Demo Bundles
+
+Example bundles provide translations for the demo applications:
+
+```ts
+export const EXAMPLE_DEMO_BUNDLES: TranslationBundle[] = [
+  {
+    locale: 'en',
+    namespace: 'ecr',
+    messages: {
+      'home.hero.title': 'Welcome to ECR Commerce',
+      'products.table.name': 'Product Name',
+      // ...
+    },
+  },
+  {
+    locale: 'en',
+    namespace: 'onboarding',
+    messages: {
+      'welcome.title': 'Welcome to ECR Platform',
+      // ...
+    },
+  },
+];
+```
+
+### Adding a New Locale
+
+To add support for a new language, create additional bundles with the target locale:
+
+```ts
+{
+  locale: 'fr',
+  namespace: 'ecr',
+  messages: {
+    'home.hero.title': 'Bienvenue sur ECR Commerce',
+    'products.table.name': 'Nom du produit',
+    // ... translate all keys
+  },
+}
+```
+
+## Using I18n in UI Schemas
+
+Components reference translations through the `i18n` property:
+
+```json
+{
+  "id": "emailInput",
+  "type": "input",
+  "adapterHint": "platform.textField",
+  "i18n": {
+    "labelKey": "onboarding.account.email.label",
+    "placeholderKey": "onboarding.account.email.placeholder",
+    "helperTextKey": "onboarding.account.email.helper",
+    "ariaLabelKey": "onboarding.account.email.ariaLabel"
+  }
+}
+```
+
+### Available I18n Properties
+
+| Property | Rendered As |
+|---|---|
+| `labelKey` | Visible label above the input |
+| `placeholderKey` | Placeholder text inside the input |
+| `helperTextKey` | Helper text below the input |
+| `ariaLabelKey` | Accessible label for screen readers |
+
+## Creating an I18n Provider
+
+To use translations in your application, create a provider using `createProviderFromBundles`:
+
+```ts
+import { createProviderFromBundles, PLATFORM_BUNDLES } from '@platform/i18n';
+
+const i18nProvider = createProviderFromBundles({
+  locale: 'en',
+  fallbackLocale: 'en',
+  bundles: [...PLATFORM_BUNDLES, ...myCustomBundles],
+  mode: 'dev', // 'dev' shows raw keys for missing translations
+});
+```
+
+Then pass it to the renderer:
+
+```tsx
+<RenderPage
+  uiSchema={uiSchema}
+  data={data}
+  context={context}
+  i18n={i18nProvider}
+/>
+```
+
+## RTL Support
+
+The renderer automatically applies `dir="rtl"` when the locale is a right-to-left language (`ar`, `he`, `fa`, `ur`). No additional configuration is needed.
+
+## Troubleshooting
+
+### Raw keys showing instead of text
+
+If you see raw keys like `ecr.home.hero.title` in the UI:
+
+1. Check that a bundle with the matching namespace exists
+2. Verify the entry key exists in the bundle's `messages` object
+3. Ensure the bundle is included in the `bundles` array passed to `createProviderFromBundles`
+4. Check that `mode` is set to `'dev'` — in dev mode, missing keys show the raw key
+
+### Translation not updating
+
+The i18n provider is memoized. If you change bundles dynamically, ensure the provider is recreated by updating the dependency that triggers the `useMemo`.

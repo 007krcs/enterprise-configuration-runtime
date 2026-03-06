@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ApiMapping, ExecutionContext, FlowSchema, JSONValue, Rule } from '@platform/schema';
 import { executeStep } from '@platform/core-runtime';
 import { RenderPage } from '@platform/react-renderer';
-import { createProviderFromBundles, EXAMPLE_TENANT_BUNDLES, PLATFORM_BUNDLES } from '@platform/i18n';
+import { createProviderFromBundles, EXAMPLE_DEMO_BUNDLES, EXAMPLE_TENANT_BUNDLES, PLATFORM_BUNDLES } from '@platform/i18n';
 import type { ConditionExplain, ExplainOperand, RuleActionDiff, RuleRead } from '@platform/observability';
 import type { ConfigVersion, ConsoleSnapshot } from '@/lib/demo/types';
 import { apiGet } from '@/lib/demo/api-client';
@@ -536,7 +536,7 @@ export function Playground({
       createProviderFromBundles({
         locale: baseLocale,
         fallbackLocale: 'en',
-        bundles: [...PLATFORM_BUNDLES, ...EXAMPLE_TENANT_BUNDLES],
+        bundles: [...PLATFORM_BUNDLES, ...EXAMPLE_TENANT_BUNDLES, ...EXAMPLE_DEMO_BUNDLES],
         mode: 'dev',
       }),
     [baseLocale],

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { JSONValue, ExecutionContext } from '@platform/schema';
 import { RenderPage } from '@platform/react-renderer';
-import { createProviderFromBundles, EXAMPLE_TENANT_BUNDLES, PLATFORM_BUNDLES } from '@platform/i18n';
+import { createProviderFromBundles, EXAMPLE_DEMO_BUNDLES, EXAMPLE_TENANT_BUNDLES, PLATFORM_BUNDLES } from '@platform/i18n';
 import type { ConfigBundle } from '@/lib/demo/types';
 import { normalizeUiPages } from '@/lib/demo/ui-pages';
 import { exampleCatalog, loadExampleBundle } from '@/lib/examples';
@@ -132,6 +132,7 @@ export default function ExamplesPage() {
   const loadExample = useProjectStore((state) => state.loadExample);
   const [busyAction, setBusyAction] = useState<{ exampleId: string; action: ExampleAction } | null>(null);
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
+  const [previewActivePageId, setPreviewActivePageId] = useState<string | null>(null);
   const autoOpenRef = useRef<string | null>(null);
 
   const baseLocale = previewContext.locale.split('-')[0] ?? previewContext.locale;
@@ -170,14 +171,16 @@ export default function ExamplesPage() {
     });
   }, [previewState]);
 
-  const currentUiSchema = previewPages?.uiSchemasById[previewPages.activeUiPageId];
+  const currentUiSchema = previewPages
+    ? previewPages.uiSchemasById[previewActivePageId ?? previewPages.activeUiPageId]
+    : undefined;
 
   const previewI18n = useMemo(() => {
     if (!previewState) return null;
     return createProviderFromBundles({
       locale: baseLocale,
       fallbackLocale: 'en',
-      bundles: [...PLATFORM_BUNDLES, ...EXAMPLE_TENANT_BUNDLES],
+      bundles: [...PLATFORM_BUNDLES, ...EXAMPLE_TENANT_BUNDLES, ...EXAMPLE_DEMO_BUNDLES],
       mode: 'dev',
     });
   }, [baseLocale, previewState]);
@@ -189,6 +192,7 @@ export default function ExamplesPage() {
     setBusyAction({ exampleId: example.id, action: 'preview' });
     try {
       const bundle = await loadExampleBundle(example.id);
+      setPreviewActivePageId(null);
       setPreviewState({ example, bundle });
     } catch (error) {
       toast({
@@ -312,6 +316,25 @@ export default function ExamplesPage() {
               Close
             </Button>
           </div>
+          {previewPages && Object.keys(previewPages.uiSchemasById).length > 1 && (
+            <div className={styles.previewTabs} role="tablist" aria-label="Preview pages">
+              {Object.keys(previewPages.uiSchemasById).map((pageId) => (
+                <button
+                  key={pageId}
+                  role="tab"
+                  aria-selected={(previewActivePageId ?? previewPages.activeUiPageId) === pageId}
+                  className={
+                    (previewActivePageId ?? previewPages.activeUiPageId) === pageId
+                      ? `${styles.previewTab} ${styles.previewTabActive}`
+                      : styles.previewTab
+                  }
+                  onClick={() => setPreviewActivePageId(pageId)}
+                >
+                  {pageId}
+                </button>
+              ))}
+            </div>
+          )}
           <div className={styles.previewBody}>
             {currentUiSchema && previewI18n ? (
               <div className={styles.previewFrame}>
