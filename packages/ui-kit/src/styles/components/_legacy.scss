@@ -1614,6 +1614,14 @@
     inset: 0;
     background: var(--pf-surface-overlay);
     z-index: var(--pf-z-modal);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: pf-backdrop-fade-in var(--pf-motion-normal) var(--pf-motion-easing-standard);
+  }
+
+  @keyframes pf-backdrop-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   .pf-dialog-root {
@@ -1864,7 +1872,6 @@
     position: absolute;
     z-index: var(--pf-z-tooltip);
     inset-inline-start: 50%;
-    transform: translateX(-50%);
     white-space: nowrap;
     border-radius: var(--pf-radius-sm);
     background: var(--pf-color-neutral-900);
@@ -1872,35 +1879,50 @@
     font-size: var(--pf-font-size-xs);
     line-height: 1.2;
     padding: var(--pf-space-1) var(--pf-space-2);
+    box-shadow: var(--pf-shadow-md);
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--pf-motion-fast) var(--pf-motion-easing-standard);
+    transform: translateX(-50%) scale(0.92);
+    transition: opacity var(--pf-motion-fast) var(--pf-motion-easing-standard),
+                transform var(--pf-motion-fast) var(--pf-motion-easing-standard);
   }
 
   .pf-tooltip--top .pf-tooltip__content {
     inset-block-end: calc(100% + var(--pf-space-2));
+    transform-origin: bottom center;
   }
 
   .pf-tooltip--bottom .pf-tooltip__content {
     inset-block-start: calc(100% + var(--pf-space-2));
+    transform-origin: top center;
   }
 
   .pf-tooltip--left .pf-tooltip__content {
     inset-inline-end: calc(100% + var(--pf-space-2));
     inset-inline-start: auto;
     inset-block-start: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) scale(0.92);
+    transform-origin: right center;
   }
 
   .pf-tooltip--right .pf-tooltip__content {
     inset-inline-start: calc(100% + var(--pf-space-2));
     inset-block-start: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) scale(0.92);
+    transform-origin: left center;
   }
 
   .pf-tooltip:hover .pf-tooltip__content,
   .pf-tooltip:focus-within .pf-tooltip__content {
     opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  .pf-tooltip--left:hover .pf-tooltip__content,
+  .pf-tooltip--left:focus-within .pf-tooltip__content,
+  .pf-tooltip--right:hover .pf-tooltip__content,
+  .pf-tooltip--right:focus-within .pf-tooltip__content {
+    transform: translateY(-50%) scale(1);
   }
 
   .pf-popover-layer {
@@ -2884,6 +2906,44 @@
     block-size: 1.5rem;
   }
 
+  /* ──── PFTextArea Autosize ──── */
+  .pf-textarea--autosize {
+    overflow: hidden;
+    resize: none;
+  }
+
+  /* ──── PFMasonry ──── */
+  .pf-masonry {
+    columns: var(--pf-masonry-columns, 3);
+    column-gap: var(--pf-masonry-gap, var(--pf-space-3));
+  }
+
+  .pf-masonry > * {
+    break-inside: avoid;
+    margin-block-end: var(--pf-masonry-gap, var(--pf-space-3));
+  }
+
+  /* ──── PFTransitionFade ──── */
+  .pf-transition-fade {
+    will-change: opacity;
+  }
+
+  /* ──── PFPopper ──── */
+  .pf-popper {
+    animation: pf-popper-enter var(--pf-motion-fast) var(--pf-motion-easing-standard);
+  }
+
+  @keyframes pf-popper-enter {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .pf-button,
     .pf-icon-button,
@@ -2900,6 +2960,16 @@
     .pf-skeleton.is-animated {
       animation-duration: 1ms;
       animation-iteration-count: 1;
+    }
+
+    .pf-backdrop,
+    .pf-popper,
+    .pf-speed-dial__action {
+      animation-duration: 1ms;
+    }
+
+    .pf-tooltip__content {
+      transition-duration: 1ms;
     }
   }
 }

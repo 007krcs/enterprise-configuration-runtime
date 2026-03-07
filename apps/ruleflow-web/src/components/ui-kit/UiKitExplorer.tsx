@@ -508,6 +508,13 @@ function getUiKitImportName(adapterHint: string): string | null {
     'platform.bottomNavigation': 'PFBottomNavigation',
     'platform.speedDial': 'PFSpeedDial',
     'platform.svgIcon': 'PFSvgIcon',
+    'platform.masonry': 'PFMasonry',
+    'platform.noSsr': 'PFNoSSR',
+    'platform.portal': 'PFPortal',
+    'platform.clickAwayListener': 'PFClickAwayListener',
+    'platform.focusTrap': 'PFFocusTrap',
+    'platform.popper': 'PFPopper',
+    'platform.transitionFade': 'PFTransitionFade',
   };
   return map[adapterHint] ?? null;
 }

@@ -110,9 +110,35 @@ export function PFTextArea({
   className,
   size = 'md',
   variant = 'outline',
+  rows = 3,
+  onChange,
   ...rest
 }: PFTextAreaProps) {
-  return <textarea className={cn('pf-textarea', sizeClass(size), `pf-textarea--${variant}`, className)} {...rest} />;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoResize = (): void => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    autoResize();
+  }, [rest.value, rest.defaultValue]);
+
+  return (
+    <textarea
+      ref={textareaRef}
+      className={cn('pf-textarea', 'pf-textarea--autosize', sizeClass(size), `pf-textarea--${variant}`, className)}
+      rows={rows}
+      onChange={(event) => {
+        autoResize();
+        onChange?.(event);
+      }}
+      {...rest}
+    />
+  );
 }
 
 export interface PFSelectOption {
