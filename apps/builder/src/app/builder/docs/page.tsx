@@ -1,11 +1,22 @@
 import React from 'react';
-import { WorkspaceHeader } from '../../../components/WorkspaceHeader';
+import ws from '../workspace.module.css';
 
 export default function DocsWorkspacePage() {
   return (
     <div>
-      <WorkspaceHeader title="Docs" subtitle="Browse project documentation within the console." />
-      <p>Placeholder for docs viewer.</p>
+      <div className={ws.pageHeader}>
+        <h1 className={ws.pageTitle}>Documentation</h1>
+        <p className={ws.pageSubtitle}>
+          Browse project documentation, API references, and component guides.
+        </p>
+      </div>
+      <div className={ws.card}>
+        <div className={ws.cardBody}>
+          <div className={ws.emptyState}>
+            Documentation workspace is coming soon. Check the repository for guides and references.
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@
     "allowJs": true,
     "noEmit": true,
     "incremental": true,
-    "types": ["node", "next"],
+    "types": ["node"],
     "typeRoots": ["../../node_modules/@types"],
     "baseUrl": ".",
     "paths": {

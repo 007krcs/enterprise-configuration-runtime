@@ -1661,11 +1661,13 @@ function ComponentPropFields({ component, contract, onPropChange }: ComponentPro
     return <p className={styles.emptyNotice}>This component has no configurable properties.</p>;
   }
 
-  const sortedEntries = entries.sort((left, right) => {
-    const leftLabel = left[1]?.label ?? left[0];
-    const rightLabel = right[1]?.label ?? right[0];
-    return leftLabel.localeCompare(rightLabel);
-  });
+  const sortedEntries = entries
+    .filter((entry): entry is [string, ComponentPropDefinition] => entry[1] !== undefined)
+    .sort((left, right) => {
+      const leftLabel = left[1].label ?? left[0];
+      const rightLabel = right[1].label ?? right[0];
+      return leftLabel.localeCompare(rightLabel);
+    });
 
   return (
     <div className={styles.fieldGroup}>

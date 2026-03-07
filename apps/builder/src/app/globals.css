@@ -101,7 +101,7 @@ body {
   font-family: var(--ecr-font-body);
   font-size: var(--ecr-font-size-base);
   line-height: var(--ecr-line-height-base);
-  overflow: hidden;
+  overflow: auto;
 }
 
 button,

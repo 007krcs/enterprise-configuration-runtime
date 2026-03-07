@@ -119,6 +119,7 @@ const ratingStarContract: ComponentContract = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const myCompanyPlugin: DeclarativePlugin<ComponentType<any>> = {
   meta: {
     id: 'myco.ui-pack',
