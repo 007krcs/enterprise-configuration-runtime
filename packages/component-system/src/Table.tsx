@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { VirtualList } from './virtualization/VirtualList';
 import styles from './Table.module.css';

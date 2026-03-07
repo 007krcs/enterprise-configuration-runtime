@@ -6,4 +6,5 @@ export * from './layout';
 export * from './navigation';
 export * from './surfaces';
 export * from './unsupported';
+export * from './utilities';
 export * from './utils';

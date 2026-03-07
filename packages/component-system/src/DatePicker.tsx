@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useMemo, useState, type ChangeEvent, type FocusEvent } from 'react';
 import { Input, type InputProps } from './Input';
 
