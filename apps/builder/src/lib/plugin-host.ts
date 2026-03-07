@@ -10,6 +10,7 @@ import {
 import type { ComponentContract } from '@platform/component-contract';
 import { builderPlugins } from '../plugins';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BuilderComponentImplementation = ComponentType<any>;
 export type BuilderRendererRegistration = RendererRegistration;
 

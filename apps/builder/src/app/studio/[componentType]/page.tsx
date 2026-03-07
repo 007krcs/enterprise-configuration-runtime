@@ -31,14 +31,17 @@ import {
 import styles from '../../../components/studio/Studio.module.css';
 
 interface StudioPageProps {
-  params: { componentType: string };
+  params: Promise<{ componentType: string }>;
 }
 
 type PropState = Record<string, ComponentPropValue>;
 
+import { use } from 'react';
+
 export default function ComponentStudioDetail({ params }: StudioPageProps) {
   const router = useRouter();
-  const componentType = decodeURIComponent(params.componentType);
+  const resolvedParams = use(params);
+  const componentType = decodeURIComponent(resolvedParams.componentType);
   const [catalog, setCatalog] = useState(() => getBuilderComponentCatalog());
   const [registry, setRegistry] = useState(() => getBuilderComponentRegistry());
   const [renderers, setRenderers] = useState(() => getBuilderRenderers());
@@ -112,7 +115,7 @@ export default function ComponentStudioDetail({ params }: StudioPageProps) {
 
   const previewProps = useMemo(() => mapPreviewProps(contract, propsState), [contract, propsState]);
   const preview = implementation
-    ? createElement(implementation as ComponentType<any>, previewProps)
+    ? createElement(implementation as ComponentType<Record<string, unknown>>, previewProps)
     : null;
 
   useEffect(() => {
@@ -207,7 +210,8 @@ export default function ComponentStudioDetail({ params }: StudioPageProps) {
               {Object.entries(contract.props ?? {}).length === 0 ? (
                 <p className={styles.description}>This component has no configurable properties.</p>
               ) : (
-                Object.entries(contract.props ?? {})
+                (Object.entries(contract.props ?? {}) as [string, ComponentPropDefinition][])
+                  .filter(([, def]) => def !== undefined)
                   .sort((left, right) => {
                     const leftLabel = left[1]?.label ?? left[0];
                     const rightLabel = right[1]?.label ?? right[0];
@@ -438,7 +442,7 @@ function buildDefaultProps(contract?: ComponentContract): PropState {
   if (!contract) return {};
   const next: PropState = {};
   for (const [key, definition] of Object.entries(contract.props ?? {})) {
-    if (definition.defaultValue !== undefined) {
+    if (definition && definition.defaultValue !== undefined) {
       next[key] = definition.defaultValue;
     }
   }

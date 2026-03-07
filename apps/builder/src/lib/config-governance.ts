@@ -337,7 +337,7 @@ export function updateVersionStatus(
     if (input.status === 'PUBLISHED' && entry.status === 'PUBLISHED') {
       return {
         ...entry,
-        status: 'ARCHIVED',
+        status: 'ARCHIVED' as ApplicationBundleStatus,
         updatedAt: now,
         updatedBy: input.actor,
         bundle: applyBundleMetadata(entry.bundle, {

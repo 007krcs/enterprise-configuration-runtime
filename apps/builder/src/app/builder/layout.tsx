@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { BuilderWorkspaceLayout } from '../../components/BuilderWorkspaceLayout';
+import { BuilderLayoutClient } from '../../components/BuilderLayoutClient';
 
 export const metadata = {
   title: 'Builder Workspaces',
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function BuilderLayout({ children }: { children: ReactNode }) {
-  return <BuilderWorkspaceLayout>{children}</BuilderWorkspaceLayout>;
+  return <BuilderLayoutClient>{children}</BuilderLayoutClient>;
 }
