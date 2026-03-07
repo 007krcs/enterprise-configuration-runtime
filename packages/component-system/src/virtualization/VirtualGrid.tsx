@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo, type CSSProperties, type ReactNode } from 'react';
 import { VirtualList } from './VirtualList';
 

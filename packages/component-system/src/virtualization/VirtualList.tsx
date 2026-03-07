@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useMemo, useRef, type CSSProperties, type ReactNode } from 'react';
 import { useVirtualWindow } from './useVirtualWindow';
 

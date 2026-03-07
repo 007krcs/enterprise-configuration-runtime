@@ -1,3 +1,5 @@
+'use client';
+
 import { useId, useMemo, useState, useRef, type ReactNode, type KeyboardEvent } from 'react';
 import styles from './Tabs.module.css';
 
