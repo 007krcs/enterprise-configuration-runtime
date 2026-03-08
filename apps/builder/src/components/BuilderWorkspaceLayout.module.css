@@ -4,7 +4,7 @@
   grid-template-columns: 220px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   grid-template-areas: 'nav main';
-  height: 100vh;
+  height: 100%;
   background: var(--ecr-color-surface-subtle);
   color: var(--ecr-color-text);
 }

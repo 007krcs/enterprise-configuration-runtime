@@ -57,7 +57,7 @@ export function BuilderThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <BuilderThemeContext.Provider value={value}>
-      <ComponentSystemProvider>{children}</ComponentSystemProvider>
+      <ComponentSystemProvider className="appRoot">{children}</ComponentSystemProvider>
     </BuilderThemeContext.Provider>
   );
 }
