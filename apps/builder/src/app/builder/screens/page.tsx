@@ -15,9 +15,9 @@ export default function ScreensWorkspacePage() {
     <div>
       {/* Page header */}
       <div className={ws.pageHeader}>
-        <h1 className={ws.pageTitle}>Screens</h1>
+        <h1 className={ws.pageTitle}>Screen Builder</h1>
         <p className={ws.pageSubtitle}>
-          Design and edit screen layouts with a drag-and-drop canvas. Select a screen, add components from the palette, and configure properties.
+          Design and edit screen layouts with drag-and-drop. Select a screen from the sidebar, drag components from the palette onto the canvas, and configure properties in the inspector panel.
         </p>
       </div>
 

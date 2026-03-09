@@ -1,43 +1,50 @@
+/* ═══════════════════════════════════════════════════════════
+   Canvas Component — Enterprise Visual Editor
+   ═══════════════════════════════════════════════════════════ */
+
 .canvasRoot {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   min-height: 100%;
   width: 100%;
-  border: 1px solid var(--ecr-color-border-muted);
-  border-radius: var(--ecr-radius-md);
-  background: var(--ecr-color-surface);
+  border: 1px solid var(--ecr-color-border, #e2e8f0);
+  border-radius: var(--ecr-radius-lg, 12px);
+  background: var(--ecr-color-surface, #ffffff);
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .canvasHeader {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--ecr-spacing-2) var(--ecr-spacing-4);
-  padding: var(--ecr-spacing-3) var(--ecr-spacing-4);
-  border-bottom: 1px solid var(--ecr-color-border-light);
-  background: var(--ecr-color-surface-soft);
+  gap: 8px 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ecr-color-border-light, #eef2f7);
+  background: var(--ecr-color-surface-soft, #f8fafb);
 }
 
 .canvasHeader h2 {
   margin: 0;
-  font-size: var(--ecr-font-size-md);
-  font-weight: 650;
-  color: var(--ecr-color-text-strong);
+  font-size: var(--ecr-font-size-md, 1.125rem);
+  font-weight: 700;
+  color: var(--ecr-color-text-strong, #020617);
+  letter-spacing: -0.01em;
 }
 
 .canvasHeader p {
   margin: 0;
-  color: var(--ecr-color-text-subtle);
-  font-size: var(--ecr-font-size-sm);
+  color: var(--ecr-color-text-subtle, #475569);
+  font-size: var(--ecr-font-size-xs, 0.75rem);
 }
 
 .canvasViewport {
   width: 100%;
   min-height: 0;
   overflow: auto;
-  padding: var(--ecr-spacing-3);
+  padding: 20px;
+  transition: padding 200ms ease;
 }
 
 .previewDesktop,
@@ -45,6 +52,7 @@
 .previewMobile {
   max-width: 100%;
   margin: 0 auto;
+  transition: max-width 300ms ease;
 }
 
 .previewTablet {
@@ -56,119 +64,174 @@
 }
 
 .canvasViewport:focus-visible {
-  outline: 2px solid var(--ecr-color-focus);
+  outline: 2px solid var(--ecr-color-focus, #2563eb);
   outline-offset: -2px;
 }
 
 .layoutTree {
   display: grid;
   align-content: start;
-  gap: var(--ecr-spacing-3);
+  gap: 16px;
   min-height: 100%;
 }
 
+/* ── Root Drop Zone ── */
 .rootDropZone {
-  border: 1px dashed var(--ecr-color-border-dashed);
-  border-radius: var(--ecr-radius-sm);
-  background: var(--ecr-color-highlight);
-  color: var(--ecr-color-info);
-  font-size: var(--ecr-font-size-xs);
+  border: 2px dashed var(--ecr-color-border-dashed, #d1d9e6);
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #0284c7;
+  font-size: var(--ecr-font-size-xs, 0.75rem);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  padding: var(--ecr-spacing-2) var(--ecr-spacing-3);
+  letter-spacing: 0.04em;
+  padding: 16px;
+  text-align: center;
+  transition: all 200ms ease;
 }
 
 .rootDropZoneActive {
-  border-color: var(--ecr-color-info-strong);
-  background: color-mix(in srgb, var(--ecr-color-info) 15%, var(--ecr-color-surface));
-  color: var(--ecr-color-info-strong);
+  border-color: var(--ecr-color-primary, #2563eb);
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
 }
 
+/* ── Empty States ── */
 .emptyCanvasMessage {
-  border: 1px dashed var(--ecr-color-border-light);
-  border-radius: var(--ecr-radius-md);
-  padding: var(--ecr-spacing-3);
-  color: var(--ecr-color-text-secondary);
-  background: var(--ecr-color-surface-muted);
-  font-size: var(--ecr-font-size-sm);
+  border: 2px dashed var(--ecr-color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 48px 20px;
+  color: var(--ecr-color-text-muted, #64748b);
+  background: var(--ecr-color-surface-muted, #f1f5f9);
+  font-size: var(--ecr-font-size-sm, 0.875rem);
+  text-align: center;
+  line-height: 1.6;
 }
 
 .emptySectionMessage,
 .emptyColumnMessage {
   margin: 0;
-  border: 1px dashed var(--ecr-color-border-light);
-  border-radius: var(--ecr-radius-sm);
-  background: var(--ecr-color-surface-soft);
-  color: var(--ecr-color-text-subtle);
-  font-size: var(--ecr-font-size-xs);
-  padding: var(--ecr-spacing-1) var(--ecr-spacing-2);
+  border: 1px dashed var(--ecr-color-border, #e2e8f0);
+  border-radius: 6px;
+  background: var(--ecr-color-surface-soft, #f8fafb);
+  color: var(--ecr-color-text-subtle, #475569);
+  font-size: var(--ecr-font-size-xs, 0.75rem);
+  padding: 12px;
+  text-align: center;
 }
 
+/* ── Component Card ── */
 .componentCard {
-  border: 1px solid var(--ecr-color-border-light);
-  border-radius: var(--ecr-radius-sm);
-  background: var(--ecr-color-surface);
-  padding: var(--ecr-spacing-2) var(--ecr-spacing-3);
+  border: 1px solid var(--ecr-color-border, #e2e8f0);
+  border-radius: 8px;
+  background: var(--ecr-color-surface, #ffffff);
+  padding: 12px 16px;
   display: grid;
-  gap: var(--ecr-spacing-1);
+  gap: 4px;
   cursor: pointer;
+  transition: all 150ms ease;
+  position: relative;
+}
+
+.componentCard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--ecr-color-primary, #2563eb);
+  border-radius: 6px 0 0 6px;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.componentCard:hover {
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.componentCard:hover::before {
+  opacity: 0.5;
 }
 
 .componentCard h4 {
   margin: 0;
-  font-size: var(--ecr-font-size-sm);
-  color: var(--ecr-color-text-strong);
+  font-size: var(--ecr-font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--ecr-color-text-strong, #020617);
 }
 
 .componentCard p,
 .componentCard span {
   margin: 0;
-  font-size: var(--ecr-font-size-xs);
-  color: var(--ecr-color-text-subtle);
+  font-size: var(--ecr-font-size-xs, 0.75rem);
+  color: var(--ecr-color-text-subtle, #475569);
+  font-family: var(--ecr-font-mono, monospace);
 }
 
 .previewMeta {
-  color: var(--ecr-color-text-secondary);
-  font-size: 0.67rem;
+  color: var(--ecr-color-text-muted, #64748b);
+  font-size: 0.625rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .componentCard:focus-visible {
-  outline: 2px solid var(--ecr-color-focus);
+  outline: 2px solid var(--ecr-color-focus, #2563eb);
   outline-offset: 2px;
 }
 
 .componentCardSelected {
-  box-shadow: inset 0 0 0 2px var(--ecr-color-focus);
+  border-color: var(--ecr-color-primary, #2563eb);
+  box-shadow: 0 0 0 2px var(--ecr-color-primary, #2563eb), 0 2px 8px rgba(37, 99, 235, 0.15);
 }
 
+.componentCardSelected::before {
+  opacity: 1;
+}
+
+/* ── Edit/Preview Modes ── */
 .editMode {
-  background-image: linear-gradient(to right, rgba(31, 111, 235, 0.04) 1px, transparent 1px);
-  background-size: 18px 18px;
+  background-image:
+    linear-gradient(to right, rgba(37, 99, 235, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 .previewMode {
   background: transparent;
 }
 
+/* ── Responsive ── */
 @media (max-width: 768px) {
   .canvasHeader {
-    padding: calc(var(--ecr-spacing-3) - 2px) calc(var(--ecr-spacing-4) - 2px);
+    padding: 12px 16px;
   }
 
   .canvasViewport {
-    padding: calc(var(--ecr-spacing-3) - 2px);
+    padding: 12px;
+  }
+
+  .canvasHeader h2 {
+    font-size: var(--ecr-font-size-base, 1rem);
   }
 }
 
-@media (max-width: 375px) {
+@media (max-width: 480px) {
   .canvasHeader {
-    padding: var(--ecr-spacing-3) var(--ecr-spacing-3);
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .canvasViewport {
-    padding: var(--ecr-spacing-2);
+    padding: 8px;
+  }
+
+  .componentCard {
+    padding: 8px 12px;
   }
 }
