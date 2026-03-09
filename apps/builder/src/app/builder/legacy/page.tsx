@@ -6,8 +6,8 @@ import { BuilderShell } from '../../../components/BuilderShell';
 import { getBuilderComponentCatalog, loadBuilderPlugins } from '../../../lib/plugin-host';
 import { summarizeBuilderWorkspace } from '../../../lib/builder-modules';
 import { createInitialBuilderFlowState } from '../../../lib/flow-engine';
-import { WorkspaceHeader } from '../../../components/WorkspaceHeader';
 import type { BuilderPaletteEntry } from '../../../components/BuilderShell';
+import ws from '../workspace.module.css';
 
 export default function LegacyBuilderPage() {
   const initialFlowState = useMemo(() => createInitialBuilderFlowState(), []);
@@ -52,11 +52,24 @@ export default function LegacyBuilderPage() {
 
   return (
     <div>
-      <WorkspaceHeader
-        title="Legacy Builder"
-        subtitle="Canvas Workspace is still available here while the new console evolves."
-      />
-      <p>Canvas Workspace (Legacy)</p>
+      <div className={ws.pageHeader}>
+        <h1 className={ws.pageTitle}>Legacy Builder</h1>
+        <p className={ws.pageSubtitle}>
+          The original canvas workspace with full palette, inspector, flow editor, and validation panels.
+          This view provides direct access to all builder capabilities in a single integrated workspace.
+        </p>
+      </div>
+      <p style={{
+        fontSize: 'var(--ecr-font-size-xs, 0.75rem)',
+        color: 'var(--ecr-color-text-muted, #64748b)',
+        marginBottom: 'var(--ecr-spacing-4, 16px)',
+        padding: '8px 12px',
+        background: 'var(--ecr-color-info-soft, #f0f9ff)',
+        borderRadius: 'var(--ecr-radius-md, 8px)',
+        borderLeft: '3px solid var(--ecr-color-info, #0284c7)',
+      }}>
+        Canvas Workspace (Legacy) — Use the new workspace tabs above for the redesigned experience.
+      </p>
       <BuilderShell
         summary={summary}
         paletteEntries={paletteEntries}

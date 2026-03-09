@@ -17,5 +17,6 @@ describe('legacy builder route', () => {
   it('renders the legacy canvas workspace', () => {
     render(<LegacyBuilderPage />);
     expect(screen.getByText(/Canvas Workspace \(Legacy\)/i)).toBeInTheDocument();
+    expect(screen.getByText('Legacy Builder')).toBeInTheDocument();
   });
 });

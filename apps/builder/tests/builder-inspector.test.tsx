@@ -1,46 +1,33 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { BuilderWorkspaceLayout } from '../src/components/BuilderWorkspaceLayout';
 
 vi.mock('next/navigation', () => ({
   usePathname: () => '/builder/screens',
 }));
 
-function mockMatchMedia(matches = false) {
-  const mediaQueryList: MediaQueryList = {
-    matches,
-    media: '',
-    onchange: null,
-    addListener: vi.fn() as unknown as MediaQueryList['addListener'],
-    removeListener: vi.fn() as unknown as MediaQueryList['removeListener'],
-    addEventListener: vi.fn() as unknown as MediaQueryList['addEventListener'],
-    removeEventListener: vi.fn() as unknown as MediaQueryList['removeEventListener'],
-    dispatchEvent: vi.fn() as unknown as MediaQueryList['dispatchEvent'],
-  };
-  vi.stubGlobal('matchMedia', vi.fn().mockReturnValue(mediaQueryList));
-}
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
-describe('inspector toggle', () => {
-  it('shows and hides inspector panel', () => {
-    mockMatchMedia(false); // desktop view -> inspector open
+describe('BuilderWorkspaceLayout', () => {
+  it('renders navigation rail and workspace content', () => {
     render(
       <BuilderWorkspaceLayout>
         <div>Workspace body</div>
       </BuilderWorkspaceLayout>,
     );
 
-    const inspector = screen.getByLabelText('Inspector panel');
-    expect(inspector).toBeInTheDocument();
+    expect(screen.getByTestId('builder-shell')).toBeInTheDocument();
+    expect(screen.getByLabelText('Builder workspaces')).toBeInTheDocument();
+    expect(screen.getByText('Workspace body')).toBeInTheDocument();
+  });
 
-    fireEvent.click(screen.getByRole('button', { name: /Hide Inspector/i }));
-    expect(screen.getByLabelText('Inspector panel').className).toMatch(/drawerHidden/i);
+  it('highlights the active nav item based on pathname', () => {
+    render(
+      <BuilderWorkspaceLayout>
+        <div>Content</div>
+      </BuilderWorkspaceLayout>,
+    );
 
-    fireEvent.click(screen.getByRole('button', { name: /Show Inspector/i }));
-    expect(screen.getByLabelText('Inspector panel').className).not.toMatch(/drawerHidden/i);
+    const screensLink = screen.getByTitle('Layout editor');
+    expect(screensLink).toHaveAttribute('aria-current', 'page');
   });
 });

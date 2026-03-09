@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════════════
+   App Shell — Top Navigation Bar
+   ═══════════════════════════════════════════════════════════ */
+
 .appShell {
   display: flex;
   flex-direction: column;
@@ -9,52 +13,92 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--ecr-spacing-3) var(--ecr-spacing-5);
-  border-bottom: 1px solid var(--ecr-color-border);
-  background: color-mix(in srgb, var(--ecr-color-surface-soft) 72%, transparent);
-  backdrop-filter: blur(14px);
+  padding: 0 var(--ecr-spacing-6, 24px);
+  height: var(--ecr-topbar-height, 56px);
+  border-bottom: 1px solid var(--ecr-color-border, #e2e8f0);
+  background: var(--ecr-color-surface, #ffffff);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  flex-shrink: 0;
+  z-index: 30;
 }
 
 .brand {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .brandTitle {
-  font-size: var(--ecr-font-size-sm);
+  font-size: var(--ecr-font-size-sm, 0.875rem);
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  color: var(--ecr-color-text-strong, #020617);
 }
 
 .brandSubtitle {
-  font-size: var(--ecr-font-size-xs);
-  color: var(--ecr-color-text-muted);
+  font-size: var(--ecr-font-size-2xs, 0.625rem);
+  color: var(--ecr-color-text-muted, #64748b);
+  letter-spacing: 0.02em;
 }
 
 .navLinks {
   display: flex;
-  gap: var(--ecr-spacing-3);
+  gap: var(--ecr-spacing-2, 8px);
   align-items: center;
 }
 
 .navLink {
   text-decoration: none;
-  color: var(--ecr-color-text);
+  color: var(--ecr-color-text-secondary, #334155);
   font-weight: 600;
-  padding: var(--ecr-spacing-1) var(--ecr-spacing-3);
-  border-radius: var(--ecr-radius-lg);
+  font-size: var(--ecr-font-size-sm, 0.875rem);
+  padding: 6px 14px;
+  border-radius: var(--ecr-radius-md, 8px);
   border: 1px solid transparent;
-  transition: background 120ms ease, border-color 120ms ease;
+  transition: all 150ms ease;
 }
 
 .navLink:hover {
-  background: color-mix(in srgb, var(--ecr-color-primary, #0f62fe) 10%, transparent);
-  border-color: color-mix(in srgb, var(--ecr-color-primary, #0f62fe) 35%, transparent);
+  background: rgba(37, 99, 235, 0.06);
+  border-color: rgba(37, 99, 235, 0.12);
+  color: var(--ecr-color-primary, #2563eb);
 }
 
 .main {
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .topNav {
+    padding: 0 var(--ecr-spacing-4, 16px);
+    height: 48px;
+  }
+
+  .brandSubtitle {
+    display: none;
+  }
+
+  .navLink {
+    font-size: var(--ecr-font-size-xs, 0.75rem);
+    padding: 4px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topNav {
+    padding: 0 12px;
+  }
+
+  .navLinks {
+    gap: 4px;
+  }
+
+  .navLink {
+    font-size: 0.6875rem;
+    padding: 4px 8px;
+  }
 }
