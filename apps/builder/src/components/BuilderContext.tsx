@@ -46,6 +46,7 @@ import {
   updateLayoutNodeProperties,
 } from '../lib/layout-engine';
 import { validateApplicationBundle } from '../lib/bundle-validator';
+import { checkFileSize, validateBundleStructure } from '../lib/bundle-import-guard';
 import {
   createConfigPackage,
   createDraftVersion,
@@ -54,6 +55,7 @@ import {
   getLatestVersion,
   loadConfigStore,
   persistConfigStore,
+  type PersistResult,
   recordAuditEntry,
   saveDraftVersion,
   setActiveVersion as setActiveVersionInStore,
@@ -376,13 +378,19 @@ export function BuilderProvider({
 
   const commitConfigStore = (nextState: ConfigStoreState) => {
     setConfigStore(nextState);
-    persistConfigStore(nextState);
+    const result = persistConfigStore(nextState);
+    if (!result.ok) {
+      setConfigMessage(result.error ?? 'Failed to save config store.');
+    }
   };
 
   const updateConfigStore = (updater: (state: ConfigStoreState) => ConfigStoreState) => {
     setConfigStore((current) => {
       const nextState = updater(current);
-      persistConfigStore(nextState);
+      const result = persistConfigStore(nextState);
+      if (!result.ok) {
+        setConfigMessage(result.error ?? 'Failed to save config store.');
+      }
       return nextState;
     });
   };
@@ -437,10 +445,6 @@ export function BuilderProvider({
     }
     setBundleUpdatedAt(new Date().toISOString());
   }, [flowGraph, schemasByScreenId, suppressUpdatedAt]);
-
-  useEffect(() => {
-    persistConfigStore(configStore);
-  }, [configStore]);
 
   useEffect(() => {
     const pkg = getActivePackage(configStore);
@@ -1054,21 +1058,25 @@ export function BuilderProvider({
     setImportMessage(null);
     setConfigMessage(null);
     try {
+      const sizeError = checkFileSize(file);
+      if (sizeError) {
+        setImportMessage(sizeError);
+        return;
+      }
       const text = await file.text();
-      const parsed = JSON.parse(text) as unknown;
-      if (!parsed || typeof parsed !== 'object') {
-        setImportMessage('Invalid bundle format.');
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        setImportMessage('File does not contain valid JSON.');
         return;
       }
-      const bundle = parsed as ApplicationBundle;
-      if (!bundle.metadata?.configId || !bundle.metadata?.tenantId) {
-        setImportMessage('Bundle metadata is missing configId or tenantId.');
+      const guard = validateBundleStructure(parsed);
+      if (!guard.ok) {
+        setImportMessage(guard.error);
         return;
       }
-      if (!bundle.flowSchema || !bundle.uiSchemas) {
-        setImportMessage('Bundle is missing flowSchema or uiSchemas.');
-        return;
-      }
+      const bundle = guard.bundle;
       const validation = validateApplicationBundle(bundle, componentContracts, {
         developmentMode,
         skipA11yI18nInDev: skipValidationInDev,
@@ -1119,8 +1127,8 @@ export function BuilderProvider({
       });
       commitConfigStore(recordAuditEntry(draftResult.state, ae));
       setImportMessage(`Imported bundle as draft v${draftResult.value.version}.`);
-    } catch {
-      setImportMessage('Invalid JSON file.');
+    } catch (err) {
+      setImportMessage(err instanceof Error ? `Import failed: ${err.message}` : 'Import failed unexpectedly.');
     }
   };
 

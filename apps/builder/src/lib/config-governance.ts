@@ -79,15 +79,34 @@ export function loadConfigStore(): ConfigStoreState {
   }
 }
 
-export function persistConfigStore(state: ConfigStoreState): void {
+export interface PersistResult {
+  ok: boolean;
+  error?: string;
+}
+
+export function persistConfigStore(state: ConfigStoreState): PersistResult {
   if (typeof window === 'undefined') {
     memoryStore = state;
-    return;
+    return { ok: true };
   }
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // ignore storage failures
+    const serialized = JSON.stringify(state);
+    const sizeBytes = new Blob([serialized]).size;
+    const MAX_STORAGE_BYTES = 4 * 1024 * 1024; // 4 MB safety limit (below browser ~5-10 MB quota)
+    if (sizeBytes > MAX_STORAGE_BYTES) {
+      const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(1);
+      return {
+        ok: false,
+        error: `Config store exceeds storage limit (${sizeMB} MB / 4 MB). Consider exporting and removing old config packages.`,
+      };
+    }
+    window.localStorage.setItem(STORAGE_KEY, serialized);
+    return { ok: true };
+  } catch (err) {
+    const message = err instanceof DOMException && err.name === 'QuotaExceededError'
+      ? 'Browser storage quota exceeded. Export your configs and clear old data.'
+      : 'Failed to save config store to browser storage.';
+    return { ok: false, error: message };
   }
 }
 
