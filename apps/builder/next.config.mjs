@@ -8,6 +8,8 @@ const nextConfig = {
     '@platform/component-contract',
     '@platform/component-system',
     '@platform/plugin-sdk',
+    '@platform/design-tokens',
+    '@platform/data-grid',
   ],
   async headers() {
     return [

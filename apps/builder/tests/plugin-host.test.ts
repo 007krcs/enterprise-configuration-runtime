@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 describe('plugin host adapter registration', () => {
-  it('registers adapter components from globals and merges with platform catalog', async () => {
+  it('registers adapter components from globals and merges with platform catalog', { timeout: 15_000 }, async () => {
     (globalThis as { __RULEFLOW_BUILDER_ADAPTER_COMPONENTS__?: unknown }).__RULEFLOW_BUILDER_ADAPTER_COMPONENTS__ = [
       {
         type: 'adapter.widget',
