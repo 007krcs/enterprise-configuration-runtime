@@ -5,6 +5,7 @@ import {
   createFlowTransition,
   removeFlowScreen,
   removeFlowTransition,
+  resetLayoutIdCounter,
   stateMachineToFlowGraph,
   upsertFlowTransition,
   updateFlowScreen,
@@ -27,6 +28,11 @@ export interface AddScreenResult {
 }
 
 export function createInitialBuilderFlowState(): BuilderFlowState {
+  // Reset the layout ID counter so that SSR and CSR produce identical node IDs.
+  // Without this, the global counter drifts between server and client rendering,
+  // causing React hydration mismatches on column/section/row IDs.
+  resetLayoutIdCounter();
+
   const firstScreenId = 'screen-1';
   const firstScreen = createFlowScreen({
     id: firstScreenId,

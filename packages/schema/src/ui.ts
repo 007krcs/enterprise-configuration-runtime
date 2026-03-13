@@ -19,6 +19,14 @@ export function createLayoutId(prefix: string): string {
   return `${prefix}-${layoutIdCounter}`;
 }
 
+/**
+ * Reset the layout ID counter. Call this before creating initial state
+ * in SSR-compatible contexts so that server and client produce identical IDs.
+ */
+export function resetLayoutIdCounter(): void {
+  layoutIdCounter = 0;
+}
+
 export interface CreateLayoutComponentNodeOptions {
   id?: string;
   label?: string;
