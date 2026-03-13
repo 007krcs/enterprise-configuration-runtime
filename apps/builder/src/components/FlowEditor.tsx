@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
 import type { FlowGraphSchema, FlowScreenNode, FlowTransitionEdge } from '@platform/schema';
 import styles from './FlowEditor.module.css';
 
@@ -111,6 +111,41 @@ export function FlowEditor({
   const canvasWidth = Math.max(920, ...screenLayout.map((layout) => layout.position.x + NODE_WIDTH + 120));
   const canvasHeight = Math.max(560, ...screenLayout.map((layout) => layout.position.y + NODE_HEIGHT + 120));
 
+  const handleScreenKeyDown = useCallback(
+    (screenId: string) => (event: KeyboardEvent<HTMLElement>) => {
+      const currentIndex = flow.screens.findIndex((s) => s.id === screenId);
+      if (currentIndex === -1) return;
+
+      let targetIndex = -1;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        targetIndex = Math.min(currentIndex + 1, flow.screens.length - 1);
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        targetIndex = Math.max(currentIndex - 1, 0);
+      } else if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onSetActiveScreen(screenId);
+        return;
+      } else if (event.key === 'Delete' || event.key === 'Backspace') {
+        // Let parent handle delete via selected screen state
+        return;
+      } else {
+        return;
+      }
+
+      event.preventDefault();
+      if (targetIndex !== currentIndex && targetIndex >= 0) {
+        const targetScreen = flow.screens[targetIndex];
+        onSelectScreen(targetScreen.id);
+        // Focus the target screen node
+        const targetElement = boardRef.current?.querySelector(
+          `[data-screen-id="${targetScreen.id}"]`,
+        ) as HTMLElement | null;
+        targetElement?.focus();
+      }
+    },
+    [flow.screens, onSelectScreen, onSetActiveScreen],
+  );
+
   const handleConnectionStart = (screenId: string) => (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -162,8 +197,11 @@ export function FlowEditor({
     <section className={styles.flowRoot} aria-label="Flow builder">
       <header className={styles.flowHeader}>
         <h2>Flow Editor</h2>
-        <p>Drag from a source handle to a target handle to create transitions between screens.</p>
+        <p>Drag from a source handle to a target handle to create transitions between screens. Use arrow keys to navigate between screens.</p>
       </header>
+      <div aria-live="polite" className="sr-only" role="status">
+        {flow.screens.length} screen{flow.screens.length !== 1 ? 's' : ''}, {flow.transitions.length} transition{flow.transitions.length !== 1 ? 's' : ''}
+      </div>
       <div className={styles.flowViewport} role="region" aria-label="Flow graph viewport">
         <div ref={boardRef} className={styles.flowBoard} style={{ width: canvasWidth, height: canvasHeight }}>
           <svg width={canvasWidth} height={canvasHeight} className={styles.edgeLayer} aria-hidden="true">
@@ -207,10 +245,15 @@ export function FlowEditor({
             return (
               <article
                 key={screen.id}
+                data-screen-id={screen.id}
                 className={[styles.screenNode, selected ? styles.screenNodeSelected : '', active ? styles.screenNodeActive : ''].join(' ')}
                 style={{ left: position.x, top: position.y }}
                 onClick={() => onSelectScreen(screen.id)}
-                aria-label={`Flow screen ${screen.title}`}
+                onKeyDown={handleScreenKeyDown(screen.id)}
+                tabIndex={0}
+                role="button"
+                aria-label={`Flow screen ${screen.title}${active ? ' (active)' : ''}`}
+                aria-selected={selected}
               >
                 <header className={styles.screenHeader}>
                   <h3>{screen.title}</h3>

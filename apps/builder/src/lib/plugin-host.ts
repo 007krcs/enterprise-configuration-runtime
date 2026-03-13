@@ -9,9 +9,14 @@ import {
 } from '@platform/plugin-sdk';
 import type { ComponentContract } from '@platform/component-contract';
 import { builderPlugins } from '../plugins';
+import { validatePluginComponent, logPluginRegistration } from './plugin-sandbox';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BuilderComponentImplementation = ComponentType<any>;
+/** Props interface for builder-rendered components */
+export interface BuilderComponentProps {
+  [key: string]: unknown;
+}
+
+export type BuilderComponentImplementation = ComponentType<BuilderComponentProps>;
 export type BuilderRendererRegistration = RendererRegistration;
 
 const pluginRegistry = createPluginRegistry<BuilderComponentImplementation, BuilderRendererRegistration>();
@@ -95,8 +100,16 @@ export function registerBuilderAdapterComponent(
   if (registeredAdapterComponentTypes.has(component.type)) {
     return;
   }
+
+  const validation = validatePluginComponent(component);
+  if (!validation.valid) {
+    logPluginRegistration(component.type ?? 'unknown', 'rejected', validation.errors.join('; '));
+    return;
+  }
+
   pluginRegistry.registerComponent(component);
   registeredAdapterComponentTypes.add(component.type);
+  logPluginRegistration(component.type, 'allowed');
 }
 
 export function registerBuilderAdapterComponents(

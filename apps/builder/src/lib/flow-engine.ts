@@ -160,7 +160,7 @@ export function addBuilderTransition(
     onEvent?: string;
     condition?: string;
   },
-): { flow: FlowGraphSchema; transitionId: string } {
+): { flow: FlowGraphSchema; transitionId: string; cycleWarning?: string } {
   const transition = createFlowTransition({
     from: input.from,
     to: input.to,
@@ -168,9 +168,17 @@ export function addBuilderTransition(
     condition: normalizeOptionalText(input.condition),
   });
 
+  const nextFlow = upsertFlowTransition(flow, transition);
+  const cycles = detectFlowCycles(nextFlow);
+  const cycleWarning =
+    cycles.length > 0
+      ? `Adding this transition creates a cycle: ${cycles.map((c) => c.join(' -> ')).join('; ')}`
+      : undefined;
+
   return {
-    flow: upsertFlowTransition(flow, transition),
+    flow: nextFlow,
     transitionId: transition.id,
+    cycleWarning,
   };
 }
 
@@ -212,6 +220,63 @@ export function updateBuilderScreenPosition(
   });
 }
 
+/**
+ * Detect cycles in a flow graph using DFS.
+ * Returns an array of cycle paths (each path is an array of screen IDs forming the cycle).
+ * Returns an empty array if the graph is acyclic.
+ */
+export function detectFlowCycles(flow: FlowGraphSchema): string[][] {
+  const adjacency = new Map<string, string[]>();
+  for (const screen of flow.screens) {
+    adjacency.set(screen.id, []);
+  }
+  for (const transition of flow.transitions) {
+    const neighbors = adjacency.get(transition.from);
+    if (neighbors) {
+      neighbors.push(transition.to);
+    }
+  }
+
+  const WHITE = 0; // unvisited
+  const GRAY = 1; // in current DFS path
+  const BLACK = 2; // fully processed
+  const color = new Map<string, number>();
+  for (const screen of flow.screens) {
+    color.set(screen.id, WHITE);
+  }
+
+  const cycles: string[][] = [];
+  const path: string[] = [];
+
+  function dfs(node: string): void {
+    color.set(node, GRAY);
+    path.push(node);
+
+    for (const neighbor of adjacency.get(node) ?? []) {
+      const neighborColor = color.get(neighbor);
+      if (neighborColor === GRAY) {
+        // Found a cycle - extract it from the path
+        const cycleStart = path.indexOf(neighbor);
+        const cyclePath = [...path.slice(cycleStart), neighbor];
+        cycles.push(cyclePath);
+      } else if (neighborColor === WHITE) {
+        dfs(neighbor);
+      }
+    }
+
+    path.pop();
+    color.set(node, BLACK);
+  }
+
+  for (const screen of flow.screens) {
+    if (color.get(screen.id) === WHITE) {
+      dfs(screen.id);
+    }
+  }
+
+  return cycles;
+}
+
 function createUniqueScreenId(flow: FlowGraphSchema, rawTitle: string): string {
   const normalized = rawTitle
     .trim()
@@ -243,12 +308,18 @@ function normalizeScreenTitle(title: string | undefined, fallbackIndex: number):
   return normalized;
 }
 
+const SCREEN_GRID_COLUMNS = 3;
+const SCREEN_GRID_OFFSET_X = 80;
+const SCREEN_GRID_OFFSET_Y = 100;
+const SCREEN_GRID_SPACING_X = 280;
+const SCREEN_GRID_SPACING_Y = 200;
+
 function nextScreenPosition(index: number): { x: number; y: number } {
-  const column = index % 3;
-  const row = Math.floor(index / 3);
+  const column = index % SCREEN_GRID_COLUMNS;
+  const row = Math.floor(index / SCREEN_GRID_COLUMNS);
   return {
-    x: 80 + column * 280,
-    y: 100 + row * 200,
+    x: SCREEN_GRID_OFFSET_X + column * SCREEN_GRID_SPACING_X,
+    y: SCREEN_GRID_OFFSET_Y + row * SCREEN_GRID_SPACING_Y,
   };
 }
 

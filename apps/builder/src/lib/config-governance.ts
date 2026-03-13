@@ -48,6 +48,20 @@ export type ConfigStoreResult<T> =
 
 const STORAGE_KEY = 'rf:builder-config-store:v1';
 const MAX_AUDIT_ENTRIES = 200;
+
+/* ── Valid status transitions ── */
+const VALID_TRANSITIONS: Record<string, ConfigVersionStatus[]> = {
+  DRAFT: ['SUBMITTED'],
+  SUBMITTED: ['APPROVED', 'REJECTED'],
+  APPROVED: ['PUBLISHED'],
+  REJECTED: ['DRAFT'],
+  PUBLISHED: ['ARCHIVED'],
+  ARCHIVED: [],
+};
+
+export function isValidTransition(from: ConfigVersionStatus, to: ConfigVersionStatus): boolean {
+  return VALID_TRANSITIONS[from]?.includes(to) ?? false;
+}
 let memoryStore: ConfigStoreState | null = null;
 
 export function createEmptyConfigStore(): ConfigStoreState {
@@ -79,15 +93,34 @@ export function loadConfigStore(): ConfigStoreState {
   }
 }
 
-export function persistConfigStore(state: ConfigStoreState): void {
+export interface PersistResult {
+  ok: boolean;
+  error?: string;
+}
+
+export function persistConfigStore(state: ConfigStoreState): PersistResult {
   if (typeof window === 'undefined') {
     memoryStore = state;
-    return;
+    return { ok: true };
   }
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // ignore storage failures
+    const serialized = JSON.stringify(state);
+    const sizeBytes = new Blob([serialized]).size;
+    const MAX_STORAGE_BYTES = 4 * 1024 * 1024; // 4 MB safety limit (below browser ~5-10 MB quota)
+    if (sizeBytes > MAX_STORAGE_BYTES) {
+      const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(1);
+      return {
+        ok: false,
+        error: `Config store exceeds storage limit (${sizeMB} MB / 4 MB). Consider exporting and removing old config packages.`,
+      };
+    }
+    window.localStorage.setItem(STORAGE_KEY, serialized);
+    return { ok: true };
+  } catch (err) {
+    const message = err instanceof DOMException && err.name === 'QuotaExceededError'
+      ? 'Browser storage quota exceeded. Export your configs and clear old data.'
+      : 'Failed to save config store to browser storage.';
+    return { ok: false, error: message };
   }
 }
 
@@ -317,6 +350,14 @@ export function updateVersionStatus(
   const version = pkg.versions.find((entry) => entry.id === input.versionId);
   if (!version) {
     return { ok: false, state, error: 'Version not found.' };
+  }
+
+  if (!isValidTransition(version.status, input.status)) {
+    return {
+      ok: false,
+      state,
+      error: `Invalid transition: ${version.status} → ${input.status}. Allowed: ${(VALID_TRANSITIONS[version.status] ?? []).join(', ') || 'none'}.`,
+    };
   }
 
   const now = new Date().toISOString();

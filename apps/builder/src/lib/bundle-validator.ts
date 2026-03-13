@@ -178,6 +178,69 @@ function validateFlowSchema(
       });
     }
   }
+
+  // Cycle detection on the flow state machine transition graph
+  const flowCycles = detectFlowSchemaCycles(flowSchema);
+  for (const cycle of flowCycles) {
+    issues.push({
+      path: 'flowSchema.states',
+      message: `Cycle detected in flow transitions: ${cycle.join(' -> ')}`,
+      severity: 'warning',
+      category: 'schema',
+    });
+  }
+}
+
+function detectFlowSchemaCycles(flowSchema: FlowSchema): string[][] {
+  const stateIds = Object.keys(flowSchema.states ?? {});
+  const adjacency = new Map<string, string[]>();
+  for (const stateId of stateIds) {
+    adjacency.set(stateId, []);
+  }
+  for (const [stateId, state] of Object.entries(flowSchema.states ?? {})) {
+    const neighbors = adjacency.get(stateId);
+    if (!neighbors) continue;
+    for (const transition of Object.values(state.on ?? {})) {
+      neighbors.push(transition.target);
+    }
+  }
+
+  const WHITE = 0;
+  const GRAY = 1;
+  const BLACK = 2;
+  const color = new Map<string, number>();
+  for (const stateId of stateIds) {
+    color.set(stateId, WHITE);
+  }
+
+  const cycles: string[][] = [];
+  const path: string[] = [];
+
+  function dfs(node: string): void {
+    color.set(node, GRAY);
+    path.push(node);
+
+    for (const neighbor of adjacency.get(node) ?? []) {
+      const neighborColor = color.get(neighbor);
+      if (neighborColor === GRAY) {
+        const cycleStart = path.indexOf(neighbor);
+        cycles.push([...path.slice(cycleStart), neighbor]);
+      } else if (neighborColor === WHITE) {
+        dfs(neighbor);
+      }
+    }
+
+    path.pop();
+    color.set(node, BLACK);
+  }
+
+  for (const stateId of stateIds) {
+    if (color.get(stateId) === WHITE) {
+      dfs(stateId);
+    }
+  }
+
+  return cycles;
 }
 
 function validateUiSchema(
@@ -460,6 +523,9 @@ function validateRuleReferences(
   }
 }
 
+/** WCAG AA minimum contrast ratio for normal text */
+const WCAG_AA_CONTRAST_RATIO = 4.5;
+
 function validateThemeContrast(bundle: ApplicationBundle, issues: ValidationIssue[]): void {
   const tokens = bundle.themes?.tokens;
   if (!tokens) return;
@@ -472,7 +538,7 @@ function validateThemeContrast(bundle: ApplicationBundle, issues: ValidationIssu
   if (!surfaceRgb || !textRgb) return;
 
   const ratio = contrastRatio(surfaceRgb, textRgb);
-  if (ratio < 4.5) {
+  if (ratio < WCAG_AA_CONTRAST_RATIO) {
     issues.push({
       path: 'themes.tokens',
       message: `Color contrast ratio ${ratio.toFixed(2)} is below 4.5:1`,
@@ -610,13 +676,25 @@ function contrastRatio(first: RGB, second: RGB): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
+/** sRGB linearization constants per IEC 61966-2-1 */
+const SRGB_LINEAR_THRESHOLD = 0.03928;
+const SRGB_LINEAR_DIVISOR = 12.92;
+const SRGB_GAMMA = 2.4;
+
+/** ITU-R BT.709 luminance coefficients */
+const LUMINANCE_R = 0.2126;
+const LUMINANCE_G = 0.7152;
+const LUMINANCE_B = 0.0722;
+
 function relativeLuminance(color: RGB): number {
   const toLinear = (channel: number) => {
     const value = channel / 255;
-    return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+    return value <= SRGB_LINEAR_THRESHOLD
+      ? value / SRGB_LINEAR_DIVISOR
+      : Math.pow((value + 0.055) / 1.055, SRGB_GAMMA);
   };
   const r = toLinear(color.r);
   const g = toLinear(color.g);
   const b = toLinear(color.b);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return LUMINANCE_R * r + LUMINANCE_G * g + LUMINANCE_B * b;
 }

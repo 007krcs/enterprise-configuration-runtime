@@ -3,6 +3,7 @@
 import React, { useMemo, useState, useEffect, type ReactNode } from 'react';
 import { BuilderProvider, type BuilderPaletteEntry } from './BuilderContext';
 import { BuilderWorkspaceLayout } from './BuilderWorkspaceLayout';
+import { ErrorBoundary } from './ErrorBoundary';
 import { getBuilderComponentCatalog, loadBuilderPlugins } from '../lib/plugin-host';
 import { summarizeBuilderWorkspace } from '../lib/builder-modules';
 import { createInitialBuilderFlowState } from '../lib/flow-engine';
@@ -49,13 +50,19 @@ export function BuilderLayoutClient({ children }: { children: ReactNode }) {
   );
 
   return (
-    <BuilderProvider
-      summary={summary}
-      paletteEntries={paletteEntries}
-      componentContracts={componentContracts}
-      initialFlowState={initialFlowState}
-    >
-      <BuilderWorkspaceLayout>{children}</BuilderWorkspaceLayout>
-    </BuilderProvider>
+    <ErrorBoundary fallbackTitle="Builder failed to load">
+      <BuilderProvider
+        summary={summary}
+        paletteEntries={paletteEntries}
+        componentContracts={componentContracts}
+        initialFlowState={initialFlowState}
+      >
+        <BuilderWorkspaceLayout>
+          <ErrorBoundary fallbackTitle="Workspace error">
+            {children}
+          </ErrorBoundary>
+        </BuilderWorkspaceLayout>
+      </BuilderProvider>
+    </ErrorBoundary>
   );
 }
