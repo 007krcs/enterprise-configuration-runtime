@@ -57,9 +57,19 @@ export function exportToExcelXml<T extends Record<string, unknown>>(
   ].join('');
 }
 
+const CSV_FORMULA_PREFIXES = ['=', '+', '-', '@', '\t', '\r'];
+
+function escapeCsvFormulaInjection(value: string): string {
+  if (value.length > 0 && CSV_FORMULA_PREFIXES.some((prefix) => value.startsWith(prefix))) {
+    return `'${value}`;
+  }
+  return value;
+}
+
 function escapeCsv(value: string): string {
-  if (!/[,"\n]/.test(value)) return value;
-  return `"${value.replaceAll('"', '""')}"`;
+  const safe = escapeCsvFormulaInjection(value);
+  if (!/[,"\n]/.test(safe)) return safe;
+  return `"${safe.replaceAll('"', '""')}"`;
 }
 
 function escapeXml(value: string): string {

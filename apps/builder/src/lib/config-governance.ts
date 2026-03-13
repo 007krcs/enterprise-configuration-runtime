@@ -48,6 +48,20 @@ export type ConfigStoreResult<T> =
 
 const STORAGE_KEY = 'rf:builder-config-store:v1';
 const MAX_AUDIT_ENTRIES = 200;
+
+/* ── Valid status transitions ── */
+const VALID_TRANSITIONS: Record<string, ConfigVersionStatus[]> = {
+  DRAFT: ['SUBMITTED'],
+  SUBMITTED: ['APPROVED', 'REJECTED'],
+  APPROVED: ['PUBLISHED'],
+  REJECTED: ['DRAFT'],
+  PUBLISHED: ['ARCHIVED'],
+  ARCHIVED: [],
+};
+
+export function isValidTransition(from: ConfigVersionStatus, to: ConfigVersionStatus): boolean {
+  return VALID_TRANSITIONS[from]?.includes(to) ?? false;
+}
 let memoryStore: ConfigStoreState | null = null;
 
 export function createEmptyConfigStore(): ConfigStoreState {
@@ -336,6 +350,14 @@ export function updateVersionStatus(
   const version = pkg.versions.find((entry) => entry.id === input.versionId);
   if (!version) {
     return { ok: false, state, error: 'Version not found.' };
+  }
+
+  if (!isValidTransition(version.status, input.status)) {
+    return {
+      ok: false,
+      state,
+      error: `Invalid transition: ${version.status} → ${input.status}. Allowed: ${(VALID_TRANSITIONS[version.status] ?? []).join(', ') || 'none'}.`,
+    };
   }
 
   const now = new Date().toISOString();

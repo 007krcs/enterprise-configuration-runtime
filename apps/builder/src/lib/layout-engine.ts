@@ -22,6 +22,9 @@ import type { DropTarget, PaletteDragItem } from '../utils/DragDropManager';
 const GRID_COLUMN_MAX = 12;
 const DEFAULT_ROW_COLUMN_COUNT = 2;
 
+/** Maximum nesting depth for layout sections. */
+export const MAX_LAYOUT_DEPTH = 10;
+
 export interface DropOperationResult {
   schema: UISchema;
   selectedNodeId: string | null;
@@ -66,7 +69,17 @@ export function createInitialBuilderSchema(pageId: string): UISchema {
   };
 }
 
+/**
+ * Cached layout index — invalidated when sections reference changes.
+ * Avoids re-traversing the tree on every drop/selection operation.
+ */
+let cachedSectionsRef: SectionNode[] | null = null;
+let cachedIndex: LayoutIndex | null = null;
+
 export function buildLayoutIndex(sections: SectionNode[]): LayoutIndex {
+  if (sections === cachedSectionsRef && cachedIndex) {
+    return cachedIndex;
+  }
   const index: LayoutIndex = {
     nodeById: new Map<string, LayoutTreeNode>(),
     sectionById: new Map<string, SectionNode>(),
@@ -78,7 +91,12 @@ export function buildLayoutIndex(sections: SectionNode[]): LayoutIndex {
     componentToColumn: new Map<string, string>(),
   };
 
-  const visitSection = (section: SectionNode): void => {
+  const visitSection = (section: SectionNode, depth: number): void => {
+    if (depth > MAX_LAYOUT_DEPTH) {
+      throw new Error(
+        `Layout depth ${depth} exceeds maximum allowed depth of ${MAX_LAYOUT_DEPTH} at section "${section.id}"`,
+      );
+    }
     index.nodeById.set(section.id, section);
     index.sectionById.set(section.id, section);
 
@@ -98,7 +116,7 @@ export function buildLayoutIndex(sections: SectionNode[]): LayoutIndex {
           if (child.kind === 'component') {
             index.componentToColumn.set(child.id, column.id);
           } else {
-            visitSection(child);
+            visitSection(child, depth + 1);
           }
         }
       }
@@ -106,10 +124,18 @@ export function buildLayoutIndex(sections: SectionNode[]): LayoutIndex {
   };
 
   for (const section of sections) {
-    visitSection(section);
+    visitSection(section, 1);
   }
 
+  cachedSectionsRef = sections;
+  cachedIndex = index;
   return index;
+}
+
+/** Explicitly invalidate the layout index cache (e.g., after structural mutations). */
+export function invalidateLayoutIndexCache(): void {
+  cachedSectionsRef = null;
+  cachedIndex = null;
 }
 
 export function getLayoutNode(schema: UISchema, nodeId: string | null): LayoutTreeNode | undefined {
@@ -301,6 +327,14 @@ function addNestedSectionToColumn(
   title: string,
 ): DropOperationResult {
   const sections = schema.sections ?? [];
+
+  // Enforce depth limit: compute current depth of the target column and reject
+  // the drop if adding a nested section would exceed MAX_LAYOUT_DEPTH.
+  const currentDepth = computeColumnDepth(sections, columnId);
+  if (currentDepth + 1 > MAX_LAYOUT_DEPTH) {
+    return { schema, selectedNodeId: null, changed: false };
+  }
+
   const nestedSection = createSectionNode({
     title,
   });
@@ -313,6 +347,37 @@ function addNestedSectionToColumn(
     selectedNodeId: nestedSection.id,
     changed: true,
   };
+}
+
+/**
+ * Compute the section-nesting depth of a column identified by `columnId`.
+ * Top-level sections are depth 1; a column inside a nested section at depth N
+ * inherits depth N.
+ */
+function computeColumnDepth(sections: SectionNode[], columnId: string): number {
+  function searchSection(section: SectionNode, depth: number): number | null {
+    for (const row of section.rows) {
+      for (const col of row.columns) {
+        if (col.id === columnId) {
+          return depth;
+        }
+        for (const child of col.children) {
+          if (child.kind === 'section') {
+            const found = searchSection(child, depth + 1);
+            if (found !== null) return found;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  for (const section of sections) {
+    const result = searchSection(section, 1);
+    if (result !== null) return result;
+  }
+
+  return 0;
 }
 
 function resolveSectionDropTarget(
