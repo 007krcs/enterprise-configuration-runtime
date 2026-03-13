@@ -7,7 +7,6 @@ import {
   getActivePackage,
   getActiveVersion,
   getLatestVersion,
-  loadConfigStore,
   persistConfigStore,
   recordAuditEntry,
   saveDraftVersion,

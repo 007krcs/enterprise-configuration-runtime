@@ -12,6 +12,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "rollup -c",
+    "build:builder": "pnpm --filter @platform/design-tokens exec node scripts/copy-assets.mjs && pnpm --filter builder build",
     "test": "vitest run",
     "prepublishOnly": "npm run build && npm test",
     "lint:colors": "node scripts/check-hardcoded-colors.js",

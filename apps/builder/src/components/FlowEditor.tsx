@@ -135,6 +135,7 @@ export function FlowEditor({
       event.preventDefault();
       if (targetIndex !== currentIndex && targetIndex >= 0) {
         const targetScreen = flow.screens[targetIndex];
+        if (!targetScreen) return;
         onSelectScreen(targetScreen.id);
         // Focus the target screen node
         const targetElement = boardRef.current?.querySelector(

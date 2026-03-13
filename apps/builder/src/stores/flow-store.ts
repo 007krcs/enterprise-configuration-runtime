@@ -10,7 +10,7 @@ import {
   updateBuilderTransition,
   type BuilderFlowState,
 } from '../lib/flow-engine';
-import { createInitialBuilderSchema } from '../lib/layout-engine';
+
 import type { UISchema } from '@platform/schema';
 
 export interface TransitionDraft {

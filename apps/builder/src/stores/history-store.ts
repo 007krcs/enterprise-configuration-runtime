@@ -43,7 +43,7 @@ export const useHistoryStore = create<HistoryStoreState & HistoryStoreActions>()
       undoStack.length > 0
     ) {
       // Replace the top of the stack — keep the old undo, use new execute
-      const top = undoStack[undoStack.length - 1];
+      const top = undoStack[undoStack.length - 1]!;
       const coalesced: Command = {
         id: command.id,
         label: command.label,
@@ -78,7 +78,7 @@ export const useHistoryStore = create<HistoryStoreState & HistoryStoreActions>()
     const { undoStack, redoStack } = get();
     if (undoStack.length === 0) return;
 
-    const command = undoStack[undoStack.length - 1];
+    const command = undoStack[undoStack.length - 1]!;
     command.undo();
 
     set({
@@ -93,7 +93,7 @@ export const useHistoryStore = create<HistoryStoreState & HistoryStoreActions>()
     const { undoStack, redoStack } = get();
     if (redoStack.length === 0) return;
 
-    const command = redoStack[redoStack.length - 1];
+    const command = redoStack[redoStack.length - 1]!;
     command.execute();
 
     set({
