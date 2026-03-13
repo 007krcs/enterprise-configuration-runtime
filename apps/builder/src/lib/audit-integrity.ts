@@ -60,7 +60,7 @@ export function verifyAuditChain(entries: HashedAuditEntry[]): {
 
   let prevHash = '';
   for (let i = 0; i < entries.length; i++) {
-    const entry = entries[i];
+    const entry = entries[i]!;
     const expectedHash = computeAuditHash(entry, prevHash);
 
     if (entry.prevHash !== prevHash) {
@@ -81,5 +81,5 @@ export function verifyAuditChain(entries: HashedAuditEntry[]): {
  */
 export function getLastAuditHash(entries: HashedAuditEntry[]): string {
   if (entries.length === 0) return '';
-  return entries[entries.length - 1].hash;
+  return entries[entries.length - 1]!.hash;
 }

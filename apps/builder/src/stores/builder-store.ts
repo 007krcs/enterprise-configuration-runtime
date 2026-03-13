@@ -17,6 +17,11 @@ import {
   serializeApplicationBundle,
   stateMachineToFlowGraph,
   type ApplicationBundle,
+  type ApplicationBundleStatus,
+  type FlowTransitionEdge,
+  type JSONValue,
+  type LayoutTreeNode,
+  type UIComponent,
   type UISchema,
 } from '@platform/schema';
 import type { BuilderWorkspaceSummary } from '../lib/builder-modules';
@@ -24,7 +29,14 @@ import { assembleBundle } from '../lib/application-bundle';
 import { validateApplicationBundle } from '../lib/bundle-validator';
 import { createInitialBuilderFlowState, type BuilderFlowState } from '../lib/flow-engine';
 import { createInitialBuilderSchema } from '../lib/layout-engine';
-import { createConfigPackage, loadConfigStore, type ConfigStoreState } from '../lib/config-governance';
+import {
+  createConfigPackage,
+  loadConfigStore,
+  type getActivePackage,
+  type getActiveVersion,
+  type AuditLogEntry,
+  type ConfigStoreState,
+} from '../lib/config-governance';
 import { setPaletteDragItem, type DropTarget, type PaletteDragItem, type PaletteItemKind } from '../utils/DragDropManager';
 
 import { useUIStore, type BuilderMode, type PreviewBreakpoint, type PreviewDataMode } from './ui-store';
@@ -108,7 +120,7 @@ export interface BuilderContextValue {
   selectedFlowScreen: ReturnType<FlowStore['getState']>['flowGraph']['screens'][number] | null;
   selectedTransitionId: string | null;
   setSelectedTransitionId: (value: string | null | ((prev: string | null) => string | null)) => void;
-  selectedTransition: import('@platform/schema').FlowTransitionEdge | null;
+  selectedTransition: FlowTransitionEdge | null;
   newScreenTitle: string;
   setNewScreenTitle: (value: string | ((prev: string) => string)) => void;
   transitionDraft: { from: string; to: string; onEvent: string; condition: string };
@@ -117,14 +129,14 @@ export interface BuilderContextValue {
   schemasByScreenId: Record<string, UISchema>;
   activeSchema: UISchema;
   selectedLayoutNodeId: string | null;
-  selectedLayoutNode: import('@platform/schema').LayoutTreeNode | undefined;
-  selectedComponent: import('@platform/schema').UIComponent | null;
+  selectedLayoutNode: LayoutTreeNode | undefined;
+  selectedComponent: UIComponent | null;
   selectedComponentContract: ComponentContract | null;
 
   configStore: ConfigStoreState;
   bundleConfigId: string;
   bundleTenantId: string;
-  bundleStatus: import('@platform/schema').ApplicationBundleStatus;
+  bundleStatus: ApplicationBundleStatus;
   bundleVersion: number;
   bundleCreatedAt: string;
   bundleUpdatedAt: string;
@@ -138,8 +150,8 @@ export interface BuilderContextValue {
   setNewConfigName: (value: string) => void;
   newConfigTenantId: string;
   setNewConfigTenantId: (value: string) => void;
-  activePackage: ReturnType<typeof import('../lib/config-governance').getActivePackage>;
-  activeVersion: ReturnType<typeof import('../lib/config-governance').getActiveVersion>;
+  activePackage: ReturnType<typeof getActivePackage>;
+  activeVersion: ReturnType<typeof getActiveVersion>;
 
   applicationBundle: ApplicationBundle;
   validationResult: ReturnType<typeof validateApplicationBundle>;
@@ -153,7 +165,7 @@ export interface BuilderContextValue {
   componentContracts: ComponentContract[];
   summary: BuilderWorkspaceSummary;
 
-  recentAuditEntries: import('../lib/config-governance').AuditLogEntry[];
+  recentAuditEntries: AuditLogEntry[];
 
   screensCount: number;
   transitionsCount: number;
@@ -185,16 +197,16 @@ export interface BuilderContextValue {
     className?: string;
     span?: number;
     componentSpan?: number;
-    props?: Record<string, import('@platform/schema').JSONValue>;
+    props?: Record<string, JSONValue>;
   }) => void;
-  updateSelectedComponentProp: (propKey: string, value: import('@platform/schema').JSONValue | undefined) => void;
+  updateSelectedComponentProp: (propKey: string, value: JSONValue | undefined) => void;
   handleLayoutTextFieldChange: (field: 'title' | 'label' | 'className') => (event: ChangeEvent<HTMLInputElement>) => void;
   handleLayoutNumberFieldChange: (field: 'span' | 'componentSpan') => (event: ChangeEvent<HTMLInputElement>) => void;
   handleLayoutPropsChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
   handleFlowConnectionCreate: (input: { from: string; to: string }) => void;
   handleFlowScreenMove: (input: { screenId: string; position: { x: number; y: number } }) => void;
   handleAddTransitionFromForm: () => void;
-  handleTransitionPatch: (transitionId: string, patch: Partial<Pick<import('@platform/schema').FlowTransitionEdge, 'from' | 'to' | 'onEvent' | 'condition'>>) => void;
+  handleTransitionPatch: (transitionId: string, patch: Partial<Pick<FlowTransitionEdge, 'from' | 'to' | 'onEvent' | 'condition'>>) => void;
   handleRemoveTransition: (transitionId: string) => void;
   handleCreateConfig: () => void;
   handlePackageSelect: (event: ChangeEvent<HTMLSelectElement>) => void;
@@ -455,7 +467,7 @@ export function BuilderProvider({
 
   const updateSelectedLayoutNode = (patch: {
     title?: string; label?: string; className?: string; span?: number; componentSpan?: number;
-    props?: Record<string, import('@platform/schema').JSONValue>;
+    props?: Record<string, JSONValue>;
   }) => {
     if (!activeScreen || !selectedLayoutNodeId) return;
     const currentSchema = flow.schemasByScreenId[activeScreen.id] ?? createInitialBuilderSchema(activeScreen.uiPageId);
@@ -464,7 +476,7 @@ export function BuilderProvider({
     config.pushAuditEntry({ action: 'layout.update', summary: `Updated layout node ${selectedLayoutNodeId}`, metadata: patch });
   };
 
-  const updateSelectedComponentProp = (propKey: string, value: import('@platform/schema').JSONValue | undefined) => {
+  const updateSelectedComponentProp = (propKey: string, value: JSONValue | undefined) => {
     if (!activeScreen || !selectedComponent) return;
     const currentSchema = flow.schemasByScreenId[activeScreen.id] ?? createInitialBuilderSchema(activeScreen.uiPageId);
     const nextSchema = layout.applyComponentPropUpdate(currentSchema, selectedComponent.id, propKey, value);
@@ -491,21 +503,21 @@ export function BuilderProvider({
     try {
       const parsed = JSON.parse(raw) as unknown;
       if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        updateSelectedLayoutNode({ props: parsed as Record<string, import('@platform/schema').JSONValue> });
+        updateSelectedLayoutNode({ props: parsed as Record<string, JSONValue> });
       }
     } catch { /* ignore invalid JSON while typing */ }
   };
 
   const handleFlowConnectionCreate = (input: { from: string; to: string }) => {
-    const tid = flow.handleFlowConnectionCreate(input);
+    flow.handleFlowConnectionCreate(input);
     config.pushAuditEntry({ action: 'flow.transition.add', summary: `Added transition ${input.from} -> ${input.to}`, metadata: { from: input.from, to: input.to } });
   };
 
   const handleFlowScreenMove = flow.handleFlowScreenMove;
 
   const handleAddTransitionFromForm = () => {
-    const tid = flow.handleAddTransitionFromForm();
-    if (tid) {
+    const transitionId = flow.handleAddTransitionFromForm();
+    if (transitionId) {
       config.pushAuditEntry({
         action: 'flow.transition.add',
         summary: `Added transition ${flow.transitionDraft.from} -> ${flow.transitionDraft.to}`,
@@ -514,7 +526,7 @@ export function BuilderProvider({
     }
   };
 
-  const handleTransitionPatch = (transitionId: string, patch: Partial<Pick<import('@platform/schema').FlowTransitionEdge, 'from' | 'to' | 'onEvent' | 'condition'>>) => {
+  const handleTransitionPatch = (transitionId: string, patch: Partial<Pick<FlowTransitionEdge, 'from' | 'to' | 'onEvent' | 'condition'>>) => {
     flow.handleTransitionPatch(transitionId, patch);
     config.pushAuditEntry({ action: 'flow.transition.update', summary: `Updated transition ${transitionId}`, metadata: { transitionId, patchKeys: Object.keys(patch) } });
   };

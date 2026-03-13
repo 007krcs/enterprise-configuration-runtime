@@ -82,8 +82,10 @@ export function validatePluginComponent(component: unknown): PluginValidationRes
  * to prevent runtime mutation of the registry.
  */
 export function sandboxPlugin(component: ComponentPluginInterface): SandboxedPlugin {
+  const rawCaps = component.capabilities ?? [];
+  const capsArray: string[] = Array.isArray(rawCaps) ? rawCaps : [rawCaps];
   const capabilities = new Set<PluginCapability>(
-    (component.capabilities ?? []).filter((c): c is PluginCapability =>
+    capsArray.filter((c): c is PluginCapability =>
       ALLOWED_CAPABILITIES.has(c as PluginCapability),
     ),
   );
