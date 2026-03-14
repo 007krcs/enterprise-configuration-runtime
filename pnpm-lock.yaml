@@ -45,6 +45,9 @@ importers:
       eslint-config-prettier:
         specifier: ^9.0.0
         version: 9.1.2(eslint@9.39.3)
+      next:
+        specifier: ^15.1.0
+        version: 15.5.12(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.97.3)
       rollup:
         specifier: ^4.52.5
         version: 4.57.1
